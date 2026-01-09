@@ -1,0 +1,116 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.sidebar {
+  width: 260px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 18px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  padding: 0 20px 16px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brandTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+.brandAccent {
+  color: var(--accent);
+}
+
+.nav {
+  flex: 1;
+  padding: 10px 12px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin: 6px 0;
+  border-radius: 12px;
+  color: rgba(229, 231, 235, 0.8);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 160ms ease, color 160ms ease, transform 120ms ease;
+}
+
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.navItemActive {
+  background: rgba(138, 43, 226, 0.16);
+  border: 1px solid rgba(138, 43, 226, 0.28);
+  color: #fff;
+}
+
+.footer {
+  padding: 12px 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logoutButton {
+  width: 100%;
+  cursor: pointer;
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  background: rgba(239, 68, 68, 0.08);
+  color: rgba(254, 202, 202, 0.95);
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 800;
+  transition: background 160ms ease, transform 120ms ease;
+}
+
+.logoutButton:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.logoutButton:active {
+  transform: scale(0.99);
+}
+
+.main {
+  flex: 1;
+  padding: 22px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.content {
+  background: var(--panel);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+
