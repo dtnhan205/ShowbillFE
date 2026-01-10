@@ -29,25 +29,41 @@ const AdminProductList: React.FC = () => {
     status: 'all',
   });
 
+  // Kiểm tra role super admin
+  const isSuperAdmin = useMemo(() => {
+    try {
+      const raw = localStorage.getItem('adminRole');
+      return raw === 'super';
+    } catch {
+      return false;
+    }
+  }, []);
+
   const fetchMeta = useCallback(async () => {
     try {
+      // Super admin có thể xem tất cả, admin thường chỉ xem của mình
+      const obsEndpoint = isSuperAdmin ? '/obs?includeInactive=true' : '/obs/mine?includeInactive=true';
+      const catsEndpoint = isSuperAdmin ? '/categories?includeInactive=true' : '/categories/mine?includeInactive=true';
+      
       const [o, c] = await Promise.all([
-        api.get<ObVersion[]>('/obs?includeInactive=true'),
-        api.get<Category[]>('/categories?includeInactive=true'),
+        api.get<ObVersion[]>(obsEndpoint),
+        api.get<Category[]>(catsEndpoint),
       ]);
       setObs(Array.isArray(o.data) ? o.data : []);
       setCats(Array.isArray(c.data) ? c.data : []);
     } catch {
       // ignore
     }
-  }, []);
+  }, [isSuperAdmin]);
 
   const fetchProducts = useCallback(async () => {
     try {
       setLoadState('loading');
       setErrorMessage(null);
 
-      const { data } = await api.get<Product[]>('/products?includeHidden=true');
+      // Super admin có thể xem tất cả sản phẩm, admin thường chỉ xem của mình
+      const endpoint = isSuperAdmin ? '/products/all' : '/products/mine';
+      const { data } = await api.get<Product[]>(endpoint);
       setProducts(Array.isArray(data) ? data : []);
 
       setLoadState('idle');
@@ -56,7 +72,7 @@ const AdminProductList: React.FC = () => {
       setErrorMessage(message);
       setLoadState('error');
     }
-  }, []);
+  }, [isSuperAdmin]);
 
   useEffect(() => {
     void fetchMeta();

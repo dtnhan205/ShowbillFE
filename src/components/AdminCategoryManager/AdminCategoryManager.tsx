@@ -14,18 +14,30 @@ const AdminCategoryManager: React.FC = () => {
 
   const canCreate = useMemo(() => name.trim() && slug.trim(), [name, slug]);
 
+  // Kiểm tra role super admin
+  const isSuperAdmin = useMemo(() => {
+    try {
+      const raw = localStorage.getItem('adminRole');
+      return raw === 'super';
+    } catch {
+      return false;
+    }
+  }, []);
+
   const fetchList = useCallback(async () => {
     try {
       setLoadState('loading');
       setError(null);
-      const { data } = await api.get<Category[]>('/categories?includeInactive=true');
+      // Super admin có thể xem tất cả, admin thường chỉ xem của mình
+      const endpoint = isSuperAdmin ? '/categories?includeInactive=true' : '/categories/mine?includeInactive=true';
+      const { data } = await api.get<Category[]>(endpoint);
       setItems(Array.isArray(data) ? data : []);
       setLoadState('idle');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Không thể tải danh sách category');
       setLoadState('error');
     }
-  }, []);
+  }, [isSuperAdmin]);
 
   useEffect(() => {
     void fetchList();

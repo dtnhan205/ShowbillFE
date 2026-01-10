@@ -49,6 +49,7 @@ const Profile: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
+      setData(null); // Reset data khi fetch mới
       const res = await api.get<PublicAdminDetail>(`/public/admins/${id}`);
       setData(res.data);
       setLoading(false);
@@ -77,21 +78,30 @@ const Profile: React.FC = () => {
     void fetchTopAdmins();
   }, []);
 
+  // Reset data và loading khi id thay đổi
+  useEffect(() => {
+    setData(null);
+    setLoading(true);
+    setError(null);
+  }, [id]);
+
   // Effect để tăng view cho tất cả bill của admin khi mở trang profile
   useEffect(() => {
     void fetchDetail();
   }, [fetchDetail]);
 
   // Khi đã có dữ liệu admin: tăng view profile + lưu vào "admin gần đây"
+  // Effect này chỉ phụ thuộc vào id và data để đảm bảo chạy lại khi id thay đổi
   useEffect(() => {
     if (!id || loading || error || !data) return;
 
-    // Chống double-call do React StrictMode: chặn nếu 2 lần trong vòng 1 giây
+    // Chống double-call: chặn nếu đã tăng view cho cùng admin trong vòng 1 giây
     const storageKey = `adminView:${id}`;
     const now = Date.now();
     const last = Number(sessionStorage.getItem(storageKey) || '0');
 
-    if (now - last < 1000) {
+    // Nếu đã tăng view gần đây và cùng admin, không tăng lại
+    if (now - last < 1000 && data.admin._id === id) {
       return;
     }
 
@@ -102,6 +112,14 @@ const Profile: React.FC = () => {
       try {
         const response = await api.post(`/public/admins/${id}/increment-views`);
         console.log('[Profile] Views incremented successfully for admin:', id, response.data);
+        // Refresh top admins sau khi tăng view để cập nhật số liệu
+        const res = await api.get<PublicAdmin[]>('/public/admins');
+        const list = Array.isArray(res.data) ? res.data : [];
+        const top = [...list]
+          .filter((a) => (a.stats?.totalViews ?? 0) > 0)
+          .sort((a, b) => (b.stats?.totalViews ?? 0) - (a.stats?.totalViews ?? 0))
+          .slice(0, 3);
+        setTopAdmins(top);
       } catch (err) {
         console.error('[Profile] Failed to increment views:', err);
       }
@@ -128,7 +146,7 @@ const Profile: React.FC = () => {
     } catch (storageErr) {
       console.error('[Profile] Failed to persist recent admins:', storageErr);
     }
-  }, [data, error, id, loading]);
+  }, [id, data, error, loading]);
 
   const filteredProducts = useMemo(() => {
     const products = data?.products ?? [];

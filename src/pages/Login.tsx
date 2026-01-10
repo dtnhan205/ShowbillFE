@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import type { AdminLoginResponse } from '../types';
+import ClientLayout from '../components/ClientLayout/ClientLayout';
 import styles from './Login.module.css';
 
 type SubmitState = 'idle' | 'submitting';
@@ -51,7 +52,7 @@ const Login: React.FC = () => {
         } else {
           localStorage.removeItem('adminRole');
         }
-        navigate('/admin', { replace: true });
+        navigate('/', { replace: true });
       } catch (err: unknown) {
         let message = 'Đăng nhập thất bại.';
 
@@ -81,49 +82,51 @@ const Login: React.FC = () => {
   );
 
   return (
-    <div className={styles.page}>
-      <form onSubmit={handleLogin} className={styles.card} noValidate>
-        <h2 className={styles.title}>Admin Login</h2>
+    <ClientLayout>
+      <div className={styles.page}>
+        <form onSubmit={handleLogin} className={styles.card} noValidate>
+          <h2 className={styles.title}>Admin Login</h2>
 
-        {error ? <div className={styles.error}>{error}</div> : null}
+          {error ? <div className={styles.error}>{error}</div> : null}
 
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="username">
-            Username
-          </label>
-          <input
-            id="username"
-            type="text"
-            placeholder="Nhập username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className={styles.input}
-            autoComplete="username"
-            required
-          />
-        </div>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="username">
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              placeholder="Nhập username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className={styles.input}
+              autoComplete="username"
+              required
+            />
+          </div>
 
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="password">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            placeholder="Nhập password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={styles.input}
-            autoComplete="current-password"
-            required
-          />
-        </div>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Nhập password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={styles.input}
+              autoComplete="current-password"
+              required
+            />
+          </div>
 
-        <button type="submit" className={styles.button} disabled={!canSubmit}>
-          {submitState === 'submitting' ? 'Đang đăng nhập...' : 'Đăng nhập'}
-        </button>
-      </form>
-    </div>
+          <button type="submit" className={styles.button} disabled={!canSubmit}>
+            {submitState === 'submitting' ? 'Đang đăng nhập...' : 'Đăng nhập'}
+          </button>
+        </form>
+      </div>
+    </ClientLayout>
   );
 };
 

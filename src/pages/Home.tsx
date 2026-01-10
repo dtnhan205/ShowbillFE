@@ -65,14 +65,25 @@ const Home: React.FC = () => {
     }
   }, []);
 
-  // Lọc theo search
+  // Lọc theo search và sắp xếp theo view giảm dần
   const filteredAdmins = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return admins;
-    return admins.filter((a) => {
-      const name = a.displayName?.toLowerCase() ?? '';
-      const bio = a.bio?.toLowerCase() ?? '';
-      return name.includes(q) || bio.includes(q);
+    let result = admins;
+    
+    // Lọc theo search nếu có
+    if (q) {
+      result = admins.filter((a) => {
+        const name = a.displayName?.toLowerCase() ?? '';
+        const bio = a.bio?.toLowerCase() ?? '';
+        return name.includes(q) || bio.includes(q);
+      });
+    }
+    
+    // Sắp xếp theo view giảm dần (view cao nhất ở đầu)
+    return [...result].sort((a, b) => {
+      const viewA = a.stats?.totalViews ?? 0;
+      const viewB = b.stats?.totalViews ?? 0;
+      return viewB - viewA; // Giảm dần
     });
   }, [admins, query]);
 

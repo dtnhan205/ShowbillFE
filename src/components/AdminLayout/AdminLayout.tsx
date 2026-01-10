@@ -90,6 +90,9 @@ const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
         </nav>
 
         <div className={styles.footer}>
+          <Link to="/" className={styles.clientButton}>
+            Truy cập trang client
+          </Link>
           <button type="button" onClick={logout} className={styles.logoutButton}>
             Đăng xuất
           </button>

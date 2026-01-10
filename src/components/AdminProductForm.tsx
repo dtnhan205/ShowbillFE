@@ -31,6 +31,16 @@ const AdminProductForm: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [metaLoading, setMetaLoading] = useState(false);
 
+  // Kiểm tra role super admin
+  const isSuperAdmin = useMemo(() => {
+    try {
+      const raw = localStorage.getItem('adminRole');
+      return raw === 'super';
+    } catch {
+      return false;
+    }
+  }, []);
+
   useEffect(() => {
     return () => {
       if (preview.startsWith('blob:')) URL.revokeObjectURL(preview);
@@ -42,9 +52,13 @@ const AdminProductForm: React.FC = () => {
     const fetchMeta = async () => {
       try {
         setMetaLoading(true);
+        // Super admin có thể xem tất cả, admin thường chỉ xem của mình
+        const obsEndpoint = isSuperAdmin ? '/obs' : '/obs/mine';
+        const catsEndpoint = isSuperAdmin ? '/categories' : '/categories/mine';
+        
         const [obsRes, catsRes] = await Promise.all([
-          api.get<ObVersion[]>('/obs'),
-          api.get<Category[]>('/categories'),
+          api.get<ObVersion[]>(obsEndpoint),
+          api.get<Category[]>(catsEndpoint),
         ]);
 
         const obs = Array.isArray(obsRes.data) ? obsRes.data : [];
@@ -68,7 +82,7 @@ const AdminProductForm: React.FC = () => {
     };
 
     void fetchMeta();
-  }, [id]);
+  }, [id, isSuperAdmin]);
 
   // load product for edit
   useEffect(() => {

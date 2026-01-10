@@ -76,26 +76,14 @@ const ClientLayout: React.FC<Props> = ({ children, showHeader = true }) => {
               <Link to="/about" className={styles.navLink}>
                 Giới thiệu
               </Link>
-              <a
-                href="/#all-admins"
-                className={styles.navLink}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (location.pathname !== '/') {
-                    navigate('/#all-admins');
-                  } else {
-                    const element = document.getElementById('all-admins');
-                    if (element) {
-                      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                  }
-                }}
-              >
-                Tất cả admin
-              </a>
               <Link to="/contact" className={styles.navLink}>
                 Liên hệ
               </Link>
+              {adminProfile && (
+                <Link to="/admin" className={styles.navLink}>
+                  Admin
+                </Link>
+              )}
             </nav>
             <div className={styles.authSection}>
               {loading ? (

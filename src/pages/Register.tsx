@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import ClientLayout from '../components/ClientLayout/ClientLayout';
 import styles from './Login.module.css';
 
 type SubmitState = 'idle' | 'submitting';
@@ -54,7 +55,13 @@ const Register: React.FC = () => {
         }
 
         localStorage.setItem('token', data.token);
-        navigate('/admin', { replace: true });
+        // Lưu role nếu có
+        if (data.admin?.role) {
+          localStorage.setItem('adminRole', data.admin.role);
+        } else {
+          localStorage.removeItem('adminRole');
+        }
+        navigate('/', { replace: true });
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Đăng ký thất bại.';
         setError(message);
@@ -66,69 +73,71 @@ const Register: React.FC = () => {
   );
 
   return (
-    <div className={styles.page}>
-      <form onSubmit={handleRegister} className={styles.card} noValidate>
-        <h2 className={styles.title}>Admin Register</h2>
+    <ClientLayout>
+      <div className={styles.page}>
+        <form onSubmit={handleRegister} className={styles.card} noValidate>
+          <h2 className={styles.title}>Admin Register</h2>
 
-        {error ? <div className={styles.error}>{error}</div> : null}
+          {error ? <div className={styles.error}>{error}</div> : null}
 
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="username">
-            Username
-          </label>
-          <input
-            id="username"
-            type="text"
-            placeholder="Nhập username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className={styles.input}
-            autoComplete="username"
-            required
-          />
-        </div>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="username">
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              placeholder="Nhập username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className={styles.input}
+              autoComplete="username"
+              required
+            />
+          </div>
 
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="email">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            placeholder="Nhập email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={styles.input}
-            autoComplete="email"
-            required
-          />
-        </div>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="email">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Nhập email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={styles.input}
+              autoComplete="email"
+              required
+            />
+          </div>
 
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="password">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            placeholder="Nhập password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={styles.input}
-            autoComplete="new-password"
-            required
-          />
-        </div>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Nhập password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={styles.input}
+              autoComplete="new-password"
+              required
+            />
+          </div>
 
-        <button type="submit" className={styles.button} disabled={!canSubmit}>
-          {submitState === 'submitting' ? 'Đang đăng ký...' : 'Đăng ký'}
-        </button>
+          <button type="submit" className={styles.button} disabled={!canSubmit}>
+            {submitState === 'submitting' ? 'Đang đăng ký...' : 'Đăng ký'}
+          </button>
 
-        <div style={{ marginTop: 14, textAlign: 'center', color: 'rgba(229,231,235,0.75)', fontSize: 14 }}>
-          Đã có tài khoản? <Link to="/login" style={{ color: '#8a2be2', fontWeight: 800 }}>Đăng nhập</Link>
-        </div>
-      </form>
-    </div>
+          <div style={{ marginTop: 14, textAlign: 'center', color: 'rgba(229,231,235,0.75)', fontSize: 14 }}>
+            Đã có tài khoản? <Link to="/login" style={{ color: '#8a2be2', fontWeight: 800 }}>Đăng nhập</Link>
+          </div>
+        </form>
+      </div>
+    </ClientLayout>
   );
 };
 
