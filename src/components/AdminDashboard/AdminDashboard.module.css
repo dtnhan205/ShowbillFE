@@ -1,3 +1,63 @@
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dashboardTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.filterContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.periodButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.periodButton {
+  padding: 8px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.periodButton:hover {
+  background: var(--panel-strong);
+  border-color: var(--accent);
+}
+
+.periodButtonActive {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.periodButtonActive:hover {
+  background: var(--accent);
+  opacity: 0.9;
+}
+
+.periodDropdowns {
+  display: flex;
+  align-items: center;
+}
+
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -113,4 +173,93 @@
 
 .retryButton:hover {
   opacity: 0.92;
+}
+
+.chartSection {
+  margin-top: 32px;
+  margin-bottom: 32px;
+  background: var(--panel-strong);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.chartTitle {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.periodSelect {
+  padding: 8px 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.periodSelect option {
+  background: var(--panel-strong);
+  color: var(--text);
+}
+
+.periodSelect:hover {
+  background: var(--panel-strong);
+  border-color: var(--accent);
+}
+
+.periodSelect:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
+}
+
+.chartContainer {
+  width: 100%;
+  height: 300px;
+  margin-bottom: 12px;
+}
+
+.chartContainerSmall {
+  width: 100%;
+  height: 200px;
+}
+
+.chartNote {
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.chartNote strong {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+  margin-bottom: 32px;
+}
+
+.chartCard {
+  background: var(--panel-strong);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.chartCardTitle {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
 }

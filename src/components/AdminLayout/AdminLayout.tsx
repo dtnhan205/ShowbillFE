@@ -105,6 +105,14 @@ const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
         </div>
 
         <div className={styles.content}>{children}</div>
+
+        <footer className={styles.mainFooter}>
+          <div className={styles.mainFooterInner}>
+            <p className={styles.mainFooterText}>
+              © {new Date().getFullYear()} ShowBill Admin. All rights reserved.
+            </p>
+          </div>
+        </footer>
       </div>
     </div>
   );

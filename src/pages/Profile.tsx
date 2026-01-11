@@ -157,12 +157,35 @@ const Profile: React.FC = () => {
     });
   }, [cat, data?.products, ob]);
 
-  const openBill = useCallback((bill: Product) => {
+  const openBill = useCallback(async (bill: Product) => {
     setModal({ open: true, img: bill.imageBase64, title: bill.name, billId: bill._id });
     setImageZoom(1);
     setImagePosition({ x: 0, y: 0 });
-    // View count is incremented when loading the profile page, not when opening individual bills
-  }, []);
+    
+    // Tăng view cho bill khi mở
+    if (bill._id) {
+      try {
+        // Chống double-call: chặn nếu đã tăng view cho cùng bill trong vòng 2 giây
+        const storageKey = `billView:${bill._id}`;
+        const now = Date.now();
+        const last = Number(sessionStorage.getItem(storageKey) || '0');
+        
+        if (now - last < 2000) {
+          return; // Đã tăng view gần đây, không tăng lại
+        }
+        
+        sessionStorage.setItem(storageKey, String(now));
+        
+        // Gọi API tăng view cho product
+        await api.post(`/public/products/${bill._id}/view`);
+        
+        // Refresh data để cập nhật views
+        void fetchDetail();
+      } catch (err) {
+        console.error('[Profile] Failed to increment product view:', err);
+      }
+    }
+  }, [fetchDetail]);
 
   const closeModal = useCallback(() => {
     setModal({ open: false });

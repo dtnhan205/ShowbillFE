@@ -1,4 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 import api from '../utils/api';
 import type { Product } from '../types';
 import styles from './AdminDashboard/AdminDashboard.module.css';
@@ -17,11 +31,51 @@ type SystemStats = {
   totalViews: number;
 };
 
+type ChartDataPoint = {
+  date: string;
+  bills: number;
+  views?: number;
+  admins?: number;
+  count?: number;
+};
+
+type MyChartData = {
+  viewsTotal: number;
+  viewsData?: ChartDataPoint[];
+  billsData: ChartDataPoint[];
+};
+
+type SystemChartData = {
+  viewsTotal: number;
+  viewsData?: ChartDataPoint[];
+  billsData: ChartDataPoint[];
+  adminsData: ChartDataPoint[];
+};
+
 const RECENT_LIMIT = 8;
 
 const AdminDashboard: React.FC = () => {
   const [myStats, setMyStats] = useState<MyStats | null>(null);
   const [systemStats, setSystemStats] = useState<SystemStats | null>(null);
+  const [myChartData, setMyChartData] = useState<MyChartData | null>(null);
+  const [systemChartData, setSystemChartData] = useState<SystemChartData | null>(null);
+  const [period, setPeriod] = useState<'week' | 'month' | 'year'>('week');
+  
+  // Tính toán giá trị mặc định cho các dropdown
+  const getDefaultWeek = () => {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - daysToMonday);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    return `${monday.getDate()}/${monday.getMonth() + 1} - ${sunday.getDate()}/${sunday.getMonth() + 1}`;
+  };
+  
+  const [selectedWeek, setSelectedWeek] = useState<string>(getDefaultWeek());
+  const [selectedMonth, setSelectedMonth] = useState<string>(`Tháng ${new Date().getMonth() + 1}`);
+  const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loadState, setLoadState] = useState<LoadState>('idle');
@@ -32,12 +86,24 @@ const AdminDashboard: React.FC = () => {
       setLoadState('loading');
       setErrorMessage(null);
 
-      const [myStatsRes, productsRes] = await Promise.all([
+      // Build query params based on period
+      let queryParams = `period=${period}`;
+      if (period === 'week' && selectedWeek) {
+        queryParams += `&week=${encodeURIComponent(selectedWeek)}`;
+      } else if (period === 'month' && selectedMonth) {
+        queryParams += `&month=${encodeURIComponent(selectedMonth)}`;
+      } else if (period === 'year' && selectedYear) {
+        queryParams += `&year=${selectedYear}`;
+      }
+
+      const [myStatsRes, productsRes, myChartRes] = await Promise.all([
         api.get<MyStats>('/admin/stats'),
         api.get<Product[]>('/products/mine'),
+        api.get<MyChartData>(`/admin/chart-data?${queryParams}`),
       ]);
 
       setMyStats(myStatsRes.data);
+      setMyChartData(myChartRes.data);
 
       const list = Array.isArray(productsRes.data) ? productsRes.data : [];
       const sorted = [...list].sort(
@@ -45,12 +111,17 @@ const AdminDashboard: React.FC = () => {
       );
       setProducts(sorted.slice(0, RECENT_LIMIT));
 
-      // Super admin: system stats
+      // Super admin: system stats and chart data
       try {
-        const sysRes = await api.get<SystemStats>('/admin/system-stats');
+        const [sysRes, sysChartRes] = await Promise.all([
+          api.get<SystemStats>('/admin/system-stats'),
+          api.get<SystemChartData>(`/admin/system-chart-data?${queryParams}`),
+        ]);
         setSystemStats(sysRes.data);
+        setSystemChartData(sysChartRes.data);
       } catch {
         setSystemStats(null);
+        setSystemChartData(null);
       }
 
       setLoadState('idle');
@@ -59,11 +130,42 @@ const AdminDashboard: React.FC = () => {
       setErrorMessage(message);
       setLoadState('error');
     }
-  }, []);
+  }, [period, selectedWeek, selectedMonth, selectedYear]);
 
   useEffect(() => {
     void fetchAll();
-  }, [fetchAll]);
+  }, [fetchAll, period, selectedWeek, selectedMonth, selectedYear]);
+  
+  // Generate danh sách tuần (4 tuần gần nhất)
+  const generateWeeks = () => {
+    const weeks: string[] = [];
+    const today = new Date();
+    
+    for (let i = 0; i < 4; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - (i * 7));
+      const dayOfWeek = date.getDay();
+      const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+      const monday = new Date(date);
+      monday.setDate(date.getDate() - daysToMonday);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      weeks.push(`${monday.getDate()}/${monday.getMonth() + 1} - ${sunday.getDate()}/${sunday.getMonth() + 1}`);
+    }
+    
+    return weeks;
+  };
+  
+  // Generate danh sách tháng
+  const generateMonths = () => {
+    return Array.from({ length: 12 }, (_, i) => `Tháng ${i + 1}`);
+  };
+  
+  // Generate danh sách năm (3 năm gần nhất)
+  const generateYears = () => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 3 }, (_, i) => (currentYear - i).toString());
+  };
 
   const statsCards = useMemo(() => {
     // Super admin view
@@ -105,6 +207,222 @@ const AdminDashboard: React.FC = () => {
     return null;
   }, [myStats, systemStats]);
 
+  // Format date for display
+  const formatDate = (dateStr: string) => {
+    if (period === 'year') {
+      // dateStr format: YYYY-MM
+      const [, month] = dateStr.split('-');
+      return `Tháng ${parseInt(month)}`;
+    }
+    const date = new Date(dateStr);
+    return `${date.getDate()}/${date.getMonth() + 1}`;
+  };
+
+  const chartsSection = useMemo(() => {
+    // Super admin charts
+    if (systemStats && systemChartData) {
+      return (
+        <>
+          <div className={styles.chartSection}>
+            <h2 className={styles.chartTitle}>Thống kê lượt xem hệ thống</h2>
+            <div className={styles.chartContainer}>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={systemChartData.viewsData || systemChartData.billsData}>
+                  <defs>
+                    <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                  <XAxis
+                    dataKey="date"
+                    tickFormatter={formatDate}
+                    stroke="#888"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <YAxis stroke="#888" style={{ fontSize: '12px' }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      border: '1px solid #444',
+                      borderRadius: '8px',
+                    }}
+                    labelFormatter={(value) => `Ngày: ${value}`}
+                    formatter={(value: number | undefined) => [
+                      (value ?? 0).toLocaleString(),
+                      'Lượt xem',
+                    ]}
+                  />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="views"
+                    stroke="#8884d8"
+                    fillOpacity={1}
+                    fill="url(#colorViews)"
+                    name="Lượt xem"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            <div className={styles.chartNote}>
+              Tổng lượt xem: <strong>{systemChartData.viewsTotal.toLocaleString()}</strong>
+            </div>
+          </div>
+
+          <div className={styles.chartsGrid}>
+            <div className={styles.chartCard}>
+              <h3 className={styles.chartCardTitle}>Thống kê tất cả Admin</h3>
+              <div className={styles.chartContainerSmall}>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={systemChartData.adminsData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={formatDate}
+                      stroke="#888"
+                      style={{ fontSize: '10px' }}
+                    />
+                    <YAxis stroke="#888" style={{ fontSize: '10px' }} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        border: '1px solid #444',
+                        borderRadius: '8px',
+                      }}
+                      labelFormatter={(value) => `Ngày: ${value}`}
+                    />
+                    <Bar dataKey="count" fill="#82ca9d" name="Admin đăng ký" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className={styles.chartCard}>
+              <h3 className={styles.chartCardTitle}>Tỉ lệ đăng ký Admin</h3>
+              <div className={styles.chartContainerSmall}>
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={systemChartData.adminsData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={formatDate}
+                      stroke="#888"
+                      style={{ fontSize: '10px' }}
+                    />
+                    <YAxis stroke="#888" style={{ fontSize: '10px' }} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        border: '1px solid #444',
+                        borderRadius: '8px',
+                      }}
+                      labelFormatter={(value) => `Ngày: ${value}`}
+                    />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="count"
+                      stroke="#ffc658"
+                      strokeWidth={2}
+                      name="Admin mới"
+                      dot={{ r: 4 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    // Normal admin charts
+    if (myStats && myChartData) {
+      return (
+        <>
+          <div className={styles.chartSection}>
+            <h2 className={styles.chartTitle}>Thống kê lượt xem</h2>
+            <div className={styles.chartContainer}>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={myChartData.viewsData || myChartData.billsData}>
+                  <defs>
+                    <linearGradient id="colorMyViews" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                  <XAxis
+                    dataKey="date"
+                    tickFormatter={formatDate}
+                    stroke="#888"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <YAxis stroke="#888" style={{ fontSize: '12px' }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      border: '1px solid #444',
+                      borderRadius: '8px',
+                    }}
+                    labelFormatter={(value) => `Ngày: ${value}`}
+                    formatter={(value: number | undefined) => [
+                      (value ?? 0).toLocaleString(),
+                      'Lượt xem',
+                    ]}
+                  />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="views"
+                    stroke="#8884d8"
+                    fillOpacity={1}
+                    fill="url(#colorMyViews)"
+                    name="Lượt xem"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            <div className={styles.chartNote}>
+              Tổng lượt xem: <strong>{myChartData.viewsTotal.toLocaleString()}</strong>
+            </div>
+          </div>
+
+          <div className={styles.chartCard}>
+            <h3 className={styles.chartCardTitle}>Thống kê tải lên Bill</h3>
+            <div className={styles.chartContainerSmall}>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={myChartData.billsData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                  <XAxis
+                    dataKey="date"
+                    tickFormatter={formatDate}
+                    stroke="#888"
+                    style={{ fontSize: '10px' }}
+                  />
+                  <YAxis stroke="#888" style={{ fontSize: '10px' }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      border: '1px solid #444',
+                      borderRadius: '8px',
+                    }}
+                    labelFormatter={(value) => `Ngày: ${value}`}
+                  />
+                  <Bar dataKey="bills" fill="#82ca9d" name="Bill" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    return null;
+  }, [myStats, myChartData, systemStats, systemChartData]);
+
   const content = useMemo(() => {
     if (loadState === 'loading') {
       return <div className={styles.loading}>Đang tải dữ liệu...</div>;
@@ -123,7 +441,79 @@ const AdminDashboard: React.FC = () => {
 
     return (
       <>
+        <div className={styles.dashboardHeader}>
+          <h1 className={styles.dashboardTitle}>Dashboard</h1>
+          <div className={styles.filterContainer}>
+            <div className={styles.periodButtons}>
+              <button
+                type="button"
+                className={`${styles.periodButton} ${period === 'week' ? styles.periodButtonActive : ''}`}
+                onClick={() => setPeriod('week')}
+              >
+                Tuần
+              </button>
+              <button
+                type="button"
+                className={`${styles.periodButton} ${period === 'month' ? styles.periodButtonActive : ''}`}
+                onClick={() => setPeriod('month')}
+              >
+                Tháng
+              </button>
+              <button
+                type="button"
+                className={`${styles.periodButton} ${period === 'year' ? styles.periodButtonActive : ''}`}
+                onClick={() => setPeriod('year')}
+              >
+                Năm
+              </button>
+            </div>
+            <div className={styles.periodDropdowns}>
+              {period === 'week' && (
+                <select
+                  value={selectedWeek}
+                  onChange={(e) => setSelectedWeek(e.target.value)}
+                  className={styles.periodDropdown}
+                >
+                  {generateWeeks().map((week) => (
+                    <option key={week} value={week}>
+                      {week}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {period === 'month' && (
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className={styles.periodDropdown}
+                >
+                  {generateMonths().map((month) => (
+                    <option key={month} value={month}>
+                      {month}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {period === 'year' && (
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  className={styles.periodDropdown}
+                >
+                  {generateYears().map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </div>
+        </div>
+
         {statsCards}
+
+        {chartsSection}
 
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
@@ -152,7 +542,7 @@ const AdminDashboard: React.FC = () => {
         </div>
       </>
     );
-  }, [errorMessage, fetchAll, loadState, products, statsCards]);
+  }, [errorMessage, fetchAll, loadState, products, statsCards, chartsSection]);
 
   return <div>{content}</div>;
 };

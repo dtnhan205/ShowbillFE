@@ -142,6 +142,138 @@
 .main {
   position: relative;
   min-height: calc(100vh - 80px);
+  padding-bottom: 20px;
+}
+
+.footer {
+  position: relative;
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+  margin-top: 60px;
+  padding: 40px 24px 20px;
+}
+
+.footerInner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 32px;
+  margin-bottom: 24px;
+}
+
+.footerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footerTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.footerSubtitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: rgba(229, 231, 235, 0.9);
+  margin-bottom: 4px;
+}
+
+.footerDescription {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(229, 231, 235, 0.7);
+  line-height: 1.5;
+}
+
+.footerNav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footerLink {
+  color: rgba(229, 231, 235, 0.7);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 160ms ease;
+}
+
+.footerLink:hover {
+  color: rgba(229, 231, 235, 0.95);
+}
+
+.footerBottom {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.footerCopyright {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(229, 231, 235, 0.6);
+}
+
+.socialLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(229, 231, 235, 0.7);
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 160ms ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.socialLink:hover {
+  color: rgba(229, 231, 235, 0.95);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateX(4px);
+}
+
+.socialIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Zalo specific color */
+.socialLink:nth-of-type(1):hover {
+  color: #0068ff;
+  border-color: rgba(0, 104, 255, 0.3);
+  background: rgba(0, 104, 255, 0.1);
+}
+
+/* TikTok specific color */
+.socialLink:nth-of-type(2):hover {
+  color: #000000;
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Telegram specific color */
+.socialLink:nth-of-type(3):hover {
+  color: #0088cc;
+  border-color: rgba(0, 136, 204, 0.3);
+  background: rgba(0, 136, 204, 0.1);
 }
 
 .authSection {
