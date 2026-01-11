@@ -5,6 +5,7 @@ import api from '../utils/api';
 import ClientProductGrid from '../components/ClientProductGrid';
 import ClientLayout from '../components/ClientLayout/ClientLayout';
 import type { Product } from '../types';
+import { base64ToBlobUrl, revokeBlobUrl } from '../utils/imageProtection';
 import styles from './Profile.module.css';
 
 type PublicAdmin = {
@@ -43,6 +44,105 @@ const Profile: React.FC = () => {
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  // Disable body scroll when modal is open
+  useEffect(() => {
+    if (modal.open) {
+      const originalOverflow = document.body.style.overflow;
+      const originalPaddingRight = document.body.style.paddingRight;
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = '0px'; // Prevent layout shift
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.paddingRight = originalPaddingRight;
+      };
+    }
+  }, [modal.open]);
+
+  // Protection: Disable right-click, drag, and keyboard shortcuts
+  useEffect(() => {
+    if (!modal.open) return;
+
+    // Disable right-click context menu
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
+
+    // Disable keyboard shortcuts (Ctrl+S, Ctrl+P, Ctrl+A, F12, etc.)
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Disable Ctrl+S (Save)
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      // Disable Ctrl+P (Print)
+      if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      // Disable Ctrl+A (Select All)
+      if (e.ctrlKey && e.key === 'a') {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      // Disable Ctrl+Shift+I (DevTools)
+      if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      // Disable F12 (DevTools)
+      if (e.key === 'F12') {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      // Disable Ctrl+Shift+C (Inspect Element)
+      if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      // Disable Ctrl+U (View Source)
+      if (e.ctrlKey && e.key === 'u') {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+
+    // Disable drag and drop
+    const handleDragStart = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
+
+    // Disable text selection
+    const handleSelectStart = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
+
+    // Add event listeners
+    document.addEventListener('contextmenu', handleContextMenu, { capture: true });
+    document.addEventListener('keydown', handleKeyDown, { capture: true });
+    document.addEventListener('dragstart', handleDragStart, { capture: true });
+    document.addEventListener('selectstart', handleSelectStart, { capture: true });
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu, { capture: true });
+      document.removeEventListener('keydown', handleKeyDown, { capture: true });
+      document.removeEventListener('dragstart', handleDragStart, { capture: true });
+      document.removeEventListener('selectstart', handleSelectStart, { capture: true });
+    };
+  }, [modal.open]);
 
   const fetchDetail = useCallback(async () => {
     if (!id) return;
@@ -148,6 +248,15 @@ const Profile: React.FC = () => {
     }
   }, [id, data, error, loading]);
 
+  // Cleanup blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (modal.img && modal.img.startsWith('blob:')) {
+        revokeBlobUrl(modal.img);
+      }
+    };
+  }, [modal.img]);
+
   const filteredProducts = useMemo(() => {
     const products = data?.products ?? [];
     return products.filter((p) => {
@@ -158,7 +267,9 @@ const Profile: React.FC = () => {
   }, [cat, data?.products, ob]);
 
   const openBill = useCallback(async (bill: Product) => {
-    setModal({ open: true, img: bill.imageBase64, title: bill.name, billId: bill._id });
+    // Convert base64 to blob URL to hide from Network tab
+    const blobUrl = bill.imageBase64 ? base64ToBlobUrl(bill.imageBase64) : '';
+    setModal({ open: true, img: blobUrl, title: bill.name, billId: bill._id });
     setImageZoom(1);
     setImagePosition({ x: 0, y: 0 });
     
@@ -188,14 +299,20 @@ const Profile: React.FC = () => {
   }, [fetchDetail]);
 
   const closeModal = useCallback(() => {
+    // Revoke blob URL to free memory
+    if (modal.img && modal.img.startsWith('blob:')) {
+      revokeBlobUrl(modal.img);
+    }
     setModal({ open: false });
     setImageZoom(1);
     setImagePosition({ x: 0, y: 0 });
-  }, []);
+  }, [modal.img]);
 
   const handleImageWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    // Prevent page scroll
+    e.nativeEvent.stopImmediatePropagation();
     const delta = e.deltaY > 0 ? -0.15 : 0.15;
     setImageZoom((prev) => {
       const newZoom = Math.max(0.5, Math.min(3, prev + delta));
@@ -419,11 +536,25 @@ const Profile: React.FC = () => {
                     onMouseMove={handleImageMouseMove}
                     onMouseUp={handleImageMouseUp}
                     onMouseLeave={handleImageMouseUp}
+                    onTouchStart={(e) => e.preventDefault()}
+                    onTouchMove={(e) => e.preventDefault()}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      return false;
+                    }}
+                    onDragStart={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      return false;
+                    }}
                     style={{ 
                       cursor: imageZoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in',
                       touchAction: 'none',
+                      overscrollBehavior: 'contain',
                     }}
                   >
+                    <div className={styles.imageProtectionOverlay} />
                     <img
                       src={modal.img}
                       alt={modal.title}
@@ -434,6 +565,22 @@ const Profile: React.FC = () => {
                         transition: isDragging ? 'none' : 'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
                       }}
                       draggable={false}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                      }}
+                      onDragStart={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                      }}
+                      onMouseDown={(e) => {
+                        // Prevent text selection
+                        if (e.detail > 1) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                     {imageZoom === 1 && (
                       <div className={styles.zoomHint}>

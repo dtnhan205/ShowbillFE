@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import styles from './ClientProductGrid.module.css';
 import type { Product } from '../types';
+import { base64ToBlobUrl } from '../utils/imageProtection';
 
 type Props = {
   products: Product[];
@@ -9,6 +10,25 @@ type Props = {
 };
 
 const ClientProductGrid: React.FC<Props> = ({ products, onOpen }) => {
+  // Convert base64 to blob URLs for all products to hide from Network tab
+  const productsWithBlobUrls = useMemo(() => {
+    return products.map((p) => ({
+      ...p,
+      imageBlobUrl: p.imageBase64 ? base64ToBlobUrl(p.imageBase64) : null,
+    }));
+  }, [products]);
+
+  // Cleanup blob URLs on unmount
+  React.useEffect(() => {
+    return () => {
+      productsWithBlobUrls.forEach((p) => {
+        if (p.imageBlobUrl && p.imageBlobUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(p.imageBlobUrl);
+        }
+      });
+    };
+  }, [productsWithBlobUrls]);
+
   if (products.length === 0) {
     return (
       <div className={styles.empty}>
@@ -28,7 +48,7 @@ const ClientProductGrid: React.FC<Props> = ({ products, onOpen }) => {
       </div>
 
       <div className={styles.grid}>
-        {products.map((p, idx) => (
+        {productsWithBlobUrls.map((p, idx) => (
           <motion.article
             key={p._id}
             className={styles.card}
@@ -40,8 +60,30 @@ const ClientProductGrid: React.FC<Props> = ({ products, onOpen }) => {
             style={{ cursor: onOpen ? 'pointer' : undefined }}
           >
             <div className={styles.media}>
-              {p.imageBase64 ? (
-                <img src={p.imageBase64} alt={p.name} className={styles.image} loading="lazy" />
+              {p.imageBlobUrl ? (
+                <img
+                  src={p.imageBlobUrl}
+                  alt={p.name}
+                  className={styles.image}
+                  loading="lazy"
+                  draggable={false}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                  }}
+                  onDragStart={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                  }}
+                  onMouseDown={(e) => {
+                    // Prevent text selection
+                    if (e.detail > 1) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
               ) : (
                 <div className={styles.noImage}>No image</div>
               )}

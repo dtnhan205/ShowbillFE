@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './AdminLayout.module.css';
 
@@ -29,6 +29,11 @@ const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
   };
 
   const isActive = (path: string) => activePath === path;
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location.pathname]);
 
   return (
     <div className={styles.layout}>

@@ -257,6 +257,8 @@
   justify-content: center;
   padding: 24px;
   z-index: 9999;
+  overflow: hidden;
+  overscroll-behavior: contain;
 }
 
 .modalContent {
@@ -374,6 +376,8 @@
 }
 
 .modalImageWrapper {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   flex: 1;
   overflow: auto;
   display: flex;
@@ -387,6 +391,12 @@
   max-height: calc(95vh - 100px);
   user-select: none;
   -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -402,6 +412,37 @@
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+}
+
+.imageProtectionOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 50px,
+      rgba(255, 255, 255, 0.03) 50px,
+      rgba(255, 255, 255, 0.03) 51px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 50px,
+      rgba(255, 255, 255, 0.03) 50px,
+      rgba(255, 255, 255, 0.03) 51px
+    );
+  mix-blend-mode: overlay;
 }
 
 .zoomHint {

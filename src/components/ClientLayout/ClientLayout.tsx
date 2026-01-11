@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../../utils/api';
 import CursorTrail from '../CursorTrail/CursorTrail';
 import styles from './ClientLayout.module.css';
@@ -20,6 +20,7 @@ const ClientLayout: React.FC<Props> = ({ children, showHeader = true }) => {
   const [adminProfile, setAdminProfile] = useState<AdminProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const fetchAdminProfile = useCallback(async () => {
     const token = localStorage.getItem('token');
@@ -45,6 +46,46 @@ const ClientLayout: React.FC<Props> = ({ children, showHeader = true }) => {
   useEffect(() => {
     void fetchAdminProfile();
   }, [fetchAdminProfile]);
+
+  // Scroll to top when route changes (but not on hash changes or query params)
+  useEffect(() => {
+    // Only scroll if pathname actually changed, not just a re-render
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
+  // Global protection: Disable common image theft methods
+  useEffect(() => {
+    // Disable right-click on images globally
+    const handleContextMenu = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'IMG' && target.closest('[data-protected="true"]')) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+
+    // Disable drag on images
+    const handleDragStart = (e: DragEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'IMG' && target.closest('[data-protected="true"]')) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu, { capture: true });
+    document.addEventListener('dragstart', handleDragStart, { capture: true });
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu, { capture: true });
+      document.removeEventListener('dragstart', handleDragStart, { capture: true });
+    };
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
