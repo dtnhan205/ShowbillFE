@@ -128,49 +128,9 @@ const Home: React.FC = () => {
   };
 
 
-  const [activeMenu, setActiveMenu] = useState('all');
-
   return (
     <ClientLayout>
       <div className={styles.pageWrapper}>
-        {/* Left Vertical Menu Sidebar */}
-        <aside className={styles.leftMenu}>
-          <nav className={styles.menuNav}>
-            <button
-              type="button"
-              className={`${styles.menuItem} ${activeMenu === 'all' ? styles.menuItemActive : ''}`}
-              onClick={() => setActiveMenu('all')}
-            >
-              <span className={styles.menuIcon}>ALL</span>
-              <span className={styles.menuLabel}>TẤT CẢ</span>
-            </button>
-            <button
-              type="button"
-              className={`${styles.menuItem} ${activeMenu === 'top' ? styles.menuItemActive : ''}`}
-              onClick={() => setActiveMenu('top')}
-            >
-              <span className={styles.menuIcon}>TOP</span>
-              <span className={styles.menuLabel}>TOP VIEW</span>
-            </button>
-            <button
-              type="button"
-              className={`${styles.menuItem} ${activeMenu === 'recent' ? styles.menuItemActive : ''}`}
-              onClick={() => setActiveMenu('recent')}
-            >
-              <span className={styles.menuIcon}>REC</span>
-              <span className={styles.menuLabel}>GẦN ĐÂY</span>
-            </button>
-            <button
-              type="button"
-              className={`${styles.menuItem} ${activeMenu === 'search' ? styles.menuItemActive : ''}`}
-              onClick={() => setActiveMenu('search')}
-            >
-              <span className={styles.menuIcon}>SRC</span>
-              <span className={styles.menuLabel}>TÌM KIẾM</span>
-            </button>
-          </nav>
-        </aside>
-
         {/* Main Content Area */}
         <div className={styles.mainContent}>
           {loading ? (
@@ -190,45 +150,131 @@ const Home: React.FC = () => {
             <>
               {/* Section 1: Hero Section */}
               <section className={styles.heroSection}>
-                <div className={styles.heroContent}>
+                <div className={styles.heroContainer}>
                   <motion.div
-                    className={styles.heroText}
-                    initial={{ opacity: 0, y: 30 }}
+                    className={styles.heroContent}
+                    initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
                   >
-                    <h1 className={styles.heroTitle}>Khám phá ShowBill</h1>
+                    <motion.div
+                      className={styles.heroBadge}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                    >
+                      <span className={styles.heroBadgeText}>Nền tảng ShowBill</span>
+                    </motion.div>
+                    
+                    <h1 className={styles.heroTitle}>
+                      <span className={styles.heroTitleGradient}>Khám phá</span>
+                      <br />
+                      ShowBill Platform
+                    </h1>
+                    
                     <p className={styles.heroDescription}>
-                      Nền tảng chia sẻ và quản lý bill cho cộng đồng. Dễ dàng tạo, chia sẻ và theo dõi các bill của bạn.
+                      Nền tảng chia sẻ và quản lý bill cho cộng đồng. Dễ dàng tạo, chia sẻ và theo dõi các bill của bạn một cách chuyên nghiệp.
                     </p>
-                    <div className={styles.heroFeatures}>
-                      <div className={styles.featureItem}>
+                    
+                    <div className={styles.heroActions}>
+                      <motion.a
+                        href="#all-admins"
+                        className={styles.heroButtonPrimary}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                      >
+                        <span>Khám phá ngay</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                          <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
-                        <span>Dễ dàng tạo và quản lý bill</span>
-                      </div>
-                      <div className={styles.featureItem}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                          <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                        <span>Chia sẻ với cộng đồng</span>
-                      </div>
-                      <div className={styles.featureItem}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                          <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                        <span>Theo dõi lượt xem và thống kê</span>
-                      </div>
+                      </motion.a>
+                      <motion.a
+                        href="/guide"
+                        className={styles.heroButtonSecondary}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.5 }}
+                      >
+                        Tìm hiểu thêm
+                      </motion.a>
                     </div>
+                    
+                    <motion.div
+                      className={styles.heroFeatures}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.6 }}
+                    >
+                      <div className={styles.featureItem}>
+                        <div className={styles.featureIcon}>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <div className={styles.featureContent}>
+                          <span className={styles.featureTitle}>Dễ dàng quản lý</span>
+                          <span className={styles.featureDesc}>Tạo và quản lý bill nhanh chóng</span>
+                        </div>
+                      </div>
+                      <div className={styles.featureItem}>
+                        <div className={styles.featureIcon}>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <div className={styles.featureContent}>
+                          <span className={styles.featureTitle}>Chia sẻ cộng đồng</span>
+                          <span className={styles.featureDesc}>Kết nối với cộng đồng người dùng</span>
+                        </div>
+                      </div>
+                      <div className={styles.featureItem}>
+                        <div className={styles.featureIcon}>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M3 3v18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M18 7a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M18 7v12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M13 11l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M13 16l5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <div className={styles.featureContent}>
+                          <span className={styles.featureTitle}>Thống kê chi tiết</span>
+                          <span className={styles.featureDesc}>Theo dõi lượt xem và phân tích</span>
+                        </div>
+                      </div>
+                    </motion.div>
                   </motion.div>
+                  
                   <motion.div
                     className={styles.heroVisual}
-                    initial={{ opacity: 0, scale: 0.9 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                    onMouseMove={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = e.clientX - rect.left;
+                      const y = e.clientY - rect.top;
+                      const centerX = rect.width / 2;
+                      const centerY = rect.height / 2;
+                      const rotateX = ((y - centerY) / centerY) * -10;
+                      const rotateY = ((x - centerX) / centerX) * 10;
+                      e.currentTarget.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+                    }}
                   >
-                    <div className={styles.heroVisualBg} />
+                    <div className={styles.heroVisualBg}>
+                      <div className={styles.heroVisualGradient} />
+                      <div className={styles.heroVisualGrid} />
+                    </div>
                   </motion.div>
                 </div>
               </section>
@@ -549,13 +595,22 @@ const Home: React.FC = () => {
           )}
         </div>
 
-        {/* Footer */}
-        <footer className={styles.footer}>
-          <div className={styles.footerContent}>
-            <span className={styles.footerLabel}>SHOWBILL</span>
-            <span className={styles.footerValue}>
-              {admins.length} Admins ({filteredAdmins.length} Active)
-            </span>
+        {/* Stats Footer */}
+        <footer className={styles.statsFooter}>
+          <div className={styles.statsFooterContent}>
+            <div className={styles.statsItem}>
+              <span className={styles.statsLabel}>SHOWBILL</span>
+            </div>
+            <div className={styles.statsDivider} />
+            <div className={styles.statsItem}>
+              <span className={styles.statsValue}>{admins.length}</span>
+              <span className={styles.statsText}>Admins</span>
+            </div>
+            <div className={styles.statsDivider} />
+            <div className={styles.statsItem}>
+              <span className={styles.statsValue}>{filteredAdmins.length}</span>
+              <span className={styles.statsText}>Active</span>
+            </div>
           </div>
         </footer>
       </div>

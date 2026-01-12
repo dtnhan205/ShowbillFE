@@ -169,142 +169,162 @@
 
 .footer {
   position: relative;
-  border-top: 1px solid rgba(138, 43, 226, 0.2);
-  background: rgba(15, 15, 20, 0.95);
-  backdrop-filter: blur(20px);
-  margin-top: 80px;
-  padding: 32px 40px;
+  margin-top: 120px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.footerBg {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 15, 0.98);
+  border-top: 1px solid rgba(138, 43, 226, 0.15);
+  z-index: 0;
+}
+
+.footerBg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 5, 10, 0.5);
+  pointer-events: none;
+}
+
+.footerContainer {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 80px 60px 0;
+}
+
+@media (max-width: 1024px) {
+  .footerContainer {
+    padding: 60px 40px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .footerContainer {
+    padding: 48px 24px 0;
+  }
 }
 
 .footerInner {
-  max-width: 1400px;
-  margin: 0 auto;
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.5fr;
-  gap: 40px;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 60px;
+  margin-bottom: 60px;
 }
 
 @media (max-width: 1024px) {
   .footerInner {
     grid-template-columns: repeat(2, 1fr);
-    gap: 32px;
+    gap: 48px;
   }
 }
 
 @media (max-width: 768px) {
   .footerInner {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 40px;
   }
-  
-  .footer {
-    padding: 24px 20px;
-  }
+}
+
+.footerBrand {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.footerTitle {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.footerDescription {
+  margin: 0;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.7;
+  max-width: 360px;
 }
 
 .footerSection {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-}
-
-.footerTitle {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 900;
-  color: #ffffff;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  background: linear-gradient(135deg, #8a2be2, #00eeff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  gap: 20px;
 }
 
 .footerSubtitle {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.9);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-}
-
-.footerDescription {
-  margin: 0;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
-  line-height: 1.6;
 }
 
 .footerNav {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .footerLink {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.65);
   text-decoration: none;
   font-size: 14px;
-  transition: all 0.2s ease;
-  padding: 4px 0;
+  font-weight: 500;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 6px 0;
   position: relative;
-  padding-left: 16px;
+  width: fit-content;
 }
 
-.footerLink::before {
-  content: '→';
+.footerLink::after {
+  content: '';
   position: absolute;
+  bottom: 4px;
   left: 0;
-  opacity: 0;
-  transition: all 0.2s ease;
-  color: rgba(0, 238, 255, 0.9);
+  width: 0;
+  height: 2px;
+  background: rgba(138, 43, 226, 0.8);
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .footerLink:hover {
   color: rgba(255, 255, 255, 1);
-  padding-left: 20px;
+  transform: translateX(4px);
 }
 
-.footerLink:hover::before {
-  opacity: 1;
-}
-
-.footerBottom {
-  max-width: 1400px;
-  margin: 32px auto 0;
-  padding-top: 24px;
-  border-top: 1px solid rgba(138, 43, 226, 0.2);
-  text-align: center;
-}
-
-.footerCopyright {
-  margin: 0;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 600;
+.footerLink:hover::after {
+  width: 100%;
 }
 
 .socialLinks {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .socialLink {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: rgba(255, 255, 255, 0.6);
-  text-decoration: none;
-  font-size: 13px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   border: 1px solid rgba(138, 43, 226, 0.2);
-  background: rgba(15, 15, 20, 0.4);
+  background: rgba(15, 15, 20, 0.6);
+  backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
@@ -312,57 +332,82 @@
 .socialLink::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 0;
-  background: linear-gradient(90deg, rgba(138, 43, 226, 0.2), rgba(0, 238, 255, 0.1));
-  transition: width 0.3s ease;
+  inset: 0;
+  background: rgba(138, 43, 226, 0.2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .socialLink:hover {
   color: rgba(255, 255, 255, 1);
   border-color: rgba(138, 43, 226, 0.5);
-  transform: translateX(4px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
 }
 
 .socialLink:hover::before {
-  width: 100%;
+  opacity: 1;
 }
 
 .socialIcon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
   position: relative;
   z-index: 1;
 }
 
-.socialLink span {
-  position: relative;
-  z-index: 1;
+.footerBottom {
+  border-top: 1px solid rgba(138, 43, 226, 0.15);
+  padding: 32px 0;
+  margin-top: 40px;
 }
 
-/* Zalo specific color */
-.socialLink:nth-of-type(1):hover {
-  color: #0068ff;
-  border-color: rgba(0, 104, 255, 0.5);
-  box-shadow: 0 0 15px rgba(0, 104, 255, 0.3);
+.footerBottomContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-/* TikTok specific color */
-.socialLink:nth-of-type(2):hover {
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+@media (max-width: 768px) {
+  .footerBottomContent {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
-/* Telegram specific color */
-.socialLink:nth-of-type(3):hover {
-  color: #0088cc;
-  border-color: rgba(0, 136, 204, 0.5);
-  box-shadow: 0 0 15px rgba(0, 136, 204, 0.3);
+.footerCopyright {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
 }
+
+.footerBottomLinks {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footerBottomLink {
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.footerBottomLink:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footerDivider {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+}
+
 
 .authSection {
   display: flex;

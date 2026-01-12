@@ -267,6 +267,14 @@ const Profile: React.FC = () => {
     });
   }, [cat, data?.products, ob]);
 
+  // Tính tổng views và số bill
+  const stats = useMemo(() => {
+    const products = data?.products ?? [];
+    const totalViews = products.reduce((sum, p) => sum + (p.views ?? 0), 0);
+    const totalBills = products.length;
+    return { totalViews, totalBills };
+  }, [data?.products]);
+
   const openBill = useCallback(
     async (bill: Product) => {
     // Convert base64 to blob URL to hide from Network tab
@@ -393,25 +401,56 @@ const Profile: React.FC = () => {
           <>
             <motion.div
               className={styles.profileCard}
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.5 }}
             >
-              <div className={styles.profileAvatar}>
-                {data.admin.avatarBase64 ? (
-                  <img
-                    src={data.admin.avatarBase64}
-                    alt={data.admin.displayName}
-                    className={styles.avatarImg}
-                  />
-                ) : (
-                  <div className={styles.avatarPlaceholder} />
-                )}
+              <div className={styles.profileHeader}>
+                <div className={styles.profileAvatar}>
+                  {data.admin.avatarBase64 ? (
+                    <img
+                      src={data.admin.avatarBase64}
+                      alt={data.admin.displayName}
+                      className={styles.avatarImg}
+                    />
+                  ) : (
+                    <div className={styles.avatarPlaceholder} />
+                  )}
+                </div>
+
+                <div className={styles.profileInfo}>
+                  <div className={styles.profileBadge}>ShowBill Admin</div>
+                  <h1 className={styles.profileName}>{data.admin.displayName}</h1>
+                  <p className={styles.profileBio}>{data.admin.bio || 'Chưa có mô tả'}</p>
+                </div>
               </div>
 
-              <div className={styles.profileInfo}>
-                <h1 className={styles.profileName}>{data.admin.displayName}</h1>
-                <p className={styles.profileBio}>{data.admin.bio || 'Chưa có mô tả'}</p>
+              <div className={styles.profileStats}>
+                <div className={styles.statCard}>
+                  <div className={styles.statIcon}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="9" y1="3" x2="9" y2="21"/>
+                      <line x1="3" y1="9" x2="21" y2="9"/>
+                    </svg>
+                  </div>
+                  <div className={styles.statContent}>
+                    <div className={styles.statValue}>{stats.totalBills}</div>
+                    <div className={styles.statLabel}>BILLS</div>
+                  </div>
+                </div>
+                <div className={styles.statCard}>
+                  <div className={styles.statIcon}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </div>
+                  <div className={styles.statContent}>
+                    <div className={styles.statValue}>{stats.totalViews}</div>
+                    <div className={styles.statLabel}>LƯỢT XEM</div>
+                  </div>
+                </div>
               </div>
             </motion.div>
 

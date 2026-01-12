@@ -10,6 +10,9 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import Guide from './pages/Guide';
 import { enableScreenshotProtection } from './utils/screenshotProtection';
 
 function App() {
@@ -38,6 +41,9 @@ function App() {
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/guide" element={<Guide />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

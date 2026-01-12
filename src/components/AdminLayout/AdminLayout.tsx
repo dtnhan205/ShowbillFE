@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import CursorTrail from '../CursorTrail/CursorTrail';
 import styles from './AdminLayout.module.css';
 
 type Props = {
@@ -37,6 +38,7 @@ const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
 
   return (
     <div className={styles.layout}>
+      <CursorTrail />
       <aside className={styles.sidebar}>
         <div className={styles.brand}>
           <h1 className={styles.brandTitle}>

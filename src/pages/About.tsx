@@ -56,7 +56,11 @@ const About: React.FC = () => {
               }}
             >
               <div className={styles.featureIconWrapper}>
-                <div className={styles.featureIcon}>🎯</div>
+                <svg className={styles.featureIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                </svg>
               </div>
               <h3 className={styles.featureTitle}>Khẳng định thương hiệu</h3>
               <p className={styles.featureText}>
@@ -79,7 +83,11 @@ const About: React.FC = () => {
               }}
             >
               <div className={styles.featureIconWrapper}>
-                <div className={styles.featureIcon}>💼</div>
+                <svg className={styles.featureIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </div>
               <h3 className={styles.featureTitle}>Tăng sự chuyên nghiệp</h3>
               <p className={styles.featureText}>
@@ -102,7 +110,12 @@ const About: React.FC = () => {
               }}
             >
               <div className={styles.featureIconWrapper}>
-                <div className={styles.featureIcon}>🤝</div>
+                <svg className={styles.featureIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </div>
               <h3 className={styles.featureTitle}>Tạo niềm tin tuyệt đối</h3>
               <p className={styles.featureText}>
