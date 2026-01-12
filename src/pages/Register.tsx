@@ -62,8 +62,26 @@ const Register: React.FC = () => {
           localStorage.removeItem('adminRole');
         }
         navigate('/', { replace: true });
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Đăng ký thất bại.';
+      } catch (err: unknown) {
+        let message = 'Đăng ký thất bại.';
+
+        // Ưu tiên message trả về từ backend (axios error)
+        if (err && typeof err === 'object' && 'response' in err) {
+          const anyErr = err as any;
+          const status = anyErr?.response?.status as number | undefined;
+          const backendMessage = anyErr?.response?.data?.message as string | undefined;
+
+          if (backendMessage) {
+            message = backendMessage;
+          } else if (status === 409) {
+            message = 'Tên đăng nhập hoặc email đã tồn tại.';
+          } else if (status === 400) {
+            message = 'Thông tin đăng ký không hợp lệ. Vui lòng kiểm tra lại.';
+          }
+        } else if (err instanceof Error) {
+          message = err.message;
+        }
+
         setError(message);
       } finally {
         setSubmitState('idle');

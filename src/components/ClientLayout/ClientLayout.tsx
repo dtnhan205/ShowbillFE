@@ -163,7 +163,7 @@ const ClientLayout: React.FC<Props> = ({ children, showHeader = true }) => {
         </header>
       )}
 
-      <main className={styles.main}>{children}</main>
+      <main className={`${styles.main} ${location.pathname === '/' ? styles.noHeaderPadding : ''}`}>{children}</main>
 
       <footer className={styles.footer}>
         <div className={styles.footerInner}>

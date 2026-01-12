@@ -1,0 +1,52 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: visible;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.watermark {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 90px;
+  font-weight: 900;
+  white-space: nowrap;
+  transform: rotate(-45deg);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  text-shadow: 
+    0 0 15px rgba(255, 255, 255, 0.8),
+    0 0 30px rgba(255, 255, 255, 0.6),
+    2px 2px 8px rgba(0, 0, 0, 0.9),
+    -2px -2px 8px rgba(0, 0, 0, 0.9),
+    0 0 0 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.2em;
+  will-change: transform;
+  opacity: 1;
+  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.3);
+}
+
+/* Dòng 1: Góc trái dưới - đứng im, chữ xéo */
+.watermark[data-index="0"] {
+  top: 120px;
+  left: 5px;
+  transform: rotate(-25deg);
+  transform-origin: center center;
+}
+
+/* Dòng 2: Góc phải dưới - đứng im, chữ xéo */
+.watermark[data-index="1"] {
+  top: 500px;
+  right: 0px;
+  transform: rotate(-25deg);
+  transform-origin: center center;
+}
+

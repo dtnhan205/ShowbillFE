@@ -9,6 +9,7 @@ type Profile = {
   displayName?: string;
   bio?: string;
   avatarBase64?: string;
+  bannerBase64?: string;
 };
 
 type LoadState = 'idle' | 'loading' | 'error';
@@ -18,6 +19,7 @@ const AdminProfile: React.FC = () => {
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
   const [avatarBase64, setAvatarBase64] = useState('');
+  const [bannerBase64, setBannerBase64] = useState('');
 
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [saveState, setSaveState] = useState<LoadState>('idle');
@@ -35,6 +37,7 @@ const AdminProfile: React.FC = () => {
       setDisplayName(data.displayName ?? data.username ?? '');
       setBio(data.bio ?? '');
       setAvatarBase64(data.avatarBase64 ?? '');
+      setBannerBase64(data.bannerBase64 ?? '');
 
       setLoadState('idle');
     } catch (e) {
@@ -56,6 +59,15 @@ const AdminProfile: React.FC = () => {
     reader.readAsDataURL(file);
   }, []);
 
+  const onBannerFile = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = String(reader.result || '');
+      setBannerBase64(result);
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
   const canSave = useMemo(() => saveState !== 'loading', [saveState]);
 
   const save = useCallback(async () => {
@@ -67,6 +79,7 @@ const AdminProfile: React.FC = () => {
         displayName: displayName.trim(),
         bio,
         avatarBase64,
+        bannerBase64,
       });
 
       setProfile(data);
@@ -79,7 +92,7 @@ const AdminProfile: React.FC = () => {
     } finally {
       setSaveState('idle');
     }
-  }, [avatarBase64, bio, displayName]);
+  }, [avatarBase64, bannerBase64, bio, displayName]);
 
   return (
     <div style={{ maxWidth: 720 }}>
@@ -158,6 +171,26 @@ const AdminProfile: React.FC = () => {
             />
             <div style={{ marginTop: 6, color: 'rgba(229,231,235,0.6)', fontSize: 13 }}>
               Chọn ảnh để tự convert sang base64.
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: 6, color: 'rgba(229,231,235,0.75)', fontWeight: 800 }}>Banner (cho slider)</label>
+            {bannerBase64 && (
+              <div style={{ marginBottom: 8, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.10)' }}>
+                <img src={bannerBase64} alt="banner preview" style={{ width: '100%', maxHeight: 200, objectFit: 'cover' }} />
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) onBannerFile(f);
+              }}
+            />
+            <div style={{ marginTop: 6, color: 'rgba(229,231,235,0.6)', fontSize: 13 }}>
+              Chọn banner để hiển thị trên trang chủ slider. Khuyến nghị tỷ lệ 16:9 hoặc 21:9.
             </div>
           </div>
 

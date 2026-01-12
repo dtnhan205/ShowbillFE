@@ -58,8 +58,9 @@ const ClientProductGrid: React.FC<Props> = ({ products, onOpen }) => {
             whileHover={{ y: -6 }}
             onClick={() => onOpen?.(p)}
             style={{ cursor: onOpen ? 'pointer' : undefined }}
+            data-protected="true"
           >
-            <div className={styles.media}>
+            <div className={styles.media} data-protected="true">
               {p.imageBlobUrl ? (
                 <img
                   src={p.imageBlobUrl}
@@ -103,10 +104,17 @@ const ClientProductGrid: React.FC<Props> = ({ products, onOpen }) => {
               </p>
 
               <div className={styles.footer}>
-                <span className={styles.status}>
-                  <span className={styles.statusDot} />
-                  Đã duyệt
-                </span>
+                <div className={styles.footerLeft}>
+                  <span className={styles.status}>
+                    <span className={styles.statusDot} />
+                    Đã duyệt
+                  </span>
+                  {p.views !== undefined && (
+                    <span className={styles.views}>
+                      {p.views} lượt xem
+                    </span>
+                  )}
+                </div>
                 <button
                   type="button"
                   className={styles.button}

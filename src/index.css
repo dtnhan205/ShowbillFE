@@ -28,3 +28,48 @@ body {
 a {
   color: inherit;
 }
+
+/* Screenshot Protection - Make it harder to capture screenshots */
+img {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  pointer-events: auto;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-modify: read-only;
+  -moz-user-modify: read-only;
+  -ms-user-modify: read-only;
+  user-modify: read-only;
+}
+
+/* Prevent text selection on images and protected content */
+[data-protected="true"],
+[data-protected="true"] * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+/* Disable image dragging globally */
+img,
+[data-protected="true"] img {
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  user-drag: none !important;
+  pointer-events: auto !important;
+}

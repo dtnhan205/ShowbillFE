@@ -105,7 +105,6 @@
   -khtml-user-drag: none;
   -moz-user-drag: none;
   -o-user-drag: none;
-  user-drag: none;
   pointer-events: none;
 }
 
@@ -171,18 +170,27 @@
 
 .desc {
   margin-top: 10px;
-  color: rgba(229, 231, 235, 0.66);
+  color: rgba(0, 255, 255, 0.66);
   font-size: 15px;
   line-height: 1.6;
   flex: 1;
 }
-
+.desc b{
+  color: #ffffff;
+}
 .footer {
   margin-top: auto;
   padding-top: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footerLeft {
+  display: flex;
+  align-items: center;
   gap: 12px;
   flex-wrap: wrap;
 }
@@ -209,6 +217,12 @@
   background: #22c55e;
   box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
   animation: pulse 2s ease-in-out infinite;
+}
+
+.views {
+  color: rgba(148, 163, 184, 0.8);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 @keyframes pulse {

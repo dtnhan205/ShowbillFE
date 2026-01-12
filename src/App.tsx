@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
@@ -9,8 +10,26 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import { enableScreenshotProtection } from './utils/screenshotProtection';
 
 function App() {
+  // Enable screenshot protection globally
+  useEffect(() => {
+    const cleanup = enableScreenshotProtection({
+      blockShortcuts: true,
+      detectScreenshot: true,
+      blockContextMenu: true,
+      blockDragDrop: true,
+      blockTextSelection: false, // Keep false to allow normal text interaction
+      onScreenshotDetected: () => {
+        // Optional: Log or show warning when screenshot is detected
+        console.warn('[App] Screenshot attempt detected');
+      },
+    });
+
+    return cleanup;
+  }, []);
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0b0b12', color: '#e5e7eb' }}>
       <Router>

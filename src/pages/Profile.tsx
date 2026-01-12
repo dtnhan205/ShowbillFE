@@ -6,6 +6,7 @@ import ClientProductGrid from '../components/ClientProductGrid';
 import ClientLayout from '../components/ClientLayout/ClientLayout';
 import type { Product } from '../types';
 import { base64ToBlobUrl, revokeBlobUrl } from '../utils/imageProtection';
+import ScreenshotProtectionOverlay from '../components/ScreenshotProtectionOverlay/ScreenshotProtectionOverlay';
 import styles from './Profile.module.css';
 
 type PublicAdmin = {
@@ -266,7 +267,8 @@ const Profile: React.FC = () => {
     });
   }, [cat, data?.products, ob]);
 
-  const openBill = useCallback(async (bill: Product) => {
+  const openBill = useCallback(
+    async (bill: Product) => {
     // Convert base64 to blob URL to hide from Network tab
     const blobUrl = bill.imageBase64 ? base64ToBlobUrl(bill.imageBase64) : '';
     setModal({ open: true, img: blobUrl, title: bill.name, billId: bill._id });
@@ -290,13 +292,28 @@ const Profile: React.FC = () => {
         // Gọi API tăng view cho product
         await api.post(`/public/products/${bill._id}/view`);
         
-        // Refresh data để cập nhật views
-        void fetchDetail();
+          // Cập nhật views ngay trên UI mà không cần refetch toàn bộ
+          setData((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              products: prev.products.map((p) =>
+                p._id === bill._id
+                  ? {
+                      ...p,
+                      views: (p.views ?? 0) + 1,
+                    }
+                  : p,
+              ),
+            };
+          });
       } catch (err) {
         console.error('[Profile] Failed to increment product view:', err);
       }
     }
-  }, [fetchDetail]);
+    },
+    [],
+  );
 
   const closeModal = useCallback(() => {
     // Revoke blob URL to free memory
@@ -531,6 +548,7 @@ const Profile: React.FC = () => {
                 {modal.img && (
                   <div
                     className={styles.modalImageWrapper}
+                    data-protected="true"
                     onWheel={handleImageWheel}
                     onMouseDown={handleImageMouseDown}
                     onMouseMove={handleImageMouseMove}
@@ -555,6 +573,7 @@ const Profile: React.FC = () => {
                     }}
                   >
                     <div className={styles.imageProtectionOverlay} />
+                    <ScreenshotProtectionOverlay text="ShowBILL.top" opacity={0.15} />
                     <img
                       src={modal.img}
                       alt={modal.title}

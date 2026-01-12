@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import type { Product } from '../types';
 import type { Category, ObVersion } from '../types/adminMeta';
+import AdminProductForm from './AdminProductForm';
 import styles from './AdminProductList/AdminProductList.module.css';
 
 type LoadState = 'idle' | 'loading' | 'error';
@@ -18,6 +19,7 @@ const AdminProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const [obs, setObs] = useState<ObVersion[]>([]);
   const [cats, setCats] = useState<Category[]>([]);
@@ -217,65 +219,84 @@ const AdminProductList: React.FC = () => {
     <div>
       <div className={styles.header}>
         <h1 className={styles.title}>Quản lý sản phẩm</h1>
-        <Link to="/admin/add" className={styles.addButton}>
-          + Thêm sản phẩm
-        </Link>
-      </div>
-
-      <div className={styles.filters}>
-        <input
-          className={styles.input}
-          placeholder="Tìm theo tên..."
-          value={filters.search}
-          onChange={(e) => setFilters((p) => ({ ...p, search: e.target.value }))}
-        />
-
-        <select
-          className={styles.select}
-          value={filters.obVersion}
-          onChange={(e) => setFilters((p) => ({ ...p, obVersion: e.target.value }))}
+        <button
+          type="button"
+          className={styles.addButton}
+          onClick={() => setShowAddForm((v) => !v)}
         >
-          <option value="">Tất cả OB</option>
-          {obs
-            .filter((x) => x.isActive)
-            .map((x) => (
-              <option key={x._id} value={x.slug}>
-                {x.name}
-              </option>
-            ))}
-        </select>
-
-        <select
-          className={styles.select}
-          value={filters.category}
-          onChange={(e) => setFilters((p) => ({ ...p, category: e.target.value }))}
-        >
-          <option value="">Tất cả Category</option>
-          {cats
-            .filter((x) => x.isActive)
-            .map((x) => (
-              <option key={x._id} value={x.slug}>
-                {x.name}
-              </option>
-            ))}
-        </select>
-
-        <select
-          className={styles.select}
-          value={filters.status}
-          onChange={(e) => setFilters((p) => ({ ...p, status: e.target.value as Filters['status'] }))}
-        >
-          <option value="all">Tất cả</option>
-          <option value="visible">Đang hiện</option>
-          <option value="hidden">Đang ẩn</option>
-        </select>
-
-        <button type="button" className={styles.resetBtn} onClick={resetFilters}>
-          Reset
+          {showAddForm ? 'Quay lại danh sách' : '+ Thêm sản phẩm'}
         </button>
       </div>
 
-      {content}
+      {showAddForm ? (
+        <div className={styles.inlineForm}>
+          <AdminProductForm
+            inlineMode
+            onSuccess={() => {
+              setShowAddForm(false);
+              void fetchProducts();
+            }}
+            onCancel={() => setShowAddForm(false)}
+          />
+        </div>
+      ) : (
+        <>
+          <div className={styles.filters}>
+            <input
+              className={styles.input}
+              placeholder="Tìm theo tên..."
+              value={filters.search}
+              onChange={(e) => setFilters((p) => ({ ...p, search: e.target.value }))}
+            />
+
+            <select
+              className={styles.select}
+              value={filters.obVersion}
+              onChange={(e) => setFilters((p) => ({ ...p, obVersion: e.target.value }))}
+            >
+              <option value="">Tất cả OB</option>
+              {obs
+                .filter((x) => x.isActive)
+                .map((x) => (
+                  <option key={x._id} value={x.slug}>
+                    {x.name}
+                  </option>
+                ))}
+            </select>
+
+            <select
+              className={styles.select}
+              value={filters.category}
+              onChange={(e) => setFilters((p) => ({ ...p, category: e.target.value }))}
+            >
+              <option value="">Tất cả Category</option>
+              {cats
+                .filter((x) => x.isActive)
+                .map((x) => (
+                  <option key={x._id} value={x.slug}>
+                    {x.name}
+                  </option>
+                ))}
+            </select>
+
+            <select
+              className={styles.select}
+              value={filters.status}
+              onChange={(e) => setFilters((p) => ({ ...p, status: e.target.value as Filters['status'] }))}
+            >
+              <option value="all">Tất cả</option>
+              <option value="visible">Đang hiện</option>
+              <option value="hidden">Đang ẩn</option>
+            </select>
+
+            <button type="button" className={styles.resetBtn} onClick={resetFilters}>
+              Reset
+            </button>
+          </div>
+
+          {content}
+        </>
+      )}
     </div>
   );
 };

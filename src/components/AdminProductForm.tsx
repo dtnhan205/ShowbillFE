@@ -11,7 +11,13 @@ type RouteParams = {
   id?: string;
 };
 
-const AdminProductForm: React.FC = () => {
+type Props = {
+  onSuccess?: () => void;
+  onCancel?: () => void;
+  inlineMode?: boolean;
+};
+
+const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = false }) => {
   const { id } = useParams<RouteParams>();
   const navigate = useNavigate();
 
@@ -162,7 +168,12 @@ const AdminProductForm: React.FC = () => {
           await api.post('/products', formData);
         }
 
-        navigate('/admin/products');
+        // Nếu có callback thì dùng, thay vì điều hướng sang trang riêng
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate('/admin/products');
+        }
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Lỗi khi lưu sản phẩm.';
         setErrorMessage(message);
@@ -171,7 +182,7 @@ const AdminProductForm: React.FC = () => {
         setSubmitState('idle');
       }
     },
-    [category, id, image, isEdit, name, navigate, obVersion],
+    [category, id, image, isEdit, name, navigate, obVersion, onSuccess],
   );
 
   if (loadState === 'loading' || metaLoading) {
@@ -195,7 +206,7 @@ const AdminProductForm: React.FC = () => {
 
   return (
     <div className={styles.wrapper}>
-      <h1 className={styles.title}>{isEdit ? 'Sửa sản phẩm' : 'Thêm sản phẩm mới'}</h1>
+      {!inlineMode && <h1 className={styles.title}>{isEdit ? 'Sửa sản phẩm' : 'Thêm sản phẩm mới'}</h1>}
 
       <form onSubmit={handleSubmit} className={styles.card}>
         <div className={styles.formGrid}>
@@ -274,9 +285,16 @@ const AdminProductForm: React.FC = () => {
           </div>
         </div>
 
-        <button type="submit" className={styles.submit} disabled={isSubmitDisabled}>
-          {submitState === 'loading' ? 'Đang lưu...' : `${isEdit ? 'Cập nhật' : 'Thêm'} sản phẩm`}
-        </button>
+        <div className={styles.actionsRow}>
+          <button type="submit" className={styles.submit} disabled={isSubmitDisabled}>
+            {submitState === 'loading' ? 'Đang lưu...' : `${isEdit ? 'Cập nhật' : 'Thêm'} sản phẩm`}
+          </button>
+          {onCancel && (
+            <button type="button" className={styles.backButton} onClick={onCancel}>
+              Hủy / quay lại
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );

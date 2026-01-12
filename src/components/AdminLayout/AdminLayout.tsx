@@ -57,12 +57,6 @@ const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
           >
             Sản phẩm
           </Link>
-          <Link
-            to="/admin/add"
-            className={`${styles.navItem} ${isActive('/admin/add') ? styles.navItemActive : ''}`}
-          >
-            Thêm sản phẩm
-          </Link>
 
           <Link
             to="/admin/obs"
