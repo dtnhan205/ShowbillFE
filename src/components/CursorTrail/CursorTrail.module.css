@@ -6,9 +6,9 @@
 /* Custom Cursor */
 .customCursor {
   position: fixed;
-  width: 32px;
-  height: 32px;
-  background-image: url('/images/concac.png');
+  width: 30px;
+  height: 30px;
+  background-image: url('/images/cursor.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -17,7 +17,7 @@
   transform: translate(-50%, -50%);
   transition: opacity 0.15s ease;
   will-change: transform, left, top;
-  filter: drop-shadow(0 0 8px rgba(0, 238, 255, 0.5));
+  filter: drop-shadow(0 0 4px rgba(0, 238, 255, 0.5));
   opacity: 0;
   /* Đảm bảo cursor không bị ảnh hưởng bởi các style khác */
   isolation: isolate;

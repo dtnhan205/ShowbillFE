@@ -73,3 +73,53 @@ img,
   user-drag: none !important;
   pointer-events: auto !important;
 }
+
+/* Custom Scrollbar - Tech Style */
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 15, 20, 0.8);
+  border-radius: 10px;
+  border: 1px solid rgba(138, 43, 226, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.8), rgba(0, 238, 255, 0.8));
+  border-radius: 10px;
+  border: 2px solid rgba(15, 15, 20, 0.5);
+  box-shadow: 
+    0 0 10px rgba(138, 43, 226, 0.4),
+    inset 0 0 10px rgba(0, 238, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 1), rgba(0, 238, 255, 1));
+  box-shadow: 
+    0 0 15px rgba(138, 43, 226, 0.6),
+    inset 0 0 15px rgba(0, 238, 255, 0.3);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.9), rgba(0, 238, 255, 0.9));
+}
+
+::-webkit-scrollbar-corner {
+  background: rgba(15, 15, 20, 0.8);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(138, 43, 226, 0.8) rgba(15, 15, 20, 0.8);
+}
+
+/* Smooth scrollbar animation */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(138, 43, 226, 0.8) rgba(15, 15, 20, 0.8);
+}

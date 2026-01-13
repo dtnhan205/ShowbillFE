@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../../utils/api';
 import CursorTrail from '../CursorTrail/CursorTrail';
+import ParticleNetwork from '../ParticleNetwork/ParticleNetwork';
 import styles from './ClientLayout.module.css';
 
 type Props = {
@@ -96,6 +97,7 @@ const ClientLayout: React.FC<Props> = ({ children, showHeader = true }) => {
 
   return (
     <div className={styles.layout}>
+      <ParticleNetwork connectionDistance={200} particleSpeed={0.25} enabled={true} />
       <CursorTrail />
       {showHeader && (
         <header className={styles.header}>

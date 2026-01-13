@@ -33,7 +33,6 @@ const Profile: React.FC = () => {
   const [data, setData] = useState<PublicAdminDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [topAdmins, setTopAdmins] = useState<PublicAdmin[]>([]);
 
   const [ob, setOb] = useState('');
   const [cat, setCat] = useState('');
@@ -41,6 +40,7 @@ const Profile: React.FC = () => {
   const [modal, setModal] = useState<{ open: boolean; img?: string; title?: string; billId?: string }>(
     { open: false },
   );
+  const [currentBillIndex, setCurrentBillIndex] = useState<number>(-1);
   const [imageZoom, setImageZoom] = useState(1);
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -72,7 +72,18 @@ const Profile: React.FC = () => {
     };
 
     // Disable keyboard shortcuts (Ctrl+S, Ctrl+P, Ctrl+A, F12, etc.)
+    // But allow ArrowUp/ArrowDown for navigation
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Allow arrow keys for navigation (but only if not combined with modifiers)
+      if (!e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          e.stopPropagation();
+          // Navigation will be handled by the navigation effect
+          return;
+        }
+      }
+
       // Disable Ctrl+S (Save)
       if (e.ctrlKey && e.key === 's') {
         e.preventDefault();
@@ -160,24 +171,6 @@ const Profile: React.FC = () => {
     }
   }, [id]);
 
-  // Lấy top admin theo view để hiển thị bên cạnh
-  useEffect(() => {
-    const fetchTopAdmins = async () => {
-      try {
-        const res = await api.get<PublicAdmin[]>('/public/admins');
-        const list = Array.isArray(res.data) ? res.data : [];
-        const top = [...list]
-          .filter((a) => (a.stats?.totalViews ?? 0) > 0)
-          .sort((a, b) => (b.stats?.totalViews ?? 0) - (a.stats?.totalViews ?? 0))
-          .slice(0, 3);
-        setTopAdmins(top);
-      } catch (err) {
-        console.error('[Profile] Failed to fetch top admins:', err);
-      }
-    };
-
-    void fetchTopAdmins();
-  }, []);
 
   // Reset data và loading khi id thay đổi
   useEffect(() => {
@@ -213,14 +206,6 @@ const Profile: React.FC = () => {
       try {
         const response = await api.post(`/public/admins/${id}/increment-views`);
         console.log('[Profile] Views incremented successfully for admin:', id, response.data);
-        // Refresh top admins sau khi tăng view để cập nhật số liệu
-        const res = await api.get<PublicAdmin[]>('/public/admins');
-        const list = Array.isArray(res.data) ? res.data : [];
-        const top = [...list]
-          .filter((a) => (a.stats?.totalViews ?? 0) > 0)
-          .sort((a, b) => (b.stats?.totalViews ?? 0) - (a.stats?.totalViews ?? 0))
-          .slice(0, 3);
-        setTopAdmins(top);
       } catch (err) {
         console.error('[Profile] Failed to increment views:', err);
       }
@@ -275,32 +260,42 @@ const Profile: React.FC = () => {
     return { totalViews, totalBills };
   }, [data?.products]);
 
-  const openBill = useCallback(
-    async (bill: Product) => {
-    // Convert base64 to blob URL to hide from Network tab
-    const blobUrl = bill.imageBase64 ? base64ToBlobUrl(bill.imageBase64) : '';
-    setModal({ open: true, img: blobUrl, title: bill.name, billId: bill._id });
-    setImageZoom(1);
-    setImagePosition({ x: 0, y: 0 });
-    
-    // Tăng view cho bill khi mở
-    if (bill._id) {
-      try {
-        // Chống double-call: chặn nếu đã tăng view cho cùng bill trong vòng 2 giây
-        const storageKey = `billView:${bill._id}`;
-        const now = Date.now();
-        const last = Number(sessionStorage.getItem(storageKey) || '0');
-        
-        if (now - last < 2000) {
-          return; // Đã tăng view gần đây, không tăng lại
+  const navigateToBill = useCallback(
+    async (newIndex: number) => {
+      if (newIndex < 0 || newIndex >= filteredProducts.length) return;
+
+      const bill = filteredProducts[newIndex];
+      if (!bill) return;
+
+      // Revoke old blob URL
+      setModal((prev) => {
+        if (prev.img && prev.img.startsWith('blob:')) {
+          revokeBlobUrl(prev.img);
         }
-        
-        sessionStorage.setItem(storageKey, String(now));
-        
-        // Gọi API tăng view cho product
-        await api.post(`/public/products/${bill._id}/view`);
-        
-          // Cập nhật views ngay trên UI mà không cần refetch toàn bộ
+        return prev;
+      });
+
+      // Convert base64 to blob URL
+      const blobUrl = bill.imageBase64 ? base64ToBlobUrl(bill.imageBase64) : '';
+      setModal({ open: true, img: blobUrl, title: bill.name, billId: bill._id });
+      setCurrentBillIndex(newIndex);
+      setImageZoom(1);
+      setImagePosition({ x: 0, y: 0 });
+
+      // Tăng view cho bill khi mở
+      if (bill._id) {
+        try {
+          const storageKey = `billView:${bill._id}`;
+          const now = Date.now();
+          const last = Number(sessionStorage.getItem(storageKey) || '0');
+
+          if (now - last < 2000) {
+            return;
+          }
+
+          sessionStorage.setItem(storageKey, String(now));
+          await api.post(`/public/products/${bill._id}/view`);
+
           setData((prev) => {
             if (!prev) return prev;
             return {
@@ -315,12 +310,86 @@ const Profile: React.FC = () => {
               ),
             };
           });
-      } catch (err) {
-        console.error('[Profile] Failed to increment product view:', err);
+        } catch (err) {
+          console.error('[Profile] Failed to increment product view:', err);
+        }
       }
-    }
     },
-    [],
+    [filteredProducts],
+  );
+
+  // Keyboard navigation for bill browsing
+  useEffect(() => {
+    if (!modal.open || currentBillIndex < 0) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          navigateToBill(currentBillIndex - 1);
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          navigateToBill(currentBillIndex + 1);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [modal.open, currentBillIndex, navigateToBill]);
+
+  const openBill = useCallback(
+    async (bill: Product) => {
+      // Find index of the bill in filtered products
+      const index = filteredProducts.findIndex((p) => p._id === bill._id);
+      setCurrentBillIndex(index >= 0 ? index : -1);
+
+      // Convert base64 to blob URL to hide from Network tab
+      const blobUrl = bill.imageBase64 ? base64ToBlobUrl(bill.imageBase64) : '';
+      setModal({ open: true, img: blobUrl, title: bill.name, billId: bill._id });
+      setImageZoom(1);
+      setImagePosition({ x: 0, y: 0 });
+      
+      // Tăng view cho bill khi mở
+      if (bill._id) {
+        try {
+          // Chống double-call: chặn nếu đã tăng view cho cùng bill trong vòng 2 giây
+          const storageKey = `billView:${bill._id}`;
+          const now = Date.now();
+          const last = Number(sessionStorage.getItem(storageKey) || '0');
+          
+          if (now - last < 2000) {
+            return; // Đã tăng view gần đây, không tăng lại
+          }
+          
+          sessionStorage.setItem(storageKey, String(now));
+          
+          // Gọi API tăng view cho product
+          await api.post(`/public/products/${bill._id}/view`);
+          
+            // Cập nhật views ngay trên UI mà không cần refetch toàn bộ
+            setData((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                products: prev.products.map((p) =>
+                  p._id === bill._id
+                    ? {
+                        ...p,
+                        views: (p.views ?? 0) + 1,
+                      }
+                    : p,
+                ),
+              };
+            });
+        } catch (err) {
+          console.error('[Profile] Failed to increment product view:', err);
+        }
+      }
+    },
+    [filteredProducts],
   );
 
   const closeModal = useCallback(() => {
@@ -329,6 +398,7 @@ const Profile: React.FC = () => {
       revokeBlobUrl(modal.img);
     }
     setModal({ open: false });
+    setCurrentBillIndex(-1);
     setImageZoom(1);
     setImagePosition({ x: 0, y: 0 });
   }, [modal.img]);
@@ -502,38 +572,6 @@ const Profile: React.FC = () => {
               <div className={styles.mainColumn}>
                 <ClientProductGrid products={filteredProducts} onOpen={openBill} />
               </div>
-
-              <aside className={styles.sideColumn}>
-                <section className={styles.sideSection}>
-                  <h3 className={styles.sideTitle}>Top Admin nhiều view</h3>
-                  {topAdmins.length === 0 ? (
-                    <p className={styles.sideEmpty}>Chưa có dữ liệu lượt xem.</p>
-                  ) : (
-                    <ul className={styles.sideList}>
-                      {topAdmins.map((a, idx) => (
-                        <li key={a._id} className={styles.sideItem}>
-                          <Link to={`/profile/${a._id}`} className={styles.sideLink}>
-                            <span className={styles.sideRank}>#{idx + 1}</span>
-                            <div className={styles.sideAvatar}>
-                              {a.avatarBase64 ? (
-                                <img src={a.avatarBase64} alt={a.displayName} />
-                              ) : (
-                                <div className={styles.sideAvatarPlaceholder} />
-                              )}
-                            </div>
-                            <div className={styles.sideMeta}>
-                              <span className={styles.sideName}>{a.displayName}</span>
-                              <span className={styles.sideStat}>
-                                {a.stats?.totalViews ?? 0} lượt xem • {a.stats?.totalBills ?? 0} bill
-                              </span>
-                            </div>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </section>
-              </aside>
             </div>
           </>
         )}
@@ -611,8 +649,48 @@ const Profile: React.FC = () => {
                       overscrollBehavior: 'contain',
                     }}
                   >
+                    {/* Navigation arrows */}
+                    {filteredProducts.length > 1 && (
+                      <>
+                        {currentBillIndex > 0 && (
+                          <button
+                            type="button"
+                            className={styles.modalNavButton}
+                            style={{ top: '50%', left: '20px' }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigateToBill(currentBillIndex - 1);
+                            }}
+                            aria-label="Bill trước"
+                            title="Bill trước (↑)"
+                          >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M18 15l-6-6-6 6"/>
+                            </svg>
+                          </button>
+                        )}
+                        {currentBillIndex < filteredProducts.length - 1 && (
+                          <button
+                            type="button"
+                            className={styles.modalNavButton}
+                            style={{ top: '50%', right: '20px' }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigateToBill(currentBillIndex + 1);
+                            }}
+                            aria-label="Bill sau"
+                            title="Bill sau (↓)"
+                          >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                          </button>
+                        )}
+                      </>
+                    )}
+
                     <div className={styles.imageProtectionOverlay} />
-                    <ScreenshotProtectionOverlay text="ShowBILL.top" opacity={0.15} />
+                    <ScreenshotProtectionOverlay text={data?.admin?.displayName || "ShowBILL.top"} opacity={0.15} />
                     <img
                       src={modal.img}
                       alt={modal.title}
@@ -643,6 +721,9 @@ const Profile: React.FC = () => {
                     {imageZoom === 1 && (
                       <div className={styles.zoomHint}>
                         <span>Cuộn chuột để phóng to</span>
+                        {filteredProducts.length > 1 && (
+                          <span className={styles.navHint}>↑ ↓ để lướt bill</span>
+                        )}
                       </div>
                     )}
                   </div>

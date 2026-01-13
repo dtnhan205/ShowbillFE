@@ -23,12 +23,34 @@ const ScreenshotProtectionOverlay: React.FC<Props> = ({
     }
   }, []);
 
-  // Tạo 2 dòng chữ đứng im: một ở góc trái dưới, một ở góc phải dưới
-  const watermarks = Array.from({ length: 2 }, (_, i) => (
-    <div key={i} className={styles.watermark} data-index={i}>
-      {text}
-    </div>
-  ));
+  // Tạo grid pattern với watermark để phủ kín toàn bộ overlay
+  // Tạo 4 hàng x 3 cột = 12 watermark, tất cả xoay cùng một góc
+  const rows = 4;
+  const cols = 3;
+  const rotation = -25; // Tất cả xoay cùng một góc
+  const watermarks = [];
+  
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const index = row * cols + col;
+      const topPercent = (row + 1) * (100 / (rows + 1)) - 5; // Dịch lên trên 5%
+      const leftPercent = (col + 1) * (100 / (cols + 1)) - 8; // Dịch sang trái 8%
+      
+      watermarks.push(
+        <div
+          key={index}
+          className={styles.watermark}
+          style={{
+            top: `${topPercent}%`,
+            left: `${leftPercent}%`,
+            transform: `rotate(${rotation}deg)`,
+          }}
+        >
+          {text}
+        </div>
+      );
+    }
+  }
 
   return (
     <div ref={overlayRef} className={styles.overlay} style={{ opacity }}>

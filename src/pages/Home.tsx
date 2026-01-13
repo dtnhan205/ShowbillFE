@@ -127,6 +127,18 @@ const Home: React.FC = () => {
     setSelectedAdminIndex((prev) => (prev + 1) % top10Admins.length);
   };
 
+  const handleScrollToAllAdmins = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const element = document.getElementById('all-admins');
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start',
+        inline: 'nearest'
+      });
+    }
+  };
+
 
   return (
     <ClientLayout>
@@ -155,13 +167,13 @@ const Home: React.FC = () => {
                     className={styles.heroContent}
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+                    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
                   >
                     <motion.div
                       className={styles.heroBadge}
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
+                      transition={{ duration: 0.3, delay: 0.05 }}
                     >
                       <span className={styles.heroBadgeText}>Nền tảng ShowBill</span>
                     </motion.div>
@@ -180,11 +192,12 @@ const Home: React.FC = () => {
                       <motion.a
                         href="#all-admins"
                         className={styles.heroButtonPrimary}
+                        onClick={handleScrollToAllAdmins}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.4 }}
+                        transition={{ duration: 0.3, delay: 0.15 }}
                       >
                         <span>Khám phá ngay</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -198,7 +211,7 @@ const Home: React.FC = () => {
                         whileTap={{ scale: 0.95 }}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.5 }}
+                        transition={{ duration: 0.3, delay: 0.2 }}
                       >
                         Tìm hiểu thêm
                       </motion.a>
@@ -208,7 +221,7 @@ const Home: React.FC = () => {
                       className={styles.heroFeatures}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.6 }}
+                      transition={{ duration: 0.3, delay: 0.25 }}
                     >
                       <div className={styles.featureItem}>
                         <div className={styles.featureIcon}>
@@ -256,7 +269,7 @@ const Home: React.FC = () => {
                     className={styles.heroVisual}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
+                    transition={{ duration: 0.4, delay: 0.1 }}
                     onMouseMove={(e) => {
                       const rect = e.currentTarget.getBoundingClientRect();
                       const x = e.clientX - rect.left;
