@@ -5,7 +5,7 @@ import styles from './AdminPackages.module.css';
 
 type PackageConfig = {
   _id: string;
-  packageType: 'basic' | 'pro' | 'premium';
+  packageType: string;
   price: number;
   billLimit: number;
 };
@@ -26,7 +26,14 @@ const AdminPackages: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [editingPackage, setEditingPackage] = useState<string | null>(null);
   const [editingPrice, setEditingPrice] = useState<number>(0);
+  const [editingBillLimit, setEditingBillLimit] = useState<number>(100);
   const [showAddBank, setShowAddBank] = useState(false);
+  const [showAddPackage, setShowAddPackage] = useState(false);
+  const [newPackage, setNewPackage] = useState({
+    packageType: '',
+    price: 0,
+    billLimit: 100,
+  });
   const [newBank, setNewBank] = useState({
     bankName: '',
     accountNumber: '',
@@ -60,13 +67,50 @@ const AdminPackages: React.FC = () => {
     try {
       await api.put(`/payment/admin/packages/config/${type}`, {
         price: editingPrice,
-        billLimit: type === 'basic' ? 20 : type === 'pro' ? 100 : -1,
+        billLimit: editingBillLimit,
       });
       await fetchData();
       setEditingPackage(null);
-      toast.success('Đã cập nhật giá gói thành công!');
+      toast.success('Đã cập nhật gói thành công!');
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Không thể cập nhật giá gói');
+      toast.error(err instanceof Error ? err.message : 'Không thể cập nhật gói');
+    }
+  };
+
+  const handleAddPackage = async () => {
+    try {
+      if (!newPackage.packageType.trim()) {
+        toast.error('Vui lòng nhập tên gói');
+        return;
+      }
+      if (newPackage.price < 0) {
+        toast.error('Giá không hợp lệ');
+        return;
+      }
+      await api.post('/payment/admin/packages/config', newPackage);
+      setNewPackage({ packageType: '', price: 0, billLimit: 100 });
+      setShowAddPackage(false);
+      await fetchData();
+      toast.success('Đã thêm gói mới thành công!');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không thể thêm gói mới');
+    }
+  };
+
+  const handleDeletePackage = async (type: string) => {
+    if (type === 'basic') {
+      toast.error('Không thể xóa gói Basic');
+      return;
+    }
+    if (!confirm(`Bạn có chắc muốn xóa gói ${type}?`)) {
+      return;
+    }
+    try {
+      await api.delete(`/payment/admin/packages/config/${type}`);
+      await fetchData();
+      toast.success('Đã xóa gói thành công!');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không thể xóa gói');
     }
   };
 
@@ -121,16 +165,60 @@ const AdminPackages: React.FC = () => {
       {error && <div className={styles.error}>{error}</div>}
 
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Cấu hình Giá Gói</h2>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>Cấu hình Giá Gói</h2>
+          <button onClick={() => setShowAddPackage(true)} className={styles.addButton}>
+            + Thêm gói mới
+          </button>
+        </div>
+
+        {showAddPackage && (
+          <div className={styles.addPackageForm}>
+            <input
+              type="text"
+              placeholder="Tên gói (ví dụ: enterprise, vip, ...)"
+              value={newPackage.packageType}
+              onChange={(e) => setNewPackage({ ...newPackage, packageType: e.target.value })}
+              className={styles.input}
+            />
+            <input
+              type="number"
+              placeholder="Giá (VNĐ)"
+              value={newPackage.price}
+              onChange={(e) => setNewPackage({ ...newPackage, price: Number(e.target.value) })}
+              className={styles.input}
+              min="0"
+            />
+            <input
+              type="number"
+              placeholder="Giới hạn bill/tháng (-1 = không giới hạn)"
+              value={newPackage.billLimit}
+              onChange={(e) => setNewPackage({ ...newPackage, billLimit: Number(e.target.value) })}
+              className={styles.input}
+              min="-1"
+            />
+            <div className={styles.formActions}>
+              <button onClick={handleAddPackage} className={styles.saveButton}>
+                Thêm
+              </button>
+              <button
+                onClick={() => {
+                  setShowAddPackage(false);
+                  setNewPackage({ packageType: '', price: 0, billLimit: 100 });
+                }}
+                className={styles.cancelButton}
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className={styles.packagesGrid}>
           {packageConfigs.map((config) => (
             <div key={config._id} className={styles.packageCard}>
               <h3 className={styles.packageName}>
-                {config.packageType === 'basic'
-                  ? 'Gói Basic'
-                  : config.packageType === 'pro'
-                  ? 'Gói Pro'
-                  : 'Gói Premium'}
+                Gói {config.packageType.charAt(0).toUpperCase() + config.packageType.slice(1)}
               </h3>
               {editingPackage === config.packageType ? (
                 <div className={styles.editForm}>
@@ -141,6 +229,16 @@ const AdminPackages: React.FC = () => {
                     placeholder="Giá (VNĐ)"
                     className={styles.input}
                     disabled={config.packageType === 'basic'}
+                    min="0"
+                  />
+                  <input
+                    type="number"
+                    value={editingBillLimit}
+                    onChange={(e) => setEditingBillLimit(Number(e.target.value))}
+                    placeholder="Giới hạn bill/tháng (-1 = không giới hạn)"
+                    className={styles.input}
+                    disabled={config.packageType === 'basic'}
+                    min="-1"
                   />
                   <div className={styles.editActions}>
                     <button
@@ -150,7 +248,11 @@ const AdminPackages: React.FC = () => {
                       Lưu
                     </button>
                     <button
-                      onClick={() => setEditingPackage(null)}
+                      onClick={() => {
+                        setEditingPackage(null);
+                        setEditingPrice(0);
+                        setEditingBillLimit(100);
+                      }}
                       className={styles.cancelButton}
                     >
                       Hủy
@@ -171,17 +273,28 @@ const AdminPackages: React.FC = () => {
                       </strong>
                     </div>
                   </div>
-                  {config.packageType !== 'basic' && (
-                    <button
-                      onClick={() => {
-                        setEditingPackage(config.packageType);
-                        setEditingPrice(config.price);
-                      }}
-                      className={styles.editButton}
-                    >
-                      Chỉnh sửa giá
-                    </button>
-                  )}
+                  <div className={styles.packageActions}>
+                    {config.packageType !== 'basic' && (
+                      <>
+                        <button
+                          onClick={() => {
+                            setEditingPackage(config.packageType);
+                            setEditingPrice(config.price);
+                            setEditingBillLimit(config.billLimit);
+                          }}
+                          className={styles.editButton}
+                        >
+                          Chỉnh sửa
+                        </button>
+                        <button
+                          onClick={() => handleDeletePackage(config.packageType)}
+                          className={styles.deleteButton}
+                        >
+                          Xóa gói
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </>
               )}
             </div>

@@ -81,7 +81,7 @@ const PaymentHistory: React.FC = () => {
   };
 
   const getPackageName = (packageType: string) => {
-    return packageType === 'pro' ? 'Pro' : 'Premium';
+    return packageType.charAt(0).toUpperCase() + packageType.slice(1);
   };
 
   const pendingPayments = payments.filter((p) => p.status === 'pending');

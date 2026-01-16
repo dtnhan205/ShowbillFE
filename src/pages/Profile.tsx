@@ -15,6 +15,9 @@ type PublicAdmin = {
   bio: string;
   avatarBase64: string;
   role?: string;
+  activePackage?: string;
+  packageColor?: string;
+  avatarFrame?: string;
   stats?: {
     totalBills: number;
     totalViews: number;
@@ -163,6 +166,19 @@ const Profile: React.FC = () => {
       setError(null);
       setData(null); // Reset data khi fetch mới
       const res = await api.get<PublicAdminDetail>(`/public/admins/${id}`);
+      
+      // Log để debug
+      console.log('[Profile] Admin data:', res.data.admin);
+      console.log('[Profile] AvatarFrame:', res.data.admin.avatarFrame);
+      console.log('[Profile] AvatarFrame type:', typeof res.data.admin.avatarFrame);
+      console.log('[Profile] AvatarFrame length:', res.data.admin.avatarFrame?.length);
+      
+      // Đảm bảo avatarFrame là string
+      if (res.data.admin.avatarFrame && typeof res.data.admin.avatarFrame !== 'string') {
+        console.warn('[Profile] AvatarFrame is not a string, converting...');
+        res.data.admin.avatarFrame = String(res.data.admin.avatarFrame);
+      }
+      
       setData(res.data);
       setLoading(false);
     } catch (e) {
@@ -486,11 +502,57 @@ const Profile: React.FC = () => {
                   ) : (
                     <div className={styles.avatarPlaceholder} />
                   )}
+                  {data.admin.avatarFrame && 
+                   typeof data.admin.avatarFrame === 'string' && 
+                   data.admin.avatarFrame.trim() !== '' && (
+                    <img
+                      src={`/images/${data.admin.avatarFrame.trim()}`}
+                      alt="Avatar Frame"
+                      className={styles.avatarFrame}
+                      onError={(e) => {
+                        console.error('[Profile] Failed to load frame:', data.admin.avatarFrame);
+                        console.error('[Profile] Frame path:', `/images/${data.admin.avatarFrame}`);
+                        e.currentTarget.style.display = 'none';
+                      }}
+                      onLoad={() => {
+                        console.log('[Profile] Frame loaded successfully:', data.admin.avatarFrame);
+                        console.log('[Profile] Frame path:', `/images/${data.admin.avatarFrame}`);
+                      }}
+                    />
+                  )}
                 </div>
 
                 <div className={styles.profileInfo}>
-                  <div className={styles.profileBadge}>ShowBill Admin</div>
-                  <h1 className={styles.profileName}>{data.admin.displayName}</h1>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <div className={styles.profileBadge}>ShowBill Admin</div>
+                    <div 
+                      className={styles.packageBadge} 
+                      data-package={data.admin.activePackage || 'basic'}
+                      style={data.admin.packageColor && data.admin.activePackage !== 'basic' && data.admin.activePackage !== 'pro' && data.admin.activePackage !== 'premium' ? {
+                        background: `linear-gradient(135deg, ${data.admin.packageColor}25 0%, ${data.admin.packageColor}20 100%)`,
+                        border: `1px solid ${data.admin.packageColor}40`,
+                        color: data.admin.packageColor,
+                        boxShadow: `0 0 10px ${data.admin.packageColor}30`,
+                      } : {}}
+                    >
+                      {data.admin.activePackage === 'pro' ? 'PRO' : 
+                       data.admin.activePackage === 'premium' ? 'PREMIUM' : 
+                       data.admin.activePackage === 'basic' ? 'BASIC' :
+                       (data.admin.activePackage || 'BASIC').toUpperCase()}
+                    </div>
+                  </div>
+                  <h1 className={styles.profileName}>
+                    {data.admin.displayName}
+                    {data.admin.activePackage && data.admin.activePackage !== 'basic' && (
+                      <span className={styles.verifiedBadge}>
+                        <img
+                          src="/images/tichxanh.png"
+                          alt="Verified"
+                          className={styles.verifiedIcon}
+                        />
+                      </span>
+                    )}
+                  </h1>
                   <p className={styles.profileBio}>{data.admin.bio || 'Chưa có mô tả'}</p>
                 </div>
               </div>

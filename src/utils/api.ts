@@ -9,6 +9,12 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // Axios tự động set Content-Type cho FormData, không cần set thủ công
+  // Nếu set thủ công sẽ làm mất boundary và gây lỗi
+  if (config.data instanceof FormData) {
+    // Không set Content-Type, để axios tự động set với boundary
+    delete config.headers['Content-Type'];
+  }
   return config;
 });
 

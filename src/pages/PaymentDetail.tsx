@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
@@ -6,7 +6,7 @@ import styles from './PaymentDetail.module.css';
 
 type Payment = {
   _id: string;
-  packageType: 'pro' | 'premium';
+  packageType: string;
   amount: number;
   transferContent: string;
   status: 'pending' | 'completed' | 'expired';
@@ -27,9 +27,11 @@ const PaymentDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   const [isPolling, setIsPolling] = useState(false);
+  const hasShownSuccessToastRef = useRef(false);
 
   useEffect(() => {
     if (id) {
+      hasShownSuccessToastRef.current = false; // Reset flag khi id thay đổi
       fetchPayment();
     }
   }, [id]);
@@ -50,6 +52,12 @@ const PaymentDetail: React.FC = () => {
     if (!isPolling || !id) return;
 
     const intervalId = setInterval(async () => {
+      // Kiểm tra flag trước khi thực hiện request
+      if (hasShownSuccessToastRef.current) {
+        setIsPolling(false);
+        return;
+      }
+
       try {
         const res = await api.get<Payment>(`/payment/${id}`);
         const updatedPayment = res.data;
@@ -59,14 +67,19 @@ const PaymentDetail: React.FC = () => {
 
           // Nếu status thay đổi từ pending sang completed
           if (prevPayment.status === 'pending' && updatedPayment.status === 'completed') {
-            setIsPolling(false);
-            toast.success('Thanh toán thành công! Gói của bạn đã được kích hoạt.', {
-              duration: 5000,
-            });
-            // Redirect sau 3 giây
-            setTimeout(() => {
-              navigate('/admin/payment');
-            }, 3000);
+            // Kiểm tra lại flag để đảm bảo chỉ xử lý 1 lần
+            if (!hasShownSuccessToastRef.current) {
+              hasShownSuccessToastRef.current = true;
+              setIsPolling(false);
+              toast.success('Thanh toán thành công! Gói của bạn đã được kích hoạt.', {
+                duration: 5000,
+                id: 'payment-success', // Dùng id để tránh duplicate toast
+              });
+              // Redirect sau 3 giây
+              setTimeout(() => {
+                navigate('/admin/payment');
+              }, 3000);
+            }
             return updatedPayment;
           }
 
@@ -203,7 +216,7 @@ const PaymentDetail: React.FC = () => {
               <div className={styles.infoCard}>
                 <div className={styles.infoRow}>
                   <span>Gói:</span>
-                  <strong>{payment.packageType === 'pro' ? 'Pro' : 'Premium'}</strong>
+                  <strong>{payment.packageType.charAt(0).toUpperCase() + payment.packageType.slice(1)}</strong>
                 </div>
                 <div className={styles.infoRow}>
                   <span>Số tiền:</span>

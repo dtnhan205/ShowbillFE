@@ -6,17 +6,27 @@ import styles from './AdminPayment.module.css';
 
 type PackageConfig = {
   _id: string;
-  packageType: 'basic' | 'pro' | 'premium';
+  packageType: string;
   price: number;
   billLimit: number;
+  color?: string;
+};
+
+type OwnedPackage = {
+  packageType: string;
+  expiryDate: string;
+  purchasedAt: string;
+  isActive: boolean;
 };
 
 type MyPackage = {
-  package: 'basic' | 'pro' | 'premium';
+  package: string;
+  activePackage: string;
   packageExpiry: string | null;
   billsUploaded: number;
   billLimit: number | null;
   canUpload: boolean;
+  ownedPackages?: OwnedPackage[];
 };
 
 const AdminPayment: React.FC = () => {
@@ -45,7 +55,7 @@ const AdminPayment: React.FC = () => {
     }
   };
 
-  const handleCreatePayment = async (packageType: 'pro' | 'premium') => {
+  const handleCreatePayment = async (packageType: string) => {
     try {
       const packageConfig = packages.find((p) => p.packageType === packageType);
       if (!packageConfig) {
@@ -67,6 +77,18 @@ const AdminPayment: React.FC = () => {
     }
   };
 
+  const handleSwitchPackage = async (packageType: string) => {
+    try {
+      await api.post('/payment/switch-package', { packageType });
+      const packageName = packageType === 'basic' ? 'Basic' : packageType.charAt(0).toUpperCase() + packageType.slice(1);
+      toast.success(`Đã chuyển sang gói ${packageName}`);
+      await fetchData(); // Refresh data
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Không thể chuyển đổi gói';
+      toast.error(errorMessage);
+    }
+  };
+
   if (loading) {
     return <div className={styles.loading}>Đang tải...</div>;
   }
@@ -75,20 +97,20 @@ const AdminPayment: React.FC = () => {
     return <div className={styles.error}>Không thể tải thông tin gói</div>;
   }
 
-  const proPackage = packages.find((p) => p.packageType === 'pro');
-  const premiumPackage = packages.find((p) => p.packageType === 'premium');
+  // Lọc bỏ gói basic (miễn phí, không cần mua)
+  const availablePackages = packages.filter((p) => p.packageType !== 'basic');
 
   return (
     <>
       <div className={styles.currentPackage}>
-        <h2>Gói hiện tại của bạn</h2>
+        <h2>Gói đang sử dụng</h2>
         <div className={styles.packageInfo}>
           <div className={styles.infoItem}>
             <span>Gói:</span>
             <strong>
-              {myPackage.package === 'basic'
+              {myPackage.activePackage === 'basic'
                 ? 'Basic'
-                : myPackage.package === 'pro'
+                : myPackage.activePackage === 'pro'
                 ? 'Pro'
                 : 'Premium'}
             </strong>
@@ -108,48 +130,162 @@ const AdminPayment: React.FC = () => {
         </div>
       </div>
 
+      {myPackage.ownedPackages && myPackage.ownedPackages.length > 0 && (
+        <div className={styles.ownedPackages}>
+          <h2>Gói đã mua</h2>
+          <div className={styles.packagesGrid}>
+            {/* Basic package - luôn có sẵn */}
+            <div
+              className={`${styles.packageCard} ${styles.basicPackage} ${myPackage.activePackage === 'basic' ? styles.activePackage : ''}`}
+            >
+              <h3>Gói Basic</h3>
+              <div className={styles.price}>Miễn phí</div>
+              <div className={styles.features}>
+                <p>✓ Upload 20 bill/tháng</p>
+                <p>✓ Vĩnh viễn</p>
+              </div>
+              <button
+                onClick={() => handleSwitchPackage('basic')}
+                className={styles.switchButton}
+                disabled={myPackage.activePackage === 'basic'}
+              >
+                {myPackage.activePackage === 'basic' ? '✓ Đang sử dụng' : 'Chuyển sang Basic'}
+              </button>
+            </div>
+
+            {/* Owned packages */}
+            {myPackage.ownedPackages.map((pkg, index) => {
+              const packageConfig = packages.find((p) => p.packageType === pkg.packageType);
+              const isExpired = new Date(pkg.expiryDate) <= new Date();
+              const isActive = pkg.isActive;
+
+              const getOwnedPackageClass = () => {
+                if (pkg.packageType === 'pro') return styles.proPackage;
+                if (pkg.packageType === 'premium') return styles.premiumPackage;
+                return ''; // Gói tùy chỉnh không có class đặc biệt
+              };
+
+              // Màu cho gói (sử dụng màu từ config hoặc màu mặc định)
+              const packageColor = packageConfig?.color || '#3b82f6';
+              const isCustomPackage = pkg.packageType !== 'pro' && pkg.packageType !== 'premium';
+
+              // Style động cho gói tùy chỉnh
+              const customPackageStyle = isCustomPackage ? {
+                borderColor: `${packageColor}40`,
+                '--package-color': packageColor,
+              } as React.CSSProperties : {};
+
+              return (
+                <div
+                  key={index}
+                  className={`${styles.packageCard} ${getOwnedPackageClass()} ${isActive ? styles.activePackage : ''} ${isExpired ? styles.expiredPackage : ''}`}
+                  style={customPackageStyle}
+                >
+                  <h3>Gói {pkg.packageType.charAt(0).toUpperCase() + pkg.packageType.slice(1)}</h3>
+                  <div 
+                    className={styles.price}
+                    style={isCustomPackage ? {
+                      background: `linear-gradient(135deg, ${packageColor} 0%, ${packageColor}dd 100%)`,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    } : {}}
+                  >
+                    {packageConfig ? `${packageConfig.price.toLocaleString()} VNĐ` : 'Đã mua'}
+                  </div>
+                  <div className={styles.features}>
+                    <p>
+                      ✓ Upload {packageConfig?.billLimit === -1 ? 'không giới hạn' : `${packageConfig?.billLimit} bill`}/tháng
+                    </p>
+                    <p>✓ Hết hạn: {new Date(pkg.expiryDate).toLocaleDateString('vi-VN')}</p>
+                    <p>✓ Mua ngày: {new Date(pkg.purchasedAt).toLocaleDateString('vi-VN')}</p>
+                  </div>
+                  {isExpired ? (
+                    <div className={styles.expiredBadge}>Đã hết hạn</div>
+                  ) : (
+                    <button
+                      onClick={() => handleSwitchPackage(pkg.packageType)}
+                      className={styles.switchButton}
+                      disabled={isActive}
+                    >
+                      {isActive ? '✓ Đang sử dụng' : 'Chuyển sang gói này'}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className={styles.upgradeSection}>
         <h2>Nâng cấp gói</h2>
         <div className={styles.packagesGrid}>
-          {proPackage && (
-            <div className={styles.packageCard}>
-              <h3>Gói Pro</h3>
-              <div className={styles.price}>{proPackage.price.toLocaleString()} VNĐ</div>
-              <div className={styles.features}>
-                <p>✓ Upload {proPackage.billLimit} bill/tháng</p>
-                <p>✓ Thời hạn: 1 tháng</p>
-              </div>
-              <button
-                onClick={() => handleCreatePayment('pro')}
-                className={styles.upgradeButton}
-                disabled={!!(myPackage.package === 'pro' && myPackage.packageExpiry && new Date(myPackage.packageExpiry) > new Date())}
-              >
-                {myPackage.package === 'pro' && myPackage.packageExpiry && new Date(myPackage.packageExpiry) > new Date()
-                  ? 'Đang sử dụng'
-                  : 'Nâng cấp Pro'}
-              </button>
-            </div>
-          )}
+          {availablePackages.map((pkg) => {
+            // Kiểm tra xem đã mua gói này chưa (còn hạn)
+            const hasPackage = myPackage.ownedPackages?.some(
+              (owned) => owned.packageType === pkg.packageType && new Date(owned.expiryDate) > new Date()
+            );
+            const isActive = myPackage.activePackage === pkg.packageType;
+            const isDisabled = hasPackage || isActive;
 
-          {premiumPackage && (
-            <div className={styles.packageCard}>
-              <h3>Gói Premium</h3>
-              <div className={styles.price}>{premiumPackage.price.toLocaleString()} VNĐ</div>
-              <div className={styles.features}>
-                <p>✓ Upload không giới hạn</p>
-                <p>✓ Thời hạn: 1 tháng</p>
-              </div>
-              <button
-                onClick={() => handleCreatePayment('premium')}
-                className={styles.upgradeButton}
-                disabled={!!(myPackage.package === 'premium' && myPackage.packageExpiry && new Date(myPackage.packageExpiry) > new Date())}
+            // Xác định class CSS dựa trên tên gói
+            const getPackageClass = () => {
+              if (pkg.packageType === 'pro') return styles.proPackage;
+              if (pkg.packageType === 'premium') return styles.premiumPackage;
+              return ''; // Gói tùy chỉnh không có class đặc biệt
+            };
+
+            // Format tên gói (viết hoa chữ cái đầu)
+            const packageName = pkg.packageType.charAt(0).toUpperCase() + pkg.packageType.slice(1);
+
+            // Màu cho gói (sử dụng màu từ config hoặc màu mặc định)
+            const packageColor = pkg.color || '#3b82f6';
+            const isCustomPackage = pkg.packageType !== 'pro' && pkg.packageType !== 'premium';
+
+            // Style động cho gói tùy chỉnh
+            const customPackageStyle = isCustomPackage ? {
+              borderColor: `${packageColor}40`,
+              '--package-color': packageColor,
+            } as React.CSSProperties : {};
+
+            return (
+              <div
+                key={pkg._id}
+                className={`${styles.packageCard} ${getPackageClass()} ${isDisabled ? styles.ownedPackage : ''}`}
+                style={customPackageStyle}
               >
-                {myPackage.package === 'premium' && myPackage.packageExpiry && new Date(myPackage.packageExpiry) > new Date()
-                  ? 'Đang sử dụng'
-                  : 'Nâng cấp Premium'}
-              </button>
-            </div>
-          )}
+                <h3>Gói {packageName}</h3>
+                <div 
+                  className={styles.price}
+                  style={isCustomPackage ? {
+                    background: `linear-gradient(135deg, ${packageColor} 0%, ${packageColor}dd 100%)`,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  } : {}}
+                >
+                  {pkg.price.toLocaleString()} VNĐ
+                </div>
+                <div className={styles.features}>
+                  <p>
+                    ✓ Upload {pkg.billLimit === -1 ? 'không giới hạn' : `${pkg.billLimit} bill`}/tháng
+                  </p>
+                  <p>✓ Thời hạn: 1 tháng</p>
+                </div>
+                {hasPackage && !isActive && (
+                  <div className={styles.ownedBadge}>Đã mua gói này</div>
+                )}
+                <button
+                  onClick={() => handleCreatePayment(pkg.packageType)}
+                  className={styles.upgradeButton}
+                  disabled={isDisabled}
+                >
+                  {isActive ? 'Đang sử dụng' : hasPackage ? 'Đã mua' : `Nâng cấp ${packageName}`}
+                </button>
+              </div>
+            );
+          })}
         </div>
       </div>
     </>

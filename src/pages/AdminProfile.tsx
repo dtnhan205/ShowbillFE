@@ -11,6 +11,8 @@ type Profile = {
   bio?: string;
   avatarBase64?: string;
   bannerBase64?: string;
+  avatarFrame?: string;
+  activePackage?: string;
 };
 
 type LoadState = 'idle' | 'loading' | 'error';
@@ -21,6 +23,7 @@ const AdminProfile: React.FC = () => {
   const [bio, setBio] = useState('');
   const [avatarBase64, setAvatarBase64] = useState('');
   const [bannerBase64, setBannerBase64] = useState('');
+  const [avatarFrame, setAvatarFrame] = useState('');
 
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [saveState, setSaveState] = useState<LoadState>('idle');
@@ -39,6 +42,10 @@ const AdminProfile: React.FC = () => {
       setBio(data.bio ?? '');
       setAvatarBase64(data.avatarBase64 ?? '');
       setBannerBase64(data.bannerBase64 ?? '');
+      setAvatarFrame(data.avatarFrame ?? '');
+      
+      // Log để debug
+      console.log('[AdminProfile] Loaded avatarFrame:', data.avatarFrame);
 
       setLoadState('idle');
     } catch (e) {
@@ -71,6 +78,15 @@ const AdminProfile: React.FC = () => {
 
   const canSave = useMemo(() => saveState !== 'loading', [saveState]);
 
+  // Danh sách frames theo gói
+  const framesByPackage: Record<string, string[]> = {
+    basic: ['basic/basic1.gif', 'basic/basic2.gif'],
+    pro: ['pro/pro1.gif', 'pro/pro2.gif', 'pro/pro4.gif'],
+    premium: ['premium/premium1.gif', 'premium/premium3.gif', 'premium/premium4.gif', 'premium/premium6.gif'],
+    vip: ['vip/vip1.gif', 'vip/vip2.gif', 'vip/vip3.gif'],
+  };
+
+
   const save = useCallback(async () => {
     try {
       setSaveState('loading');
@@ -81,6 +97,7 @@ const AdminProfile: React.FC = () => {
         bio,
         avatarBase64,
         bannerBase64,
+        avatarFrame,
       });
 
       setProfile(data);
@@ -170,8 +187,217 @@ const AdminProfile: React.FC = () => {
                 if (f) onAvatarFile(f);
               }}
             />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: 6, color: 'rgba(229,231,235,0.75)', fontWeight: 800 }}>
+              Khung avatar
+            </label>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', 
+              gap: 12,
+              marginBottom: 12,
+            }}>
+              <div
+                onClick={async () => {
+                  setAvatarFrame('');
+                  // Tự động lưu khi chọn "Không" (xóa khung)
+                  try {
+                    const response = await api.put<Profile>('/admin/profile', {
+                      avatarFrame: '',
+                    });
+                    // Cập nhật profile từ response
+                    setProfile(response.data);
+                    // Đảm bảo state sync với server
+                    if (response.data.avatarFrame !== '') {
+                      console.warn('[AdminProfile] AvatarFrame mismatch, refetching...');
+                      const updatedProfile = await api.get<Profile>('/admin/profile');
+                      setProfile(updatedProfile.data);
+                      setAvatarFrame(updatedProfile.data.avatarFrame || '');
+                    }
+                    toast.success('Đã xóa khung avatar');
+                  } catch (e: any) {
+                    const errorMsg = e?.response?.data?.message || 'Không thể xóa khung avatar';
+                    toast.error(errorMsg);
+                    console.error('[AdminProfile] Error removing frame:', e);
+                    // Rollback nếu lỗi
+                    setAvatarFrame(profile?.avatarFrame || '');
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  aspectRatio: '1',
+                  borderRadius: 12,
+                  border: `2px solid ${avatarFrame === '' ? '#3b82f6' : 'rgba(255,255,255,0.1)'}`,
+                  background: 'rgba(255,255,255,0.04)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  position: 'relative',
+                }}
+                title="Không dùng khung"
+              >
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>Không</span>
+                {avatarFrame === '' && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 4,
+                      right: 4,
+                      width: 20,
+                      height: 20,
+                      borderRadius: '50%',
+                      background: '#3b82f6',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#fff',
+                      fontSize: 12,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    ✓
+                  </div>
+                )}
+              </div>
+              {Object.entries(framesByPackage).map(([pkg, frames]) => {
+                const userPackage = (profile?.activePackage || 'basic').toLowerCase();
+                const pkgLower = pkg.toLowerCase();
+                let isLocked = false;
+                
+                // Logic theo yêu cầu:
+                // - Basic: chỉ mở basic, đóng tất cả trả phí
+                // - Pro: mở basic + pro, đóng premium + vip
+                // - Premium: mở tất cả (basic + pro + premium + vip)
+                // - VIP: mở basic + vip, đóng pro + premium
+                
+                if (userPackage === 'basic') {
+                  // Basic: chỉ mở basic
+                  isLocked = pkgLower !== 'basic';
+                } else if (userPackage === 'pro') {
+                  // Pro: mở basic + pro, đóng premium + vip
+                  isLocked = pkgLower !== 'basic' && pkgLower !== 'pro';
+                } else if (userPackage === 'premium') {
+                  // Premium: mở tất cả
+                  isLocked = false;
+                } else if (userPackage === 'vip') {
+                  // VIP: mở basic + vip, đóng pro + premium
+                  isLocked = pkgLower !== 'basic' && pkgLower !== 'vip';
+                } else {
+                  // Gói tùy chỉnh: chỉ mở frames của chính gói đó
+                  isLocked = pkgLower !== userPackage;
+                }
+
+                return frames.map((frame) => {
+                  const isSelected = avatarFrame === frame;
+                  const isAvailable = !isLocked;
+
+                  return (
+                    <div
+                      key={frame}
+                      onClick={async () => {
+                        if (isAvailable) {
+                          const newFrame = frame;
+                          setAvatarFrame(newFrame);
+                          // Tự động lưu khi chọn khung
+                          try {
+                            const response = await api.put<Profile>('/admin/profile', {
+                              avatarFrame: newFrame,
+                            });
+                            // Cập nhật profile từ response
+                            setProfile(response.data);
+                            // Đảm bảo state sync với server
+                            if (response.data.avatarFrame !== newFrame) {
+                              console.warn('[AdminProfile] AvatarFrame mismatch, refetching...');
+                              const updatedProfile = await api.get<Profile>('/admin/profile');
+                              setProfile(updatedProfile.data);
+                              setAvatarFrame(updatedProfile.data.avatarFrame || '');
+                            }
+                            toast.success('Đã cập nhật khung avatar');
+                          } catch (e: any) {
+                            const errorMsg = e?.response?.data?.message || 'Không thể lưu khung avatar';
+                            toast.error(errorMsg);
+                            console.error('[AdminProfile] Error saving frame:', e);
+                            // Rollback nếu lỗi
+                            setAvatarFrame(profile?.avatarFrame || '');
+                          }
+                        } else {
+                          toast.error('Vui lòng nâng cấp gói để sử dụng khung này.');
+                        }
+                      }}
+                      style={{
+                        width: '100%',
+                        aspectRatio: '1',
+                        borderRadius: 12,
+                        border: `2px solid ${isSelected ? '#3b82f6' : isLocked ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                        background: isLocked ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.04)',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        cursor: isAvailable ? 'pointer' : 'not-allowed',
+                        opacity: isLocked ? 0.5 : 1,
+                        transition: 'all 0.2s',
+                      }}
+                      title={isLocked ? 'Vui lòng nâng cấp gói để sử dụng' : frame}
+                    >
+                      <img
+                        src={`/images/${frame}`}
+                        alt={frame}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          pointerEvents: 'none',
+                        }}
+                      />
+                      {isLocked && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: 'rgba(0,0,0,0.6)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <span style={{ color: '#ef4444', fontSize: 20 }}>🔒</span>
+                        </div>
+                      )}
+                      {isSelected && !isLocked && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: 4,
+                            right: 4,
+                            width: 20,
+                            height: 20,
+                            borderRadius: '50%',
+                            background: '#3b82f6',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#fff',
+                            fontSize: 12,
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          ✓
+                        </div>
+                      )}
+                    </div>
+                  );
+                });
+              })}
+            </div>
             <div style={{ marginTop: 6, color: 'rgba(229,231,235,0.6)', fontSize: 13 }}>
-              Chọn ảnh để tự convert sang base64.
+              Gói hiện tại: <strong>{profile?.activePackage?.toUpperCase() || 'BASIC'}</strong>. 
+              Chỉ có thể chọn khung của gói hiện tại hoặc gói thấp hơn.
             </div>
           </div>
 
@@ -190,9 +416,6 @@ const AdminProfile: React.FC = () => {
                 if (f) onBannerFile(f);
               }}
             />
-            <div style={{ marginTop: 6, color: 'rgba(229,231,235,0.6)', fontSize: 13 }}>
-              Chọn banner để hiển thị trên trang chủ slider. Khuyến nghị tỷ lệ 16:9 hoặc 21:9.
-            </div>
           </div>
 
           <button

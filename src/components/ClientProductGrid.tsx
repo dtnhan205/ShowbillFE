@@ -104,17 +104,15 @@ const ClientProductGrid: React.FC<Props> = ({ products, onOpen }) => {
               </p>
 
               <div className={styles.footer}>
-                <div className={styles.footerLeft}>
-                  <span className={styles.status}>
-                    <span className={styles.statusDot} />
-                    Đã duyệt
-                  </span>
-                  {p.views !== undefined && (
-                    <span className={styles.views}>
-                      {p.views} lượt xem
-                    </span>
-                  )}
-                </div>
+                {p.views !== undefined && (
+                  <div className={styles.viewsContainer}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <span className={styles.views}>{p.views}</span>
+                  </div>
+                )}
                 <button
                   type="button"
                   className={styles.button}
@@ -123,7 +121,7 @@ const ClientProductGrid: React.FC<Props> = ({ products, onOpen }) => {
                     onOpen?.(p);
                   }}
                 >
-                  Xem bill chi tiết
+                  Xem chi tiết
                 </button>
               </div>
             </div>

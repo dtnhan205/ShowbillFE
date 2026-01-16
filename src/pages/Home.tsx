@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../utils/api';
 import ClientLayout from '../components/ClientLayout/ClientLayout';
+import { shortenId } from '../utils/idUtils';
 import styles from './Home.module.css';
 
 type PublicAdminItem = {
@@ -368,7 +369,7 @@ const Home: React.FC = () => {
                       {selectedAdmin.bio || 'Place Description Here'}
                     </p>
                     <Link
-                      to={`/profile/${selectedAdmin._id}`}
+                      to={`/profile/${shortenId(selectedAdmin._id)}`}
                       className={styles.discoverButton}
                     >
                       <span>DISCOVER PROFILE</span>
@@ -540,7 +541,7 @@ const Home: React.FC = () => {
                           transition={{ duration: 0.4, delay: idx * 0.05 }}
                         >
                           <Link
-                            to={`/profile/${admin._id}`}
+                            to={`/profile/${shortenId(admin._id)}`}
                             className={styles.adminCard}
                           >
                           <div className={styles.cardHeader}>

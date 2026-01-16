@@ -156,8 +156,8 @@
 }
 
 .qrImage {
-  width: 200px;
-  height: 200px;
+  width: 235px;
+  height: 250px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: white;
