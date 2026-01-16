@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import api from '../../utils/api';
-import type { Product, ObVersion, Category } from '../../types';
+import type { Product } from '../../types';
+import type { ObVersion, Category } from '../../types/adminMeta';
 import styles from './AdminProductForm.module.css';
 
 type LoadState = 'idle' | 'loading' | 'error';
@@ -111,17 +113,17 @@ const AdminProductForm: React.FC = () => {
       e.preventDefault();
 
       if (!name.trim()) {
-        alert('Vui lòng nhập tên sản phẩm');
+        toast.error('Vui lòng nhập tên sản phẩm');
         return;
       }
 
       if (!obVersion || !category) {
-        alert('Vui lòng chọn OB và Category');
+        toast.error('Vui lòng chọn OB và Category');
         return;
       }
 
       if (!isEdit && !image) {
-        alert('Vui lòng chọn hình ảnh');
+        toast.error('Vui lòng chọn hình ảnh');
         return;
       }
 
@@ -146,7 +148,7 @@ const AdminProductForm: React.FC = () => {
         const message = err instanceof Error ? err.message : 'Lỗi khi lưu sản phẩm.';
         setErrorMessage(message);
         setSubmitState('error');
-        alert(message);
+        toast.error(message);
       } finally {
         setSubmitState('idle');
       }

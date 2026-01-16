@@ -140,8 +140,8 @@
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: #8a2be2;
-  box-shadow: 0 0 12px rgba(138, 43, 226, 0.9);
+  background: var(--accent2);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.9);
 }
 
 .noImage {

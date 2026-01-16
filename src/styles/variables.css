@@ -1,16 +1,24 @@
 :root {
-  --bg: #0a0a0f;
-  --bg2: #0f0a1a;
-  --panel: rgba(255, 255, 255, 0.06);
-  --panel-strong: rgba(255, 255, 255, 0.08);
-  --border: rgba(138, 43, 226, 0.15);
-  --text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(229, 231, 235, 0.70);
-  --muted2: rgba(229, 231, 235, 0.60);
-  --accent: #8a2be2;
-  --accent2: #a855f7;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  --shadow-accent: 0 24px 70px rgba(138, 43, 226, 0.2);
-  --radius: 18px;
-}
-
+    /* Panel glassmorphism */
+    --panel: rgba(15, 23, 42, 0.85);
+    --panel-strong: rgba(15, 23, 42, 0.95);
+  
+    /* Viền và text */
+    --border: rgba(15, 118, 110, 0.45); /* teal đậm */
+    --text: rgba(248, 250, 252, 0.96);
+    --muted: rgba(148, 163, 184, 0.9);
+    --muted2: rgba(148, 163, 184, 0.75);
+  
+    /* Accent chính/phụ: teal + vàng cam */
+    --accent: #0f766e;   /* xanh teal */
+    --accent2: #f59e0b;  /* vàng cam */
+  
+    /* Một số accent bổ sung nếu cần */
+    --accent-blue: #1d4ed8;
+    --accent-orange: #ea580c;
+  
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+    --shadow-accent: 0 24px 70px rgba(15, 118, 110, 0.35);
+    --radius: 18px;
+  }
+  

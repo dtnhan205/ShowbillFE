@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -35,6 +36,40 @@ function App() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0b0b12', color: '#e5e7eb' }}>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: 'rgba(15, 15, 20, 0.95)',
+            color: '#ffffff',
+            border: '1px solid rgba(138, 43, 226, 0.3)',
+            borderRadius: '12px',
+            padding: '16px',
+            fontSize: '14px',
+            fontWeight: '600',
+            boxShadow: '0 4px 5px rgba(0, 0, 0, 0.3)',
+          },
+          success: {
+            iconTheme: {
+              primary: '#22c55e',
+              secondary: '#ffffff',
+            },
+            style: {
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#ffffff',
+            },
+            style: {
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+            },
+          },
+        }}
+      />
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />

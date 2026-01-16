@@ -58,6 +58,76 @@
   align-items: center;
 }
 
+.packageCard {
+  background: var(--panel-strong);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.packageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.packageTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.warning {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.16);
+  color: #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.packageInfo {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.packageStat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.packageStatLabel {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.packageStatValue {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.upgradeLink {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.upgradeLink:hover {
+  opacity: 0.8;
+}
+
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

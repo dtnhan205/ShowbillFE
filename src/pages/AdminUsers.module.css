@@ -129,3 +129,112 @@
   font-weight: 700;
   font-size: 13px;
 }
+
+.filters {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+}
+
+@media (max-width: 860px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+.filterInput,
+.filterSelect {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.95);
+  outline: none;
+  font-size: 14px;
+}
+
+.filterInput:focus,
+.filterSelect:focus {
+  border-color: rgba(138, 43, 226, 0.55);
+  box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.15);
+}
+
+.filterSelect option {
+  background: #111118;
+  color: #e5e7eb;
+}
+
+.resetBtn {
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.92);
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.resetBtn:hover {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.emptyMessage {
+  text-align: center;
+  padding: 24px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.packageInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.packageBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid;
+}
+
+.packageBasic {
+  background: rgba(156, 163, 175, 0.16);
+  color: #d1d5db;
+  border-color: rgba(156, 163, 175, 0.35);
+}
+
+.packagePro {
+  background: rgba(59, 130, 246, 0.16);
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
+.packagePremium {
+  background: rgba(251, 191, 36, 0.16);
+  color: #fde047;
+  border-color: rgba(251, 191, 36, 0.35);
+}
+
+.packageExpiry {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.packageExpired {
+  font-size: 11px;
+  color: #ef4444;
+  font-weight: 600;
+}

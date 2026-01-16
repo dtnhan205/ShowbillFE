@@ -28,6 +28,8 @@ export interface AdminUserItem {
   bio?: string;
   avatarBase64?: string;
   isActive?: boolean;
+  package?: 'basic' | 'pro' | 'premium';
+  packageExpiry?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -151,7 +151,16 @@ const Register: React.FC = () => {
           </button>
 
           <div style={{ marginTop: 14, textAlign: 'center', color: 'rgba(229,231,235,0.75)', fontSize: 14 }}>
-            Đã có tài khoản? <Link to="/login" style={{ color: '#8a2be2', fontWeight: 800 }}>Đăng nhập</Link>
+            Đã có tài khoản?{' '}
+            <Link
+              to="/login"
+              style={{
+                color: '#fbbf24',
+                fontWeight: 800,
+              }}
+            >
+              Đăng nhập
+            </Link>
           </div>
         </form>
       </div>

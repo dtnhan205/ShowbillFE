@@ -9,6 +9,10 @@ import AdminObs from './AdminObs';
 import AdminCategories from './AdminCategories';
 import AdminProfile from './AdminProfile';
 import AdminUsers from './AdminUsers';
+import AdminPackages from './AdminPackages';
+import AdminPayment from './AdminPayment';
+import PaymentDetail from './PaymentDetail';
+import PaymentHistory from './PaymentHistory';
 
 const Admin: React.FC = () => {
   return (
@@ -21,6 +25,10 @@ const Admin: React.FC = () => {
         <Route path="/obs" element={<AdminObs />} />
         <Route path="/categories" element={<AdminCategories />} />
         <Route path="/users" element={<AdminUsers />} />
+        <Route path="/packages" element={<AdminPackages />} />
+        <Route path="/payment" element={<AdminPayment />} />
+        <Route path="/payment/history" element={<PaymentHistory />} />
+        <Route path="/payment/:id" element={<PaymentDetail />} />
         <Route path="/profile" element={<AdminProfile />} />
 
         {/* Backward compatible */}

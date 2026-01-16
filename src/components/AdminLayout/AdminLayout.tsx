@@ -74,13 +74,34 @@ const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
           </Link>
 
           {isSuperAdmin && (
-            <Link
-              to="/admin/users"
-              className={`${styles.navItem} ${isActive('/admin/users') ? styles.navItemActive : ''}`}
-            >
-              Quản lý Admin
-            </Link>
+            <>
+              <Link
+                to="/admin/users"
+                className={`${styles.navItem} ${isActive('/admin/users') ? styles.navItemActive : ''}`}
+              >
+                Quản lý Admin
+              </Link>
+              <Link
+                to="/admin/packages"
+                className={`${styles.navItem} ${isActive('/admin/packages') ? styles.navItemActive : ''}`}
+              >
+                Quản lý Gói & Ngân hàng
+              </Link>
+            </>
           )}
+
+          <Link
+            to="/admin/payment"
+            className={`${styles.navItem} ${isActive('/admin/payment') ? styles.navItemActive : ''}`}
+          >
+            Nâng cấp Gói
+          </Link>
+          <Link
+            to="/admin/payment/history"
+            className={`${styles.navItem} ${isActive('/admin/payment/history') ? styles.navItemActive : ''}`}
+          >
+            Lịch sử thanh toán
+          </Link>
 
           <Link
             to="/admin/profile"

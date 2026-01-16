@@ -15,7 +15,7 @@
   font-size: 48px;
   font-weight: 900;
   margin: 0 0 16px 0;
-  background: linear-gradient(135deg, #fff, #8a2be2);
+  background: linear-gradient(135deg, #fbbf24, #0f766e);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -99,7 +99,7 @@
 
 .infoLink {
   font-size: 14px;
-  color: rgba(138, 43, 226, 0.9);
+  color: #fbbf24;
   text-decoration: none;
   font-weight: 700;
   transition: color 200ms ease, opacity 200ms ease;
@@ -107,7 +107,7 @@
 }
 
 .infoLink:hover {
-  color: #9d3ff0;
+  color: #fde68a;
   opacity: 0.9;
 }
 
@@ -163,7 +163,7 @@
 .input:focus,
 .textarea:focus {
   outline: none;
-  border-color: rgba(138, 43, 226, 0.6);
+  border-color: rgba(15, 118, 110, 0.8);
   background: rgba(15, 23, 42, 0.7);
 }
 
@@ -196,18 +196,19 @@
   width: 100%;
   padding: 14px 24px;
   border-radius: 12px;
-  border: none;
-  background: #8a2be2;
+  border: 1px solid white;
+  background: linear-gradient(135deg, #0e2d49, #0e2d49);
   color: #fff;
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
-  transition: background 200ms ease, transform 120ms ease;
+  transition: background 2000ms ease, transform 120ms ease;
   margin-top: 8px;
 }
 
 .submitButton:hover:not(:disabled) {
-  background: #9d3ff0;
+  background: linear-gradient(135deg, #1f507a, #0a4a83);
+
 }
 
 .submitButton:active:not(:disabled) {

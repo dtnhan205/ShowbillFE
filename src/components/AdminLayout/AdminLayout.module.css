@@ -3,6 +3,9 @@
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
+  /* Override CSS variables for admin pages only */
+  --panel: rgba(27, 27, 27, 0.3);
+  --panel-strong: rgba(27, 27, 27, 0.3);
 }
 
 .sidebar {

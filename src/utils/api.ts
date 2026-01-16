@@ -12,4 +12,19 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Response interceptor để xử lý lỗi và extract message từ backend
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Nếu có response từ server, lấy message từ response.data.message
+    if (error.response && error.response.data && error.response.data.message) {
+      const customError = new Error(error.response.data.message);
+      (customError as any).response = error.response;
+      return Promise.reject(customError);
+    }
+    // Nếu không có message từ server, giữ nguyên error
+    return Promise.reject(error);
+  }
+);
+
 export default api;

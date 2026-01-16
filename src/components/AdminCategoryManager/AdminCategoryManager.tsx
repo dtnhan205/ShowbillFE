@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import api from '../../utils/api';
 import styles from './AdminCategoryManager.module.css';
 import type { Category } from '../../types/adminMeta';
@@ -11,6 +12,9 @@ const AdminCategoryManager: React.FC = () => {
   const [slug, setSlug] = useState('');
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const canCreate = useMemo(() => name.trim() && slug.trim(), [name, slug]);
 
@@ -49,8 +53,9 @@ const AdminCategoryManager: React.FC = () => {
       setName('');
       setSlug('');
       await fetchList();
+      toast.success('Đã tạo category thành công!');
     } catch (e) {
-      alert(e instanceof Error ? e.message : 'Tạo category thất bại');
+      toast.error(e instanceof Error ? e.message : 'Tạo category thất bại');
     }
   }, [fetchList, name, slug]);
 
@@ -58,27 +63,75 @@ const AdminCategoryManager: React.FC = () => {
     try {
       await api.put(`/categories/${id}`, { isActive: next });
       setItems((prev) => prev.map((x) => (x._id === id ? { ...x, isActive: next } : x)));
+      toast.success('Đã cập nhật category thành công!');
     } catch (e) {
-      alert(e instanceof Error ? e.message : 'Cập nhật thất bại');
+      toast.error(e instanceof Error ? e.message : 'Cập nhật thất bại');
     }
   }, []);
 
-  const removeItem = useCallback(async (id: string) => {
-    const ok = window.confirm('Xóa category này?');
-    if (!ok) return;
+  const removeItem = useCallback((id: string) => {
+    setConfirmDelete(id);
+  }, []);
+
+  const confirmDeleteCategory = useCallback(async () => {
+    if (!confirmDelete) return;
     try {
-      await api.delete(`/categories/${id}`);
-      setItems((prev) => prev.filter((x) => x._id !== id));
+      await api.delete(`/categories/${confirmDelete}`);
+      setItems((prev) => prev.filter((x) => x._id !== confirmDelete));
+      toast.success('Đã xóa category thành công!');
+      setConfirmDelete(null);
     } catch (e) {
-      alert(e instanceof Error ? e.message : 'Xóa thất bại');
+      toast.error(e instanceof Error ? e.message : 'Xóa thất bại');
     }
+  }, [confirmDelete]);
+
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      const searchLower = search.toLowerCase().trim();
+      if (searchLower) {
+        const matchesSearch =
+          item.name.toLowerCase().includes(searchLower) || item.slug.toLowerCase().includes(searchLower);
+        if (!matchesSearch) return false;
+      }
+
+      if (statusFilter === 'active' && !item.isActive) return false;
+      if (statusFilter === 'inactive' && item.isActive) return false;
+
+      return true;
+    });
+  }, [items, search, statusFilter]);
+
+  const resetFilters = useCallback(() => {
+    setSearch('');
+    setStatusFilter('all');
   }, []);
 
   return (
     <div className={styles.wrap}>
       <div className={styles.header}>
         <h2 className={styles.title}>Quản lý Category</h2>
-        <div className={styles.muted}>Tổng: {items.length}</div>
+        <div className={styles.muted}>Tổng: {items.length} | Hiển thị: {filteredItems.length}</div>
+      </div>
+
+      <div className={styles.filters}>
+        <input
+          className={styles.filterInput}
+          placeholder="Tìm theo tên hoặc slug..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select
+          className={styles.filterSelect}
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
+        >
+          <option value="all">Tất cả trạng thái</option>
+          <option value="active">Đang hoạt động</option>
+          <option value="inactive">Đã tắt</option>
+        </select>
+        <button type="button" className={styles.resetBtn} onClick={resetFilters}>
+          Reset
+        </button>
       </div>
 
       <div className={styles.card}>
@@ -118,7 +171,14 @@ const AdminCategoryManager: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {items.map((x) => (
+            {filteredItems.length === 0 ? (
+              <tr>
+                <td colSpan={4} className={styles.emptyMessage}>
+                  Không tìm thấy category nào phù hợp với bộ lọc.
+                </td>
+              </tr>
+            ) : (
+              filteredItems.map((x) => (
               <tr key={x._id}>
                 <td>{x.name}</td>
                 <td className={styles.muted}>{x.slug}</td>
@@ -146,10 +206,28 @@ const AdminCategoryManager: React.FC = () => {
                   </div>
                 </td>
               </tr>
-            ))}
+              ))
+            )}
           </tbody>
         </table>
       </div>
+
+      {confirmDelete && (
+        <div className={styles.modalOverlay} onClick={() => setConfirmDelete(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.modalTitle}>Xác nhận xóa</h3>
+            <p className={styles.modalMessage}>Bạn có chắc muốn xóa category này?</p>
+            <div className={styles.modalActions}>
+              <button onClick={confirmDeleteCategory} className={styles.modalConfirmButton}>
+                Xóa
+              </button>
+              <button onClick={() => setConfirmDelete(null)} className={styles.modalCancelButton}>
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

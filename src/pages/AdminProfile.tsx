@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import api from '../utils/api';
 
 type Profile = {
@@ -84,7 +85,7 @@ const AdminProfile: React.FC = () => {
 
       setProfile(data);
       setSaveState('idle');
-      alert('Cập nhật hồ sơ thành công');
+      toast.success('Cập nhật hồ sơ thành công');
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Cập nhật hồ sơ thất bại';
       setError(msg);
@@ -203,7 +204,7 @@ const AdminProfile: React.FC = () => {
               padding: '12px 14px',
               borderRadius: 12,
               border: 0,
-              background: '#8a2be2',
+              background: 'linear-gradient(135deg, #0f766e, #f59e0b)',
               color: '#fff',
               fontWeight: 900,
               cursor: 'pointer',

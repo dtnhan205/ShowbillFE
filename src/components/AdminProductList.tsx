@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import api from '../utils/api';
 import type { Product } from '../types';
 import type { Category, ObVersion } from '../types/adminMeta';
@@ -20,6 +21,7 @@ const AdminProductList: React.FC = () => {
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const [obs, setObs] = useState<ObVersion[]>([]);
   const [cats, setCats] = useState<Category[]>([]);
@@ -81,18 +83,22 @@ const AdminProductList: React.FC = () => {
     void fetchProducts();
   }, [fetchMeta, fetchProducts]);
 
-  const handleDelete = useCallback(async (id: string) => {
-    const ok = window.confirm('Xóa sản phẩm này?');
-    if (!ok) return;
+  const handleDelete = useCallback((id: string) => {
+    setConfirmDelete(id);
+  }, []);
 
+  const confirmDeleteProduct = useCallback(async () => {
+    if (!confirmDelete) return;
     try {
-      await api.delete(`/products/${id}`);
-      setProducts((prev) => prev.filter((p) => p._id !== id));
+      await api.delete(`/products/${confirmDelete}`);
+      setProducts((prev) => prev.filter((p) => p._id !== confirmDelete));
+      toast.success('Đã xóa sản phẩm thành công!');
+      setConfirmDelete(null);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Xóa sản phẩm thất bại.';
-      alert(message);
+      toast.error(message);
     }
-  }, []);
+  }, [confirmDelete]);
 
   const handleToggleHidden = useCallback(async (id: string) => {
     try {
@@ -100,7 +106,7 @@ const AdminProductList: React.FC = () => {
       setProducts((prev) => prev.map((p) => (p._id === id ? { ...p, isHidden: !p.isHidden } : p)));
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Cập nhật trạng thái thất bại.';
-      alert(message);
+      toast.error(message);
     }
   }, []);
 
@@ -193,7 +199,7 @@ const AdminProductList: React.FC = () => {
                     </Link>
                     <button
                       type="button"
-                      onClick={() => void handleDelete(p._id)}
+                      onClick={() => handleDelete(p._id)}
                       className={`${styles.actionBtn} ${styles.delete}`}
                     >
                       Xóa
@@ -296,6 +302,23 @@ const AdminProductList: React.FC = () => {
 
           {content}
         </>
+      )}
+
+      {confirmDelete && (
+        <div className={styles.modalOverlay} onClick={() => setConfirmDelete(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.modalTitle}>Xác nhận xóa</h3>
+            <p className={styles.modalMessage}>Bạn có chắc muốn xóa sản phẩm này?</p>
+            <div className={styles.modalActions}>
+              <button onClick={confirmDeleteProduct} className={styles.modalConfirmButton}>
+                Xóa
+              </button>
+              <button onClick={() => setConfirmDelete(null)} className={styles.modalCancelButton}>
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

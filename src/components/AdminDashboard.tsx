@@ -54,12 +54,21 @@ type SystemChartData = {
 
 const RECENT_LIMIT = 8;
 
+type MyPackage = {
+  package: 'basic' | 'pro' | 'premium';
+  packageExpiry: string | null;
+  billsUploaded: number;
+  billLimit: number | null;
+  canUpload: boolean;
+};
+
 const AdminDashboard: React.FC = () => {
   const [myStats, setMyStats] = useState<MyStats | null>(null);
   const [systemStats, setSystemStats] = useState<SystemStats | null>(null);
   const [myChartData, setMyChartData] = useState<MyChartData | null>(null);
   const [systemChartData, setSystemChartData] = useState<SystemChartData | null>(null);
-  const [period, setPeriod] = useState<'week' | 'month' | 'year'>('week');
+  const [period, setPeriod] = useState<'week' | 'month' | 'year'>('month');
+  const [myPackage, setMyPackage] = useState<MyPackage | null>(null);
   
   // Tính toán giá trị mặc định cho các dropdown
   const getDefaultWeek = () => {
@@ -96,14 +105,18 @@ const AdminDashboard: React.FC = () => {
         queryParams += `&year=${selectedYear}`;
       }
 
-      const [myStatsRes, productsRes, myChartRes] = await Promise.all([
+      const [myStatsRes, productsRes, myChartRes, packageRes] = await Promise.all([
         api.get<MyStats>('/admin/stats'),
         api.get<Product[]>('/products/mine'),
         api.get<MyChartData>(`/admin/chart-data?${queryParams}`),
+        api.get<MyPackage>('/payment/my-package').catch(() => null),
       ]);
 
       setMyStats(myStatsRes.data);
       setMyChartData(myChartRes.data);
+      if (packageRes) {
+        setMyPackage(packageRes.data);
+      }
 
       const list = Array.isArray(productsRes.data) ? productsRes.data : [];
       const sorted = [...list].sort(
@@ -510,6 +523,40 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {myPackage && (
+          <div className={styles.packageCard}>
+            <div className={styles.packageHeader}>
+              <h3 className={styles.packageTitle}>
+                Gói hiện tại: {myPackage.package === 'basic' ? 'Basic' : myPackage.package === 'pro' ? 'Pro' : 'Premium'}
+              </h3>
+              {!myPackage.canUpload && (
+                <span className={styles.warning}>Đã đạt giới hạn upload</span>
+              )}
+            </div>
+            <div className={styles.packageInfo}>
+              <div className={styles.packageStat}>
+                <span className={styles.packageStatLabel}>Đã upload:</span>
+                <span className={styles.packageStatValue}>
+                  {myPackage.billsUploaded} / {myPackage.billLimit === null ? '∞' : myPackage.billLimit}
+                </span>
+              </div>
+              {myPackage.packageExpiry && (
+                <div className={styles.packageStat}>
+                  <span className={styles.packageStatLabel}>Hết hạn:</span>
+                  <span className={styles.packageStatValue}>
+                    {new Date(myPackage.packageExpiry).toLocaleDateString('vi-VN')}
+                  </span>
+                </div>
+              )}
+            </div>
+            {myPackage.package === 'basic' && (
+              <a href="/admin/payment" className={styles.upgradeLink}>
+                Nâng cấp gói để upload thêm →
+              </a>
+            )}
+          </div>
+        )}
 
         {statsCards}
 
