@@ -1,17 +1,37 @@
 .dashboardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  padding: 28px;
+  border-radius: 16px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(147, 51, 234, 0.05) 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.dashboardHeader::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
 }
 
 .dashboardTitle {
   margin: 0;
   font-size: 24px;
-  font-weight: 900;
-  color: var(--text);
+  font-weight: 800;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboardTitle::before {
+  content: '';
+  display: none;
 }
 
 .filterContainer {
@@ -26,31 +46,33 @@
 }
 
 .periodButton {
-  padding: 8px 16px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .periodButton:hover {
-  background: var(--panel-strong);
-  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
 }
 
 .periodButtonActive {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: linear-gradient(135deg, #3b82f6 0%, #0a1e77 100%);
+  border-color: transparent;
   color: white;
+  box-shadow: 0 4px 5px rgba(59, 130, 246, 0.3);
 }
 
 .periodButtonActive:hover {
-  background: var(--accent);
-  opacity: 0.9;
+  box-shadow: 0 6px 5px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
 }
 
 .periodDropdowns {
@@ -59,11 +81,19 @@
 }
 
 .packageCard {
-  background: var(--panel-strong);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
+  padding: 28px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   margin-bottom: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.packageCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .packageHeader {
@@ -75,9 +105,9 @@
 
 .packageTitle {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
-  color: var(--text);
+  color: #ffffff;
 }
 
 .warning {
@@ -103,29 +133,36 @@
 }
 
 .packageStatLabel {
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 700;
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .packageStatValue {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
-  color: var(--text);
+  color: #ffffff;
 }
 
 .upgradeLink {
   display: inline-block;
-  margin-top: 8px;
-  color: var(--accent);
-  font-weight: 700;
+  margin-top: 12px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3b82f6 0%, #055685 100%);
+  color: white;
+  font-weight: 800;
   font-size: 14px;
   text-decoration: none;
-  transition: opacity 0.2s;
+  transition: all 0.3s;
+  box-shadow: 0 4px 5px rgba(59, 130, 246, 0.3);
 }
 
 .upgradeLink:hover {
-  opacity: 0.8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 5px rgba(59, 130, 246, 0.4);
 }
 
 .stats {
@@ -136,29 +173,37 @@
 }
 
 .statCard {
-  background: var(--panel-strong);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 24px;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .statCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.25);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .statValue {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--accent);
+  font-size: 32px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 8px 0 4px;
   line-height: 1.2;
 }
 
 .statLabel {
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .section {
@@ -169,16 +214,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sectionTitle {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
-  color: var(--text);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .productsGrid {
@@ -200,93 +248,122 @@
   width: 100%;
   height: 120px;
   object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 8px;
+  border-radius: 12px;
+  margin-bottom: 10px;
   background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--border);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s;
+}
+
+.productCard:hover .productImage {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
 }
 
 .productName {
   font-size: 13px;
-  color: var(--text);
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: 600;
 }
 
 .noProducts,
 .loading {
-  padding: 36px 0;
+  padding: 60px 40px;
   text-align: center;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 15px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .error {
-  padding: 36px 0;
+  padding: 60px 40px;
   text-align: center;
   color: #ef4444;
+  font-size: 15px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+  border: 2px solid rgba(239, 68, 68, 0.3);
 }
 
 .retryButton {
-  margin-top: 14px;
-  padding: 10px 14px;
-  background: var(--accent);
+  margin-top: 16px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   font-weight: 800;
-  transition: opacity 0.2s;
+  font-size: 14px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
 
 .retryButton:hover {
-  opacity: 0.92;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 5px rgba(59, 130, 246, 0.4);
 }
 
 .chartSection {
   margin-top: 32px;
   margin-bottom: 32px;
-  background: var(--panel-strong);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px;
+  padding: 32px 28px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chartSection:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .chartTitle {
-  margin: 0 0 20px 0;
-  font-size: 20px;
+  margin: 0 0 24px 0;
+  font-size: 22px;
   font-weight: 800;
-  color: var(--text);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .periodSelect {
-  padding: 8px 12px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.95);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: all 0.3s;
 }
 
 .periodSelect option {
-  background: var(--panel-strong);
-  color: var(--text);
+  background: #1e1e28;
+  color: #e5e7eb;
 }
 
 .periodSelect:hover {
-  background: var(--panel-strong);
-  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(59, 130, 246, 0.4);
 }
 
 .periodSelect:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .chartContainer {
@@ -302,13 +379,16 @@
 
 .chartNote {
   text-align: center;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 14px;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 .chartNote strong {
-  color: var(--accent);
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-weight: 800;
 }
 
@@ -321,15 +401,23 @@
 }
 
 .chartCard {
-  background: var(--panel-strong);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
+  padding: 24px;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chartCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .chartCardTitle {
-  margin: 0 0 16px 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
 }

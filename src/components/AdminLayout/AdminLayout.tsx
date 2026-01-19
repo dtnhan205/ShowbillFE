@@ -2,6 +2,7 @@ import React, { useMemo, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import CursorTrail from '../CursorTrail/CursorTrail';
 import styles from './AdminLayout.module.css';
+import { PLATFORM_DISCLAIMER } from '../../utils/legal';
 
 type Props = {
   title?: string;
@@ -87,6 +88,12 @@ const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
               >
                 Quản lý Gói & Ngân hàng
               </Link>
+              <Link
+                to="/admin/reports"
+                className={`${styles.navItem} ${isActive('/admin/reports') ? styles.navItemActive : ''}`}
+              >
+                Report Admin
+              </Link>
             </>
           )}
 
@@ -108,6 +115,12 @@ const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
             className={`${styles.navItem} ${isActive('/admin/profile') ? styles.navItemActive : ''}`}
           >
             Hồ sơ
+          </Link>
+          <Link
+            to="/admin/guide"
+            className={`${styles.navItem} ${isActive('/admin/guide') ? styles.navItemActive : ''}`}
+          >
+            Cách dùng
           </Link>
         </nav>
 
@@ -132,6 +145,9 @@ const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
           <div className={styles.mainFooterInner}>
             <p className={styles.mainFooterText}>
               © {new Date().getFullYear()} ShowBill Admin. All rights reserved.
+            </p>
+            <p className={styles.mainFooterText} style={{ marginTop: 8 }}>
+              {PLATFORM_DISCLAIMER}
             </p>
           </div>
         </footer>

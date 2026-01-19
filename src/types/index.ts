@@ -1,7 +1,8 @@
 export interface Product {
   _id: string;
   name: string;
-  imageBase64: string;
+  imageUrl?: string; // URL path: /uploads/products/filename.jpg
+  imageBase64?: string; // Backward compatibility
   createdAt: string;
   isHidden: boolean;
   obVersion?: string;
@@ -26,10 +27,18 @@ export interface AdminUserItem {
   role: 'super' | 'admin';
   displayName?: string;
   bio?: string;
-  avatarBase64?: string;
+  avatarUrl?: string; // URL path: /uploads/avatars/filename.jpg
+  avatarBase64?: string; // Backward compatibility
+  bannerUrl?: string; // URL path: /uploads/banners/filename.jpg
+  bannerBase64?: string; // Backward compatibility
   isActive?: boolean;
-  package?: 'basic' | 'pro' | 'premium';
+  package?: 'basic' | 'pro' | 'premium' | 'vip' | 'custom';
   packageExpiry?: string;
+  activePackage?: 'basic' | 'pro' | 'premium' | 'vip' | 'custom';
+  ownedPackages?: Array<{
+    packageType: string;
+    expiryDate?: string;
+  }>;
   createdAt: string;
   updatedAt: string;
 }

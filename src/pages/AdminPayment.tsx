@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
+import Icon from '../components/Icons/Icon';
 import styles from './AdminPayment.module.css';
+import { UPGRADE_DISCLAIMER } from '../utils/legal';
 
 type PackageConfig = {
   _id: string;
@@ -103,7 +105,12 @@ const AdminPayment: React.FC = () => {
   return (
     <>
       <div className={styles.currentPackage}>
-        <h2>Gói đang sử dụng</h2>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Icon name="lightning" size={24} color="rgba(251, 191, 36, 0.9)" /> Gói đang sử dụng
+        </h2>
+        <p style={{ marginTop: 8, marginBottom: 0, color: 'rgba(229,231,235,0.7)', fontWeight: 700, fontSize: 13 }}>
+          {UPGRADE_DISCLAIMER}
+        </p>
         <div className={styles.packageInfo}>
           <div className={styles.infoItem}>
             <span>Gói:</span>
@@ -132,7 +139,9 @@ const AdminPayment: React.FC = () => {
 
       {myPackage.ownedPackages && myPackage.ownedPackages.length > 0 && (
         <div className={styles.ownedPackages}>
-          <h2>Gói đã mua</h2>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Icon name="package" size={28} color="rgba(255, 255, 255, 0.9)" /> Gói đã mua
+          </h2>
           <div className={styles.packagesGrid}>
             {/* Basic package - luôn có sẵn */}
             <div
@@ -141,15 +150,25 @@ const AdminPayment: React.FC = () => {
               <h3>Gói Basic</h3>
               <div className={styles.price}>Miễn phí</div>
               <div className={styles.features}>
-                <p>✓ Upload 20 bill/tháng</p>
-                <p>✓ Vĩnh viễn</p>
+                <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Upload 20 bill/tháng
+                </p>
+                <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Vĩnh viễn
+                </p>
               </div>
               <button
                 onClick={() => handleSwitchPackage('basic')}
                 className={styles.switchButton}
                 disabled={myPackage.activePackage === 'basic'}
               >
-                {myPackage.activePackage === 'basic' ? '✓ Đang sử dụng' : 'Chuyển sang Basic'}
+                {myPackage.activePackage === 'basic' ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Đang sử dụng
+                  </span>
+                ) : (
+                  'Chuyển sang Basic'
+                )}
               </button>
             </div>
 
@@ -194,11 +213,15 @@ const AdminPayment: React.FC = () => {
                     {packageConfig ? `${packageConfig.price.toLocaleString()} VNĐ` : 'Đã mua'}
                   </div>
                   <div className={styles.features}>
-                    <p>
-                      ✓ Upload {packageConfig?.billLimit === -1 ? 'không giới hạn' : `${packageConfig?.billLimit} bill`}/tháng
+                    <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Upload {packageConfig?.billLimit === -1 ? 'không giới hạn' : `${packageConfig?.billLimit} bill`}/tháng
                     </p>
-                    <p>✓ Hết hạn: {new Date(pkg.expiryDate).toLocaleDateString('vi-VN')}</p>
-                    <p>✓ Mua ngày: {new Date(pkg.purchasedAt).toLocaleDateString('vi-VN')}</p>
+                    <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Hết hạn: {new Date(pkg.expiryDate).toLocaleDateString('vi-VN')}
+                    </p>
+                    <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Mua ngày: {new Date(pkg.purchasedAt).toLocaleDateString('vi-VN')}
+                    </p>
                   </div>
                   {isExpired ? (
                     <div className={styles.expiredBadge}>Đã hết hạn</div>
@@ -208,7 +231,13 @@ const AdminPayment: React.FC = () => {
                       className={styles.switchButton}
                       disabled={isActive}
                     >
-                      {isActive ? '✓ Đang sử dụng' : 'Chuyển sang gói này'}
+                      {isActive ? (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Đang sử dụng
+                        </span>
+                      ) : (
+                        'Chuyển sang gói này'
+                      )}
                     </button>
                   )}
                 </div>
@@ -219,7 +248,12 @@ const AdminPayment: React.FC = () => {
       )}
 
       <div className={styles.upgradeSection}>
-        <h2>Nâng cấp gói</h2>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Icon name="rocket" size={28} color="rgba(255, 255, 255, 0.9)" /> Nâng cấp gói
+        </h2>
+        <p style={{ marginTop: 8, marginBottom: 16, color: 'rgba(229,231,235,0.7)', fontWeight: 700, fontSize: 13 }}>
+          {UPGRADE_DISCLAIMER}
+        </p>
         <div className={styles.packagesGrid}>
           {availablePackages.map((pkg) => {
             // Kiểm tra xem đã mua gói này chưa (còn hạn)
@@ -268,10 +302,12 @@ const AdminPayment: React.FC = () => {
                   {pkg.price.toLocaleString()} VNĐ
                 </div>
                 <div className={styles.features}>
-                  <p>
-                    ✓ Upload {pkg.billLimit === -1 ? 'không giới hạn' : `${pkg.billLimit} bill`}/tháng
+                  <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Upload {pkg.billLimit === -1 ? 'không giới hạn' : `${pkg.billLimit} bill`}/tháng
                   </p>
-                  <p>✓ Thời hạn: 1 tháng</p>
+                  <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Thời hạn: 1 tháng
+                  </p>
                 </div>
                 {hasPackage && !isActive && (
                   <div className={styles.ownedBadge}>Đã mua gói này</div>
@@ -286,6 +322,20 @@ const AdminPayment: React.FC = () => {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      <div className={styles.upgradeSection}>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Icon name="refresh-cw" size={28} color="rgba(255, 255, 255, 0.9)" /> Hoàn tiền
+        </h2>
+        <div style={{ color: 'rgba(229,231,235,0.75)', fontWeight: 700, lineHeight: 1.6 }}>
+          <p style={{ marginTop: 0 }}>
+            Không hoàn tiền khi vi phạm Terms hoặc dùng vào scam; hoàn tiền khi lỗi hệ thống nghiêm trọng.
+          </p>
+          <p style={{ marginBottom: 0 }}>
+            Trường hợp cần hỗ trợ, vui lòng liên hệ để được xử lý trong 24–72 giờ.
+          </p>
         </div>
       </div>
     </>

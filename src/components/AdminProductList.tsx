@@ -4,6 +4,8 @@ import toast from 'react-hot-toast';
 import api from '../utils/api';
 import type { Product } from '../types';
 import type { Category, ObVersion } from '../types/adminMeta';
+import { getImageUrl } from '../utils/imageUrl';
+import Icon from './Icons/Icon';
 import AdminProductForm from './AdminProductForm';
 import styles from './AdminProductList/AdminProductList.module.css';
 
@@ -66,7 +68,7 @@ const AdminProductList: React.FC = () => {
       setErrorMessage(null);
 
       // Super admin có thể xem tất cả sản phẩm, admin thường chỉ xem của mình
-      const endpoint = isSuperAdmin ? '/products/all' : '/products/mine';
+      const endpoint = isSuperAdmin ? '/products/all?page=1&limit=300' : '/products/mine?page=1&limit=300';
       const { data } = await api.get<Product[]>(endpoint);
       setProducts(Array.isArray(data) ? data : []);
 
@@ -164,6 +166,7 @@ const AdminProductList: React.FC = () => {
               <th>Hình ảnh</th>
               <th>OB</th>
               <th>Category</th>
+              <th>Lượt xem</th>
               <th>Trạng thái</th>
               <th>Hành động</th>
             </tr>
@@ -173,7 +176,9 @@ const AdminProductList: React.FC = () => {
               <tr key={p._id}>
                 <td>{p.name}</td>
                 <td>
-                  {p.imageBase64 ? (
+                  {p.imageUrl ? (
+                    <img src={getImageUrl(p.imageUrl)} alt={p.name} className={styles.image} />
+                  ) : p.imageBase64 ? (
                     <img src={p.imageBase64} alt={p.name} className={styles.image} />
                   ) : (
                     <div className={styles.noImage}>No image</div>
@@ -186,6 +191,11 @@ const AdminProductList: React.FC = () => {
                   <span className={`${styles.badge} ${styles.badgeMeta}`}>{p.category ?? '-'}</span>
                 </td>
                 <td>
+                  <span className={styles.viewsCount}>
+                    {(p.views ?? 0).toLocaleString('vi-VN')}
+                  </span>
+                </td>
+                <td>
                   <span
                     className={`${styles.badge} ${p.isHidden ? styles.badgeHidden : styles.badgeVisible}`}
                   >
@@ -194,7 +204,7 @@ const AdminProductList: React.FC = () => {
                 </td>
                 <td>
                   <div className={styles.actions}>
-                    <Link to={`/admin/edit/${p._id}`} className={styles.link}>
+                    <Link to={`/admin/edit/${p._id}`} className={`${styles.actionBtn} ${styles.edit}`}>
                       Sửa
                     </Link>
                     <button
@@ -224,7 +234,9 @@ const AdminProductList: React.FC = () => {
   return (
     <div>
       <div className={styles.header}>
-        <h1 className={styles.title}>Quản lý sản phẩm</h1>
+        <h1 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Icon name="package" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý sản phẩm
+        </h1>
         <button
           type="button"
           className={styles.addButton}

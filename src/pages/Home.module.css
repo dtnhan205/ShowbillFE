@@ -710,7 +710,7 @@
   min-width: 200px;
   height: 300px;
   border-radius: 16px;
-  overflow: hidden;
+  overflow: visible;
   cursor: pointer;
   position: relative;
   transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -738,9 +738,22 @@
 .carouselCardImage {
   position: absolute;
   inset: 0;
+  border-radius: 15px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.carouselCardFrame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .carouselCardOverlay {
@@ -749,7 +762,6 @@
   left: 0;
   right: 0;
   padding: 20px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
 }
 
 .carouselCardTitle {
@@ -1166,7 +1178,7 @@
   width: 64px;
   height: 64px;
   border-radius: 16px;
-  overflow: hidden;
+  overflow: visible;
   border: 3px solid rgba(59, 130, 246, 0.4);
   background: rgba(0, 0, 0, 0.4);
   flex-shrink: 0;
@@ -1177,20 +1189,36 @@
 
 .adminCard:hover .cardAvatar {
   border-color: rgba(59, 130, 246, 0.8);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 6px 5px rgba(59, 130, 246, 0.4);
   transform: scale(1.05);
 }
 
 .avatarImg {
   width: 100%;
   height: 100%;
+  border-radius: 14px;
   object-fit: cover;
+  position: relative;
+  z-index: 1;
 }
 
 .avatarPlaceholder {
   width: 100%;
   height: 100%;
   background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(0, 238, 255, 0.2));
+}
+
+.cardAvatarFrame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 12px;
 }
 
 .cardName {
@@ -1365,7 +1393,7 @@
 .pageButton:hover:not(:disabled) {
   background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 6px 5px rgba(59, 130, 246, 0.4);
   transform: translateY(-2px);
   color: #ffffff;
 }

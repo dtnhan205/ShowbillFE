@@ -3,7 +3,9 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../../utils/api';
 import CursorTrail from '../CursorTrail/CursorTrail';
 import ParticleNetwork from '../ParticleNetwork/ParticleNetwork';
+import { getImageUrl } from '../../utils/imageUrl';
 import styles from './ClientLayout.module.css';
+import { PLATFORM_DISCLAIMER } from '../../utils/legal';
 
 type Props = {
   children: React.ReactNode;
@@ -14,7 +16,8 @@ type AdminProfile = {
   _id: string;
   username: string;
   displayName?: string;
-  avatarBase64?: string;
+  avatarUrl?: string;
+  avatarBase64?: string; // Backward compatibility
 };
 
 const ClientLayout: React.FC<Props> = ({ children, showHeader = true }) => {
@@ -133,9 +136,9 @@ const ClientLayout: React.FC<Props> = ({ children, showHeader = true }) => {
               ) : adminProfile ? (
                 <div className={styles.adminInfo}>
                   <Link to="/admin" className={styles.adminLink}>
-                    {adminProfile.avatarBase64 && (
+                    {(adminProfile.avatarUrl || adminProfile.avatarBase64) && (
                       <img
-                        src={adminProfile.avatarBase64}
+                        src={adminProfile.avatarUrl ? getImageUrl(adminProfile.avatarUrl) : adminProfile.avatarBase64}
                         alt={adminProfile.displayName || adminProfile.username}
                         className={styles.adminAvatar}
                       />
@@ -261,6 +264,16 @@ const ClientLayout: React.FC<Props> = ({ children, showHeader = true }) => {
             <div className={styles.footerBottomContent}>
               <p className={styles.footerCopyright}>
                 © {new Date().getFullYear()} ShowBill. Tất cả quyền được bảo lưu.
+              </p>
+              <p
+                style={{
+                  margin: 0,
+                  color: 'rgba(229,231,235,0.65)',
+                  fontSize: 12,
+                  fontWeight: 700,
+                }}
+              >
+                {PLATFORM_DISCLAIMER}
               </p>
               <div className={styles.footerBottomLinks}>
                 <Link to="/terms" className={styles.footerBottomLink}>Điều khoản</Link>

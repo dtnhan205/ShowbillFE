@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
+import Icon from '../components/Icons/Icon';
 import styles from './AdminPackages.module.css';
 
 type PackageConfig = {
@@ -166,7 +167,10 @@ const AdminPackages: React.FC = () => {
 
       <div className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Cấu hình Giá Gói</h2>
+          <h2 className={styles.sectionTitle}>
+            <Icon name="package" size={24} color="rgba(255, 255, 255, 0.9)" style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />
+            Cấu hình Giá Gói
+          </h2>
           <button onClick={() => setShowAddPackage(true)} className={styles.addButton}>
             + Thêm gói mới
           </button>
@@ -304,7 +308,9 @@ const AdminPackages: React.FC = () => {
 
       <div className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Tài khoản Ngân hàng</h2>
+          <h2 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Icon name="credit-card" size={28} color="rgba(255, 255, 255, 0.9)" /> Tài khoản Ngân hàng
+          </h2>
           <button onClick={() => setShowAddBank(true)} className={styles.addButton}>
             + Thêm tài khoản
           </button>

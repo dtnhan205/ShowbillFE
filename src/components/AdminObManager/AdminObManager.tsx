@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../utils/api';
+import Icon from '../Icons/Icon';
 import styles from './AdminObManager.module.css';
 import type { ObVersion } from '../../types/adminMeta';
 
@@ -18,30 +19,18 @@ const AdminObManager: React.FC = () => {
 
   const canCreate = useMemo(() => name.trim() && slug.trim(), [name, slug]);
 
-  // Kiểm tra role super admin
-  const isSuperAdmin = useMemo(() => {
-    try {
-      const raw = localStorage.getItem('adminRole');
-      return raw === 'super';
-    } catch {
-      return false;
-    }
-  }, []);
-
   const fetchList = useCallback(async () => {
     try {
       setLoadState('loading');
       setError(null);
-      // Super admin có thể xem tất cả, admin thường chỉ xem của mình
-      const endpoint = isSuperAdmin ? '/obs?includeInactive=true' : '/obs/mine?includeInactive=true';
-      const { data } = await api.get<ObVersion[]>(endpoint);
+      const { data } = await api.get<ObVersion[]>('/obs/mine?includeInactive=true');
       setItems(Array.isArray(data) ? data : []);
       setLoadState('idle');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Không thể tải danh sách OB');
       setLoadState('error');
     }
-  }, [isSuperAdmin]);
+  }, []);
 
   useEffect(() => {
     void fetchList();
@@ -109,7 +98,9 @@ const AdminObManager: React.FC = () => {
   return (
     <div className={styles.wrap}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Quản lý OB (Free Fire)</h2>
+        <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Icon name="game" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý OB (Free Fire)
+        </h2>
         <div className={styles.muted}>Tổng: {items.length} | Hiển thị: {filteredItems.length}</div>
       </div>
 

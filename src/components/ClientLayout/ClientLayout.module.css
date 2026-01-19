@@ -449,15 +449,15 @@
 }
 
 .authButtonPrimary {
-  background: linear-gradient(135deg, rgba(138, 43, 226, 0.8), rgba(0, 238, 255, 0.6));
+  background: linear-gradient(135deg, rgba(16, 15, 99, 0.8), rgba(0, 238, 255, 0.6));
   border-color: rgba(138, 43, 226, 0.6);
   color: #fff;
-  box-shadow: 0 0 5px rgba(138, 43, 226, 0.4);
 }
 
 .authButtonPrimary:hover {
-  background: linear-gradient(135deg, rgba(138, 43, 226, 1), rgba(0, 238, 255, 0.8));
-  box-shadow: 0 0 10px rgba(138, 43, 226, 0.6);
+  background: linear-gradient(135deg, rgba(20, 18, 128, 0.8), rgba(8, 58, 61, 0.6));
+
+  box-shadow: 0 0 5px rgba(138, 43, 226, 0.6);
 }
 
 .adminInfo {

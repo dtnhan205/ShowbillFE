@@ -8,12 +8,19 @@ import type { Product } from '../types';
 import { base64ToBlobUrl, revokeBlobUrl } from '../utils/imageProtection';
 import ScreenshotProtectionOverlay from '../components/ScreenshotProtectionOverlay/ScreenshotProtectionOverlay';
 import styles from './Profile.module.css';
+import toast from 'react-hot-toast';
+import { UPGRADE_DISCLAIMER, maskSensitiveText } from '../utils/legal';
+import { getImageUrl } from '../utils/imageUrl';
+import Icon from '../components/Icons/Icon';
 
 type PublicAdmin = {
   _id: string;
   displayName: string;
   bio: string;
-  avatarBase64: string;
+  avatarUrl?: string;
+  avatarBase64?: string; // Backward compatibility
+  bannerUrl?: string;
+  bannerBase64?: string; // Backward compatibility
   role?: string;
   activePackage?: string;
   packageColor?: string;
@@ -36,6 +43,16 @@ const Profile: React.FC = () => {
   const [data, setData] = useState<PublicAdminDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [reportName, setReportName] = useState('');
+  const [reportZalo, setReportZalo] = useState('');
+  const [reportReason, setReportReason] = useState('');
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [reportErrors, setReportErrors] = useState<{
+    name?: string;
+    zalo?: string;
+    reason?: string;
+  }>({});
 
   const [ob, setOb] = useState('');
   const [cat, setCat] = useState('');
@@ -239,7 +256,8 @@ const Profile: React.FC = () => {
           _id: data.admin._id,
           displayName: data.admin.displayName,
           bio: data.admin.bio,
-          avatarBase64: data.admin.avatarBase64,
+          avatarUrl: data.admin.avatarUrl || data.admin.avatarBase64,
+          avatarBase64: data.admin.avatarBase64, // Backward compatibility
           role: data.admin.role,
         },
         ...withoutCurrent,
@@ -291,9 +309,14 @@ const Profile: React.FC = () => {
         return prev;
       });
 
-      // Convert base64 to blob URL
-      const blobUrl = bill.imageBase64 ? base64ToBlobUrl(bill.imageBase64) : '';
-      setModal({ open: true, img: blobUrl, title: bill.name, billId: bill._id });
+      // Get image URL (prefer imageUrl, fallback to base64)
+      let imgUrl = '';
+      if (bill.imageUrl) {
+        imgUrl = getImageUrl(bill.imageUrl);
+      } else if (bill.imageBase64) {
+        imgUrl = base64ToBlobUrl(bill.imageBase64);
+      }
+      setModal({ open: true, img: imgUrl, title: bill.name, billId: bill._id });
       setCurrentBillIndex(newIndex);
       setImageZoom(1);
       setImagePosition({ x: 0, y: 0 });
@@ -362,9 +385,14 @@ const Profile: React.FC = () => {
       const index = filteredProducts.findIndex((p) => p._id === bill._id);
       setCurrentBillIndex(index >= 0 ? index : -1);
 
-      // Convert base64 to blob URL to hide from Network tab
-      const blobUrl = bill.imageBase64 ? base64ToBlobUrl(bill.imageBase64) : '';
-      setModal({ open: true, img: blobUrl, title: bill.name, billId: bill._id });
+      // Get image URL (prefer imageUrl, fallback to base64)
+      let imgUrl = '';
+      if (bill.imageUrl) {
+        imgUrl = getImageUrl(bill.imageUrl);
+      } else if (bill.imageBase64) {
+        imgUrl = base64ToBlobUrl(bill.imageBase64);
+      }
+      setModal({ open: true, img: imgUrl, title: bill.name, billId: bill._id });
       setImageZoom(1);
       setImagePosition({ x: 0, y: 0 });
       
@@ -419,6 +447,107 @@ const Profile: React.FC = () => {
     setImagePosition({ x: 0, y: 0 });
   }, [modal.img]);
 
+  const closeReportModal = useCallback(() => {
+    setReportModalOpen(false);
+    setReportName('');
+    setReportZalo('');
+    setReportReason('');
+    setReportSubmitting(false);
+    setReportErrors({});
+  }, []);
+
+  // Validation functions
+  const validateName = useCallback((name: string): string | undefined => {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      return 'Vui lòng nhập tên người báo cáo';
+    }
+    if (trimmed.length < 2) {
+      return 'Tên phải có ít nhất 2 ký tự';
+    }
+    if (trimmed.length > 100) {
+      return 'Tên không được quá 100 ký tự';
+    }
+    return undefined;
+  }, []);
+
+  const validateZalo = useCallback((zalo: string): string | undefined => {
+    const trimmed = zalo.trim();
+    if (!trimmed) {
+      return 'Vui lòng nhập số Zalo';
+    }
+    
+    // Loại bỏ các ký tự không phải số để kiểm tra
+    const digitsOnly = trimmed.replace(/[\s+\-()]/g, '');
+    
+    // Kiểm tra format số điện thoại Việt Nam
+    // Format 1: 0xxxxxxxxx (10 số, bắt đầu bằng 0)
+    // Format 2: 84xxxxxxxxx (11 số, bắt đầu bằng 84)
+    // Format 3: +84xxxxxxxxx (có dấu +)
+    const vietnamPhonePattern = /^(0|\+84|84)[1-9]\d{8,9}$/;
+    
+    if (!vietnamPhonePattern.test(digitsOnly)) {
+      return 'Số Zalo không hợp lệ. Vui lòng nhập số điện thoại Việt Nam (ví dụ: 0912345678 hoặc +84912345678)';
+    }
+    
+    // Kiểm tra độ dài sau khi loại bỏ ký tự đặc biệt
+    if (digitsOnly.length < 10 || digitsOnly.length > 11) {
+      return 'Số điện thoại phải có 10 hoặc 11 chữ số';
+    }
+    
+    return undefined;
+  }, []);
+
+  const validateReason = useCallback((reason: string): string | undefined => {
+    const trimmed = reason.trim();
+    if (!trimmed) {
+      return 'Vui lòng nhập lý do báo cáo';
+    }
+    if (trimmed.length < 10) {
+      return 'Lý do báo cáo phải có ít nhất 10 ký tự';
+    }
+    if (trimmed.length > 1000) {
+      return 'Lý do báo cáo không được quá 1000 ký tự';
+    }
+    return undefined;
+  }, []);
+
+  const submitAdminReport = useCallback(async () => {
+    if (!data?.admin?._id || reportSubmitting) return;
+    
+    // Validate tất cả fields
+    const nameError = validateName(reportName);
+    const zaloError = validateZalo(reportZalo);
+    const reasonError = validateReason(reportReason);
+    
+    // Set errors để hiển thị trên form
+    setReportErrors({
+      name: nameError,
+      zalo: zaloError,
+      reason: reasonError,
+    });
+    
+    // Nếu có lỗi, không submit
+    if (nameError || zaloError || reasonError) {
+      toast.error('Vui lòng kiểm tra lại các thông tin đã nhập');
+      return;
+    }
+    
+    try {
+      setReportSubmitting(true);
+      const res = await api.post<{ message: string }>(`/public/admins/${data.admin._id}/report`, {
+        reporterName: reportName.trim(),
+        reporterZalo: reportZalo.trim(),
+        reason: reportReason.trim(),
+      });
+      toast.success(res.data?.message || 'Đã gửi báo cáo. Sẽ xử lý trong 24–72 giờ.');
+      closeReportModal();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không thể gửi báo cáo.');
+      setReportSubmitting(false);
+    }
+  }, [closeReportModal, data?.admin?._id, reportName, reportZalo, reportReason, reportSubmitting, validateName, validateZalo, validateReason]);
+
   const handleImageWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -466,7 +595,7 @@ const Profile: React.FC = () => {
           transition={{ duration: 0.3 }}
         >
           <Link to="/" className={styles.backButton}>
-            ← Quay lại trang chủ
+            <Icon name="back" size={16} className={styles.backIcon} /> Quay lại trang chủ
           </Link>
         </motion.div>
 
@@ -493,9 +622,9 @@ const Profile: React.FC = () => {
             >
               <div className={styles.profileHeader}>
                 <div className={styles.profileAvatar}>
-                  {data.admin.avatarBase64 ? (
+                  {(data.admin.avatarUrl || data.admin.avatarBase64) ? (
                     <img
-                      src={data.admin.avatarBase64}
+                      src={data.admin.avatarUrl ? getImageUrl(data.admin.avatarUrl) : data.admin.avatarBase64}
                       alt={data.admin.displayName}
                       className={styles.avatarImg}
                     />
@@ -542,7 +671,7 @@ const Profile: React.FC = () => {
                     </div>
                   </div>
                   <h1 className={styles.profileName}>
-                    {data.admin.displayName}
+                    {maskSensitiveText(data.admin.displayName)}
                     {data.admin.activePackage && data.admin.activePackage !== 'basic' && (
                       <span className={styles.verifiedBadge}>
                         <img
@@ -553,8 +682,22 @@ const Profile: React.FC = () => {
                       </span>
                     )}
                   </h1>
-                  <p className={styles.profileBio}>{data.admin.bio || 'Chưa có mô tả'}</p>
+                  <p className={styles.profileBio}>{maskSensitiveText(data.admin.bio || 'Chưa có mô tả')}</p>
+                  {(data.admin.activePackage || 'basic') !== 'basic' && (
+                    <p className={styles.profileLegalNote}>{UPGRADE_DISCLAIMER}</p>
+                  )}
                 </div>
+              </div>
+
+              <div className={styles.profileActionsRow}>
+                <button
+                  type="button"
+                  className={styles.reportAdminButton}
+                  onClick={() => setReportModalOpen(true)}
+                  title="Báo cáo admin (xử lý 24–72 giờ)"
+                >
+                  Report Admin
+                </button>
               </div>
 
               <div className={styles.profileStats}>
@@ -661,7 +804,7 @@ const Profile: React.FC = () => {
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className={styles.modalHeader}>
-                  <h2 className={styles.modalTitle}>{modal.title}</h2>
+                  <h2 className={styles.modalTitle}>{modal.title ? maskSensitiveText(modal.title) : ''}</h2>
                   <div className={styles.modalActions}>
                     {imageZoom !== 1 && (
                       <button
@@ -680,7 +823,7 @@ const Profile: React.FC = () => {
                       className={styles.modalClose}
                       aria-label="Đóng"
                     >
-                      ✕
+                      <Icon name="close" size={18} color="rgba(255, 255, 255, 0.9)" />
                     </button>
                   </div>
                 </div>
@@ -790,6 +933,130 @@ const Profile: React.FC = () => {
                     )}
                   </div>
                 )}
+
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {reportModalOpen && data?.admin?._id && (
+            <motion.div
+              className={styles.reportOverlay}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={closeReportModal}
+            >
+              <motion.div
+                className={styles.reportModal}
+                initial={{ opacity: 0, scale: 0.96, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96, y: 10 }}
+                transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className={styles.reportHeader}>
+                  <div>
+                    <div className={styles.reportTitle}>Báo cáo Admin</div>
+                    <div className={styles.reportSubtitle}>Hệ thống sẽ xử lý trong 24–72 giờ.</div>
+                  </div>
+                  <button type="button" className={styles.reportClose} onClick={closeReportModal} aria-label="Đóng">
+                    <Icon name="close" size={18} color="rgba(255, 255, 255, 0.9)" />
+                  </button>
+                </div>
+
+                <div className={styles.reportBody}>
+                  <label className={styles.reportLabel} htmlFor="report-name">
+                    Tên người báo cáo <span style={{ color: 'var(--accent)' }}>*</span>
+                  </label>
+                  <input
+                    id="report-name"
+                    type="text"
+                    className={`${styles.reportInput} ${reportErrors.name ? styles.reportInputError : ''}`}
+                    value={reportName}
+                    onChange={(e) => {
+                      setReportName(e.target.value);
+                      const error = validateName(e.target.value);
+                      setReportErrors((prev) => ({ ...prev, name: error }));
+                    }}
+                    onBlur={(e) => {
+                      const error = validateName(e.target.value);
+                      setReportErrors((prev) => ({ ...prev, name: error }));
+                    }}
+                    placeholder="Nhập tên của bạn"
+                    maxLength={100}
+                    disabled={reportSubmitting}
+                  />
+                  {reportErrors.name && (
+                    <div className={styles.reportError}>{reportErrors.name}</div>
+                  )}
+
+                  <label className={styles.reportLabel} htmlFor="report-zalo" style={{ marginTop: '16px' }}>
+                    Số Zalo <span style={{ color: 'var(--accent)' }}>*</span>
+                  </label>
+                  <input
+                    id="report-zalo"
+                    type="text"
+                    className={`${styles.reportInput} ${reportErrors.zalo ? styles.reportInputError : ''}`}
+                    value={reportZalo}
+                    onChange={(e) => {
+                      setReportZalo(e.target.value);
+                      const error = validateZalo(e.target.value);
+                      setReportErrors((prev) => ({ ...prev, zalo: error }));
+                    }}
+                    onBlur={(e) => {
+                      const error = validateZalo(e.target.value);
+                      setReportErrors((prev) => ({ ...prev, zalo: error }));
+                    }}
+                    placeholder="Nhập số Zalo của bạn"
+                    maxLength={20}
+                    disabled={reportSubmitting}
+                  />
+                  {reportErrors.zalo && (
+                    <div className={styles.reportError}>{reportErrors.zalo}</div>
+                  )}
+
+                  <label className={styles.reportLabel} htmlFor="report-reason" style={{ marginTop: '16px' }}>
+                    Lý do báo cáo <span style={{ color: 'var(--accent)' }}>*</span>
+                  </label>
+                  <textarea
+                    id="report-reason"
+                    className={`${styles.reportTextarea} ${reportErrors.reason ? styles.reportTextareaError : ''}`}
+                    value={reportReason}
+                    onChange={(e) => {
+                      setReportReason(e.target.value);
+                      const error = validateReason(e.target.value);
+                      setReportErrors((prev) => ({ ...prev, reason: error }));
+                    }}
+                    onBlur={(e) => {
+                      const error = validateReason(e.target.value);
+                      setReportErrors((prev) => ({ ...prev, reason: error }));
+                    }}
+                    rows={4}
+                    placeholder="Mô tả vấn đề bạn gặp phải (ví dụ: nội dung vi phạm, lộ thông tin cá nhân, ...)"
+                    maxLength={1000}
+                    disabled={reportSubmitting}
+                  />
+                  {reportErrors.reason && (
+                    <div className={styles.reportError}>{reportErrors.reason}</div>
+                  )}
+                </div>
+
+                <div className={styles.reportActions}>
+                  <button type="button" className={styles.reportCancel} onClick={closeReportModal} disabled={reportSubmitting}>
+                    Huỷ
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.reportSubmit}
+                    onClick={() => void submitAdminReport()}
+                    disabled={reportSubmitting}
+                  >
+                    {reportSubmitting ? 'Đang gửi...' : 'Gửi báo cáo'}
+                  </button>
+                </div>
               </motion.div>
             </motion.div>
           )}

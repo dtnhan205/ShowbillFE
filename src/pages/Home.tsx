@@ -4,14 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '../utils/api';
 import ClientLayout from '../components/ClientLayout/ClientLayout';
 import { shortenId } from '../utils/idUtils';
+import { getImageUrl } from '../utils/imageUrl';
 import styles from './Home.module.css';
 
 type PublicAdminItem = {
   _id: string;
   displayName: string;
   bio: string;
-  avatarBase64: string;
-  bannerBase64?: string;
+  avatarUrl?: string;
+  avatarBase64?: string; // Backward compatibility
+  bannerUrl?: string;
+  bannerBase64?: string; // Backward compatibility
+  avatarFrame?: string;
   stats?: {
     totalBills: number;
     totalViews: number;
@@ -339,8 +343,12 @@ const Home: React.FC = () => {
                       ease: [0.25, 0.1, 0.25, 1],
                     }}
                     style={{
-                      backgroundImage: selectedAdmin.bannerBase64
+                      backgroundImage: selectedAdmin.bannerUrl
+                        ? `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${getImageUrl(selectedAdmin.bannerUrl)})`
+                        : selectedAdmin.bannerBase64
                         ? `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${selectedAdmin.bannerBase64})`
+                        : selectedAdmin.avatarUrl
+                        ? `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${getImageUrl(selectedAdmin.avatarUrl)})`
                         : selectedAdmin.avatarBase64
                         ? `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${selectedAdmin.avatarBase64})`
                         : 'linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(0, 238, 255, 0.2))',
@@ -433,11 +441,14 @@ const Home: React.FC = () => {
                             <div
                               className={styles.carouselCardImage}
                               style={{
-                                backgroundImage: admin.avatarBase64
+                                backgroundImage: admin.avatarUrl
+                                  ? `url(${getImageUrl(admin.avatarUrl)})`
+                                  : admin.avatarBase64
                                   ? `url(${admin.avatarBase64})`
                                   : 'linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(0, 238, 255, 0.2))',
                               }}
-                            />
+                            >
+                            </div>
                             <div className={styles.carouselCardOverlay}>
                               <h3 className={styles.carouselCardTitle}>{admin.displayName}</h3>
                               <p className={styles.carouselCardSubtitle}>
@@ -546,10 +557,24 @@ const Home: React.FC = () => {
                           >
                           <div className={styles.cardHeader}>
                             <div className={styles.cardAvatar}>
-                              {admin.avatarBase64 ? (
+                              {admin.avatarUrl ? (
+                                <img src={getImageUrl(admin.avatarUrl)} alt={admin.displayName} className={styles.avatarImg} />
+                              ) : admin.avatarBase64 ? (
                                 <img src={admin.avatarBase64} alt={admin.displayName} className={styles.avatarImg} />
                               ) : (
                                 <div className={styles.avatarPlaceholder} />
+                              )}
+                              {admin.avatarFrame && 
+                               typeof admin.avatarFrame === 'string' && 
+                               admin.avatarFrame.trim() !== '' && (
+                                <img
+                                  src={`/images/${admin.avatarFrame.trim()}`}
+                                  alt="Avatar Frame"
+                                  className={styles.cardAvatarFrame}
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
+                                />
                               )}
                             </div>
                             <h3 className={styles.cardName}>{admin.displayName}</h3>

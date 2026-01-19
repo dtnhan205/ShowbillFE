@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
+import Icon from '../components/Icons/Icon';
 import styles from './PaymentHistory.module.css';
 
 type Payment = {
@@ -95,7 +96,9 @@ const PaymentHistory: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2>Lịch sử thanh toán</h2>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Icon name="history" size={28} color="rgba(255, 255, 255, 0.9)" /> Lịch sử thanh toán
+        </h2>
         <div className={styles.summary}>
           <span>Tổng: {payments.length}</span>
           <span className={styles.pendingCount}>Chưa thanh toán: {pendingPayments.length}</span>

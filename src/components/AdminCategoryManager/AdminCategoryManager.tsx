@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import api from '../../utils/api';
+import Icon from '../Icons/Icon';
 import styles from './AdminCategoryManager.module.css';
 import type { Category } from '../../types/adminMeta';
 
@@ -109,7 +110,9 @@ const AdminCategoryManager: React.FC = () => {
   return (
     <div className={styles.wrap}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Quản lý Category</h2>
+        <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Icon name="folder" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý Category
+        </h2>
         <div className={styles.muted}>Tổng: {items.length} | Hiển thị: {filteredItems.length}</div>
       </div>
 

@@ -4,6 +4,8 @@ import toast from 'react-hot-toast';
 import api from '../utils/api';
 import type { Product } from '../types';
 import type { Category, ObVersion } from '../types/adminMeta';
+import { getImageUrl } from '../utils/imageUrl';
+import Icon from './Icons/Icon';
 import styles from './AdminProductForm/AdminProductForm.module.css';
 
 type LoadState = 'idle' | 'loading' | 'error';
@@ -35,6 +37,7 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
   const [obVersion, setObVersion] = useState<string>('');
   const [category, setCategory] = useState<string>('');
   const [uploadMode, setUploadMode] = useState<'single' | 'multiple'>('single');
+  const [legalConfirmed, setLegalConfirmed] = useState(false);
 
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [submitState, setSubmitState] = useState<LoadState>('idle');
@@ -68,13 +71,9 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
     const fetchMeta = async () => {
       try {
         setMetaLoading(true);
-        // Super admin có thể xem tất cả, admin thường chỉ xem của mình
-        const obsEndpoint = isSuperAdmin ? '/obs' : '/obs/mine';
-        const catsEndpoint = isSuperAdmin ? '/categories' : '/categories/mine';
-        
         const [obsRes, catsRes] = await Promise.all([
-          api.get<ObVersion[]>(obsEndpoint),
-          api.get<Category[]>(catsEndpoint),
+          api.get<ObVersion[]>('/obs/mine'),
+          api.get<Category[]>('/categories/mine'),
         ]);
 
         const obs = Array.isArray(obsRes.data) ? obsRes.data : [];
@@ -98,7 +97,7 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
     };
 
     void fetchMeta();
-  }, [id, isSuperAdmin]);
+  }, [id]);
 
   // load product for edit
   useEffect(() => {
@@ -109,7 +108,10 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
         setLoadState('loading');
         setErrorMessage(null);
 
-        const { data } = await api.get<Product[]>('/products');
+        // Kiểm tra role để gọi đúng endpoint
+        const isSuperAdmin = localStorage.getItem('adminRole') === 'super';
+        const endpoint = isSuperAdmin ? '/products/all?page=1&limit=1000' : '/products/mine?page=1&limit=1000';
+        const { data } = await api.get<Product[]>(endpoint);
         const found = Array.isArray(data) ? data.find((p) => p._id === id) : undefined;
 
         if (!found) {
@@ -119,7 +121,14 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
         }
 
         setName(found.name ?? '');
-        setPreview(found.imageBase64 ?? '');
+        // Set preview từ URL hoặc base64
+        if (found.imageUrl) {
+          setPreview(getImageUrl(found.imageUrl));
+        } else if (found.imageBase64) {
+          setPreview(found.imageBase64);
+        } else {
+          setPreview('');
+        }
         setObVersion(found.obVersion ?? '');
         setCategory(found.category ?? '');
 
@@ -219,6 +228,7 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
       // Edit mode: only need name if updating name
       return false;
     }
+    if (!legalConfirmed) return true;
     // Create mode
     if (uploadMode === 'single') {
       if (!name.trim()) return true;
@@ -230,7 +240,7 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
       if (billObVersions.some((ob) => !ob) || billCategories.some((cat) => !cat)) return true;
     }
     return false;
-  }, [submitState, metaLoading, name, obVersion, category, isEdit, image, uploadMode, images, fileNames, billObVersions, billCategories]);
+  }, [submitState, metaLoading, name, obVersion, category, isEdit, image, uploadMode, images, fileNames, billObVersions, billCategories, legalConfirmed]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -238,6 +248,11 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
 
       if (!obVersion || !category) {
         toast.error('Vui lòng chọn OB và Category');
+        return;
+      }
+
+      if (!isEdit && !legalConfirmed) {
+        toast.error('Vui lòng xác nhận đã che thông tin nhạy cảm và có sự đồng ý của chủ thể dữ liệu.');
         return;
       }
 
@@ -364,6 +379,7 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
       id,
       image,
       isEdit,
+      legalConfirmed,
       name,
       navigate,
       obVersion,
@@ -425,7 +441,9 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
               textAlign: 'center',
             }}
           >
-            ⚡ Chọn chế độ upload:
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <Icon name="lightning" size={18} color="rgba(251, 191, 36, 0.9)" /> Chọn chế độ upload:
+            </span>
           </div>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
@@ -496,9 +514,12 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
               borderRadius: '8px',
             }}
           >
-            {uploadMode === 'single'
-              ? '✓ Chế độ này cho phép bạn upload 1 bill với tên và hình ảnh riêng.'
-              : '✓ Chế độ này cho phép bạn upload nhiều bill cùng lúc, mỗi bill sẽ có tên riêng.'}
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" />
+              {uploadMode === 'single'
+                ? 'Chế độ này cho phép bạn upload 1 bill với tên và hình ảnh riêng.'
+                : 'Chế độ này cho phép bạn upload nhiều bill cùng lúc, mỗi bill sẽ có tên riêng.'}
+            </span>
           </div>
         </div>
       )}
@@ -579,7 +600,13 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
                 required={!isEdit}
               />
 
-              {preview ? <img src={preview} alt="Preview" className={styles.preview} /> : null}
+              {preview ? (
+                <img src={preview} alt="Preview" className={styles.preview} />
+              ) : isEdit ? (
+                <p className={styles.hint} style={{ marginTop: 12, color: 'rgba(229, 231, 235, 0.7)' }}>
+                  Nếu không chọn ảnh mới, sẽ giữ nguyên ảnh cũ.
+                </p>
+              ) : null}
             </div>
           )}
 
@@ -619,7 +646,9 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
                   style={{ display: 'none' }}
                 />
                 <div style={{ marginBottom: '12px' }}>
-                  <div style={{ fontSize: '48px', marginBottom: '8px' }}>📁</div>
+                  <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
+                    <Icon name="folder" size={48} color="rgba(255, 255, 255, 0.7)" />
+                  </div>
                   <div style={{ fontSize: '16px', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
                     {images.length > 0 ? `Đã chọn ${images.length} file` : 'Click để chọn nhiều file'}
                   </div>
@@ -757,7 +786,9 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
                                 alignSelf: 'flex-start',
                               }}
                             >
-                              🗑️ Xóa bill này
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                <Icon name="trash" size={16} color="currentColor" /> Xóa bill này
+                              </span>
                             </button>
                           </div>
                         </div>
@@ -770,8 +801,33 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
           )}
         </div>
 
-        <div className={styles.actionsRow}>
-          <button type="submit" className={styles.submit} disabled={isSubmitDisabled}>
+        {!isEdit && (
+          <label
+            style={{
+              display: 'flex',
+              gap: 10,
+              alignItems: 'flex-start',
+              marginTop: 12,
+              marginBottom: 6,
+              color: 'rgba(229,231,235,0.85)',
+              fontWeight: 700,
+              fontSize: 13,
+              lineHeight: 1.5,
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={legalConfirmed}
+              onChange={(e) => setLegalConfirmed(e.target.checked)}
+              style={{ marginTop: 3, width: 18, height: 18, cursor: 'pointer' }}
+              required
+            />
+            Tôi xác nhận đã che thông tin nhạy cảm và có sự đồng ý của chủ thể dữ liệu.
+          </label>
+        )}
+
+        <div className={styles.actionsRow} style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+          <button type="submit" className={styles.submit} disabled={isSubmitDisabled} style={{ flex: 1 }}>
             {submitState === 'loading'
               ? 'Đang lưu...'
               : isEdit
@@ -780,9 +836,21 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
                   ? 'Thêm sản phẩm'
                   : `Upload ${images.length} bill`}
           </button>
-          {onCancel && (
-            <button type="button" className={styles.backButton} onClick={onCancel}>
-              Hủy / quay lại
+          {(isEdit || onCancel) && (
+            <button
+              type="button"
+              onClick={() => {
+                if (onCancel) {
+                  onCancel();
+                } else {
+                  navigate('/admin/products');
+                }
+              }}
+              className={styles.cancelButton}
+              disabled={submitState === 'loading'}
+              style={{ padding: '12px 24px', minWidth: '100px' }}
+            >
+              Hủy
             </button>
           )}
         </div>

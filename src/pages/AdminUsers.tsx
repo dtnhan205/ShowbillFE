@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
+import Icon from '../components/Icons/Icon';
 import type { AdminUserItem } from '../types';
 import styles from './AdminUsers.module.css';
 
@@ -12,7 +13,7 @@ const AdminUsers: React.FC = () => {
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'super' | 'admin'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
-  const [packageFilter, setPackageFilter] = useState<'all' | 'basic' | 'pro' | 'premium'>('all');
+  const [packageFilter, setPackageFilter] = useState<'all' | 'basic' | 'pro' | 'premium' | 'vip' | 'custom'>('all');
 
   const fetchAdmins = useCallback(async () => {
     try {
@@ -65,7 +66,8 @@ const AdminUsers: React.FC = () => {
       if (statusFilter === 'inactive' && admin.isActive !== false) return false;
 
       if (packageFilter !== 'all') {
-        const adminPackage = admin.package || 'basic';
+        // Sử dụng activePackage nếu có, nếu không thì dùng package, mặc định là 'basic'
+        const adminPackage = admin.activePackage || admin.package || 'basic';
         if (adminPackage !== packageFilter) return false;
       }
 
@@ -98,7 +100,9 @@ const AdminUsers: React.FC = () => {
   return (
     <div className={styles.page}>
       <div className={styles.headerRow}>
-        <h2 className={styles.title}>Quản lý Admin</h2>
+        <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Icon name="users" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý Admin
+        </h2>
         <p className={styles.subtitle}>Chỉ super admin mới xem được trang này. | Tổng: {admins.length} | Hiển thị: {filteredAdmins.length}</p>
       </div>
 
@@ -130,12 +134,14 @@ const AdminUsers: React.FC = () => {
         <select
           className={styles.filterSelect}
           value={packageFilter}
-          onChange={(e) => setPackageFilter(e.target.value as 'all' | 'basic' | 'pro' | 'premium')}
+          onChange={(e) => setPackageFilter(e.target.value as 'all' | 'basic' | 'pro' | 'premium' | 'vip' | 'custom')}
         >
           <option value="all">Tất cả gói</option>
           <option value="basic">Basic</option>
           <option value="pro">Pro</option>
           <option value="premium">Premium</option>
+          <option value="vip">VIP</option>
+          <option value="custom">Custom</option>
         </select>
         <button type="button" className={styles.resetBtn} onClick={resetFilters}>
           Reset
@@ -171,7 +177,8 @@ const AdminUsers: React.FC = () => {
                 <td>{a.role}</td>
                 <td>
                   {(() => {
-                    const adminPackage = a.package || 'basic';
+                    // Sử dụng activePackage nếu có, nếu không thì dùng package, mặc định là 'basic'
+                    const adminPackage = a.activePackage || a.package || 'basic';
                     const packageExpiry = a.packageExpiry ? new Date(a.packageExpiry) : null;
                     const isExpired = packageExpiry && packageExpiry < new Date();
                     const packageName = adminPackage.charAt(0).toUpperCase() + adminPackage.slice(1);

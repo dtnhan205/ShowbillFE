@@ -1,8 +1,11 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import Icon from './Icons/Icon';
 import styles from './ClientProductGrid.module.css';
 import type { Product } from '../types';
 import { base64ToBlobUrl } from '../utils/imageProtection';
+import { maskSensitiveText } from '../utils/legal';
+import { getImageUrl } from '../utils/imageUrl';
 
 type Props = {
   products: Product[];
@@ -10,12 +13,24 @@ type Props = {
 };
 
 const ClientProductGrid: React.FC<Props> = ({ products, onOpen }) => {
-  // Convert base64 to blob URLs for all products to hide from Network tab
+  // Get image URL (prefer imageUrl, fallback to imageBase64 for backward compatibility)
   const productsWithBlobUrls = useMemo(() => {
-    return products.map((p) => ({
+    return products.map((p) => {
+      let imageBlobUrl: string | null = null;
+      
+      if (p.imageUrl) {
+        // Use imageUrl directly (backend serves static files)
+        imageBlobUrl = getImageUrl(p.imageUrl);
+      } else if (p.imageBase64) {
+        // Fallback to base64 (backward compatibility)
+        imageBlobUrl = base64ToBlobUrl(p.imageBase64);
+      }
+      
+      return {
       ...p,
-      imageBlobUrl: p.imageBase64 ? base64ToBlobUrl(p.imageBase64) : null,
-    }));
+        imageBlobUrl,
+      };
+    });
   }, [products]);
 
   // Cleanup blob URLs on unmount
@@ -41,7 +56,9 @@ const ClientProductGrid: React.FC<Props> = ({ products, onOpen }) => {
     <section id="products" className={styles.section}>
       <div className={styles.header}>
         <div>
-          <h2 className={styles.title}>Bill đã up</h2>
+          <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Icon name="clipboard" size={28} color="rgba(255, 255, 255, 0.9)" /> Bill đã up
+          </h2>
           <p className={styles.subtitle}>Chọn bill để xem chi tiết</p>
         </div>
         <div className={styles.count}>Tổng: {products.length}</div>
@@ -64,7 +81,7 @@ const ClientProductGrid: React.FC<Props> = ({ products, onOpen }) => {
               {p.imageBlobUrl ? (
                 <img
                   src={p.imageBlobUrl}
-                  alt={p.name}
+                  alt={maskSensitiveText(p.name)}
                   className={styles.image}
                   loading="lazy"
                   draggable={false}
@@ -98,7 +115,7 @@ const ClientProductGrid: React.FC<Props> = ({ products, onOpen }) => {
             </div>
 
             <div className={styles.body}>
-              <h3 className={styles.name}>{p.name}</h3>
+              <h3 className={styles.name}>{maskSensitiveText(p.name)}</h3>
               <p className={styles.desc}>
                 OB: <b>{p.obVersion ?? '-'}</b> • Category: <b>{p.category ?? '-'}</b>
               </p>

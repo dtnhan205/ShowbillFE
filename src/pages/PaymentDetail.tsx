@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
+import Icon from '../components/Icons/Icon';
 import styles from './PaymentDetail.module.css';
 
 type Payment = {
@@ -197,7 +198,9 @@ const PaymentDetail: React.FC = () => {
     <div className={styles.paymentContainer}>
         {payment.status === 'completed' && (
           <div className={styles.successMessage}>
-            <h2>✓ Thanh toán thành công!</h2>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Icon name="check" size={20} color="rgba(34, 197, 94, 0.9)" /> Thanh toán thành công!
+            </h2>
             <p>Gói của bạn đã được kích hoạt.</p>
           </div>
         )}
@@ -242,7 +245,7 @@ const PaymentDetail: React.FC = () => {
                     <div className={styles.copyable}>
                       <strong>{payment.bankAccountId.accountNumber}</strong>
                       <button onClick={() => copyToClipboard(payment.bankAccountId.accountNumber)}>
-                        📋
+                        <Icon name="clipboard" size={18} color="rgba(255, 255, 255, 0.8)" />
                       </button>
                     </div>
                   </div>
@@ -255,7 +258,7 @@ const PaymentDetail: React.FC = () => {
                     <div className={styles.copyable}>
                       <strong>{payment.transferContent}</strong>
                       <button onClick={() => copyToClipboard(payment.transferContent)}>
-                        📋
+                        <Icon name="clipboard" size={18} color="rgba(255, 255, 255, 0.8)" />
                       </button>
                     </div>
                   </div>

@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import Icon from '../components/Icons/Icon';
 import ClientLayout from '../components/ClientLayout/ClientLayout';
 import styles from './Contact.module.css';
 
@@ -85,14 +86,18 @@ const Contact: React.FC = () => {
               </div>
             </div>
             <div className={styles.infoItem}>
-              <div className={styles.infoIcon}>💬</div>
+              <div className={styles.infoIcon}>
+                <Icon name="message" size={24} color="rgba(255, 255, 255, 0.9)" />
+              </div>
               <div>
                 <h3 className={styles.infoLabel}>Hỗ trợ</h3>
                 <p className={styles.infoText}>Chúng tôi phản hồi trong vòng 24 giờ</p>
               </div>
             </div>
             <div className={styles.infoItem}>
-              <div className={styles.infoIcon}>⏰</div>
+              <div className={styles.infoIcon}>
+                <Icon name="clock" size={24} color="rgba(255, 255, 255, 0.9)" />
+              </div>
               <div>
                 <h3 className={styles.infoLabel}>Thời gian</h3>
                 <p className={styles.infoText}>Thứ 2 - Thứ 6: 9:00 - 18:00</p>

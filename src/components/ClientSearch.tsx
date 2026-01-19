@@ -53,7 +53,7 @@ const ClientSearch: React.FC<Props> = ({ onSearch, onRefresh }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            ✕
+            <Icon name="close" size={16} color="rgba(255, 255, 255, 0.9)" />
           </motion.button>
         )}
         <button type="button" className={styles.secondaryButton} onClick={handleRefresh}>

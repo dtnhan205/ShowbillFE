@@ -63,6 +63,20 @@ const Terms: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className={styles.section}
+        >
+          <h2 className={styles.sectionTitle}>2.1. Tuyên bố về “bill”</h2>
+          <p className={styles.text}>
+            Bill hiển thị trên ShowBill chỉ mang tính tham khảo uy tín, không phải chứng từ tài chính hợp pháp và không được xem là
+            bằng chứng giao dịch được xác thực. Người đăng chịu trách nhiệm về nội dung bill và phải che thông tin nhạy cảm trước khi
+            công khai.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
           className={styles.section}
         >

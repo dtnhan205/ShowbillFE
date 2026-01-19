@@ -15,6 +15,8 @@ import {
 } from 'recharts';
 import api from '../utils/api';
 import type { Product } from '../types';
+import { getImageUrl } from '../utils/imageUrl';
+import Icon from './Icons/Icon';
 import styles from './AdminDashboard/AdminDashboard.module.css';
 
 type LoadState = 'idle' | 'loading' | 'error';
@@ -55,7 +57,8 @@ type SystemChartData = {
 const RECENT_LIMIT = 8;
 
 type MyPackage = {
-  package: 'basic' | 'pro' | 'premium';
+  package: 'basic' | 'pro' | 'premium' | 'vip' | 'custom';
+  activePackage?: 'basic' | 'pro' | 'premium' | 'vip' | 'custom';
   packageExpiry: string | null;
   billsUploaded: number;
   billLimit: number | null;
@@ -455,7 +458,9 @@ const AdminDashboard: React.FC = () => {
     return (
       <>
         <div className={styles.dashboardHeader}>
-          <h1 className={styles.dashboardTitle}>Dashboard</h1>
+          <h1 className={styles.dashboardTitle} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Icon name="chart" size={28} color="rgba(255, 255, 255, 0.9)" /> Dashboard
+          </h1>
           <div className={styles.filterContainer}>
             <div className={styles.periodButtons}>
               <button
@@ -524,16 +529,28 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {myPackage && (
-          <div className={styles.packageCard}>
-            <div className={styles.packageHeader}>
-              <h3 className={styles.packageTitle}>
-                Gói hiện tại: {myPackage.package === 'basic' ? 'Basic' : myPackage.package === 'pro' ? 'Pro' : 'Premium'}
-              </h3>
-              {!myPackage.canUpload && (
-                <span className={styles.warning}>Đã đạt giới hạn upload</span>
-              )}
-            </div>
+        {myPackage && (() => {
+          // Sử dụng activePackage nếu có, nếu không thì dùng package, mặc định là 'basic'
+          const currentPackage = myPackage.activePackage || myPackage.package || 'basic';
+          const packageNames: Record<string, string> = {
+            basic: 'Basic',
+            pro: 'Pro',
+            premium: 'Premium',
+            vip: 'VIP',
+            custom: 'Custom',
+          };
+          const packageDisplayName = packageNames[currentPackage] || currentPackage.charAt(0).toUpperCase() + currentPackage.slice(1);
+          
+          return (
+            <div className={styles.packageCard}>
+              <div className={styles.packageHeader}>
+                <h3 className={styles.packageTitle}>
+                  Gói hiện tại: {packageDisplayName}
+                </h3>
+                {!myPackage.canUpload && (
+                  <span className={styles.warning}>Đã đạt giới hạn upload</span>
+                )}
+              </div>
             <div className={styles.packageInfo}>
               <div className={styles.packageStat}>
                 <span className={styles.packageStatLabel}>Đã upload:</span>
@@ -550,13 +567,14 @@ const AdminDashboard: React.FC = () => {
                 </div>
               )}
             </div>
-            {myPackage.package === 'basic' && (
+            {currentPackage === 'basic' && (
               <a href="/admin/payment" className={styles.upgradeLink}>
-                Nâng cấp gói để upload thêm →
+                Nâng cấp gói để upload thêm <Icon name="forward" size={14} style={{ display: 'inline', marginLeft: 4, verticalAlign: 'middle' }} />
               </a>
             )}
           </div>
-        )}
+          );
+        })()}
 
         {statsCards}
 
@@ -573,12 +591,23 @@ const AdminDashboard: React.FC = () => {
             <div className={styles.productsGrid}>
               {products.map((p) => (
                 <div key={p._id} className={styles.productCard}>
-                  <img
-                    src={p.imageBase64}
-                    alt={p.name}
-                    className={styles.productImage}
-                    loading="lazy"
-                  />
+                  {p.imageUrl ? (
+                    <img
+                      src={getImageUrl(p.imageUrl)}
+                      alt={p.name}
+                      className={styles.productImage}
+                      loading="lazy"
+                    />
+                  ) : p.imageBase64 ? (
+                    <img
+                      src={p.imageBase64}
+                      alt={p.name}
+                      className={styles.productImage}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className={styles.noImage}>No image</div>
+                  )}
                   <p className={styles.productName} title={p.name}>
                     {p.name}
                   </p>

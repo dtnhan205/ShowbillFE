@@ -1,19 +1,43 @@
 .section {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
+  padding: 28px;
+  border-radius: 16px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(147, 51, 234, 0.05) 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
 }
 
 .sectionHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .sectionTitle {
-  margin: 0 0 20px 0;
-  font-size: 20px;
+  margin: 0;
+  font-size: 24px;
   font-weight: 800;
-  color: var(--text);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sectionTitle span {
+  font-size: 28px;
 }
 
 .packagesGrid {
@@ -23,17 +47,25 @@
 }
 
 .packageCard {
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--panel);
+  padding: 28px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.packageCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .packageName {
-  margin: 0 0 16px 0;
-  font-size: 18px;
+  margin: 0 0 20px 0;
+  font-size: 20px;
   font-weight: 800;
-  color: var(--text);
+  color: #ffffff;
 }
 
 .packageInfo {
@@ -51,30 +83,53 @@
 }
 
 .infoRow span {
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
 }
 
 .infoRow strong {
-  color: var(--text);
-  font-weight: 700;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 16px;
 }
 
 .editButton,
 .addButton {
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--accent);
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #3b82f6 0%, #094194 100%);
   color: white;
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 800;
+  font-size: 15px;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.3s;
+  box-shadow: 0 4px 5px rgba(59, 130, 246, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.editButton::before,
+.addButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.editButton:hover::before,
+.addButton:hover::before {
+  left: 100%;
 }
 
 .editButton:hover,
 .addButton:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 5px rgba(59, 130, 246, 0.4);
 }
 
 .editForm {
@@ -84,12 +139,20 @@
 }
 
 .input {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--panel-strong);
-  color: var(--text);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.95);
   font-size: 14px;
+  transition: all 0.3s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .editActions,
@@ -99,14 +162,15 @@
 }
 
 .addPackageForm {
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--panel);
-  margin-bottom: 20px;
+  padding: 24px;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  margin-bottom: 24px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .packageActions {
@@ -116,25 +180,39 @@
 }
 
 .saveButton {
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
   border: none;
-  background: var(--accent);
+  background: linear-gradient(135deg, #3b82f6 0%, #094194 100%);
   color: white;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 14px;
   cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 5px rgba(59, 130, 246, 0.3);
+}
+
+.saveButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 5px rgba(59, 130, 246, 0.4);
 }
 
 .cancelButton {
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--panel);
-  color: var(--text);
-  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 800;
   font-size: 14px;
   cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cancelButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 .banksList {
@@ -147,10 +225,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--panel);
+  padding: 24px;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bankCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .bankInfo {
@@ -158,16 +244,16 @@
 }
 
 .bankInfo h3 {
-  margin: 0 0 8px 0;
-  font-size: 16px;
+  margin: 0 0 12px 0;
+  font-size: 18px;
   font-weight: 800;
-  color: var(--text);
+  color: #ffffff;
 }
 
 .bankInfo p {
-  margin: 4px 0;
+  margin: 6px 0;
   font-size: 14px;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .bankInfo .apiUrl {
@@ -178,7 +264,7 @@
 }
 
 .bankInfo .apiUrl span {
-  color: rgba(138, 43, 226, 0.8);
+  color: #a78bfa;
   font-weight: 600;
 }
 
@@ -213,50 +299,67 @@
 
 .toggleButton,
 .deleteButton {
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--panel-strong);
-  color: var(--text);
-  font-weight: 700;
-  font-size: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 800;
+  font-size: 13px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s;
+}
+
+.toggleButton {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.1);
+  color: #93c5fd;
 }
 
 .toggleButton:hover {
-  background: var(--accent);
-  color: white;
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.6);
+  transform: translateY(-2px);
+}
+
+.deleteButton {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.1);
+  color: #fecaca;
 }
 
 .deleteButton:hover {
   background: rgba(239, 68, 68, 0.2);
-  color: #fecaca;
+  border-color: rgba(239, 68, 68, 0.6);
+  transform: translateY(-2px);
 }
 
 .addBankForm {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--panel);
-  margin-bottom: 20px;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  margin-bottom: 24px;
 }
 
 .loading,
 .error {
-  padding: 24px;
+  padding: 60px 40px;
   text-align: center;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .error {
   color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-  border-radius: 8px;
-  margin-bottom: 20px;
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .modalOverlay {
@@ -274,32 +377,33 @@
 }
 
 .modalContent {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px;
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.98) 0%, rgba(20, 20, 30, 0.98) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 32px;
   max-width: 400px;
   width: 90%;
-  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
 }
 
 .modalTitle {
   margin: 0 0 16px 0;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
-  color: var(--text);
+  color: #ffffff;
 }
 
 .modalMessage {
   margin: 0 0 24px 0;
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.5;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
 }
 
 .modalMessage strong {
-  color: var(--text);
-  font-weight: 700;
+  color: #ffffff;
+  font-weight: 800;
 }
 
 .modalActions {
@@ -309,35 +413,38 @@
 }
 
 .modalConfirmButton {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: rgba(239, 68, 68, 0.2);
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 2px solid rgba(239, 68, 68, 0.4);
+  background: transparent;
   color: #fecaca;
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 800;
+  font-size: 15px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s;
 }
 
 .modalConfirmButton:hover {
-  background: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.6);
+  transform: translateY(-2px);
 }
 
 .modalCancelButton {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--panel-strong);
-  color: var(--text);
-  font-weight: 700;
-  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 800;
+  font-size: 15px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s;
 }
 
 .modalCancelButton:hover {
-  background: var(--accent);
-  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 

@@ -1,46 +1,65 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding: 28px;
+  border-radius: 16px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(147, 51, 234, 0.05) 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
   margin-bottom: 8px;
 }
 
-.header h2 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--text);
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
 }
 
+.header h2 {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 .summary {
   display: flex;
-  gap: 16px;
-  font-size: 14px;
-  color: var(--muted);
+  gap: 20px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .pendingCount {
-  color: #f59e0b;
+  color: #fbbf24;
   font-weight: 700;
 }
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .sectionTitle {
-  margin: 0;
-  font-size: 18px;
+  margin: 0 0 20px 0;
+  font-size: 20px;
   font-weight: 800;
-  color: var(--text);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .paymentsList {
@@ -50,25 +69,32 @@
 }
 
 .paymentCard {
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--panel);
+  padding: 28px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  gap: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.paymentCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .completedCard {
-  background: rgba(34, 197, 94, 0.05);
-  border-color: rgba(34, 197, 94, 0.2);
+  background: linear-gradient(145deg, rgba(7, 90, 62, 0.15) 0%, rgba(30, 30, 40, 0.95) 100%);
+  border-color: rgba(16, 185, 129, 0.4);
 }
 
 .expiredCard {
-  background: rgba(239, 68, 68, 0.05);
-  border-color: rgba(239, 68, 68, 0.2);
+  background: linear-gradient(145deg, rgba(75, 22, 22, 0.15) 0%, rgba(30, 30, 40, 0.95) 100%);
+  border-color: rgba(239, 68, 68, 0.4);
 }
 
 .paymentInfo {
@@ -84,32 +110,39 @@
 
 .paymentHeader h4 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--text);
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
 }
 
 .paymentDetails {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  gap: 16px;
 }
 
 .detailItem {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 14px;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .detailItem span {
-  color: var(--muted);
-  font-size: 12px;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .detailItem strong {
-  color: var(--text);
-  font-weight: 700;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 16px;
 }
 
 .paymentActions {
@@ -120,35 +153,56 @@
 }
 
 .payButton {
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 14px 24px;
+  border-radius: 12px;
   border: none;
-  background: var(--accent);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   color: white;
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 800;
+  font-size: 15px;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.payButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.payButton:hover::before {
+  left: 100%;
 }
 
 .payButton:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 5px rgba(59, 130, 246, 0.4);
 }
 
 .deleteButton {
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: rgba(239, 68, 68, 0.1);
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: 2px solid rgba(239, 68, 68, 0.4);
+  background: transparent;
   color: #fecaca;
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 800;
+  font-size: 15px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s;
 }
 
 .deleteButton:hover {
   background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.6);
+  transform: translateY(-2px);
 }
 
 .deleteButton:disabled {
@@ -186,10 +240,13 @@
 
 .loading,
 .empty {
-  padding: 40px;
+  padding: 60px 40px;
   text-align: center;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 16px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .modalOverlay {
@@ -207,27 +264,28 @@
 }
 
 .modalContent {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px;
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.98) 0%, rgba(20, 20, 30, 0.98) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 32px;
   max-width: 400px;
   width: 90%;
-  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
 }
 
 .modalTitle {
   margin: 0 0 16px 0;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
-  color: var(--text);
+  color: #ffffff;
 }
 
 .modalMessage {
   margin: 0 0 24px 0;
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.5;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
 }
 
 .modalActions {
@@ -237,36 +295,39 @@
 }
 
 .modalConfirmButton {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: rgba(239, 68, 68, 0.2);
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 2px solid rgba(239, 68, 68, 0.4);
+  background: transparent;
   color: #fecaca;
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 800;
+  font-size: 15px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s;
 }
 
 .modalConfirmButton:hover {
-  background: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.6);
+  transform: translateY(-2px);
 }
 
 .modalCancelButton {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--panel-strong);
-  color: var(--text);
-  font-weight: 700;
-  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 800;
+  font-size: 15px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s;
 }
 
 .modalCancelButton:hover {
-  background: var(--accent);
-  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {

@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
+import { getImageUrl } from '../utils/imageUrl';
+import Icon from '../components/Icons/Icon';
+import styles from './AdminProfile.module.css';
 
 type Profile = {
   _id: string;
@@ -9,8 +12,10 @@ type Profile = {
   role: 'super' | 'admin';
   displayName?: string;
   bio?: string;
-  avatarBase64?: string;
-  bannerBase64?: string;
+  avatarUrl?: string;
+  avatarBase64?: string; // Backward compatibility
+  bannerUrl?: string;
+  bannerBase64?: string; // Backward compatibility
   avatarFrame?: string;
   activePackage?: string;
 };
@@ -21,8 +26,10 @@ const AdminProfile: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
-  const [avatarBase64, setAvatarBase64] = useState('');
-  const [bannerBase64, setBannerBase64] = useState('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>('');
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string>('');
   const [avatarFrame, setAvatarFrame] = useState('');
 
   const [loadState, setLoadState] = useState<LoadState>('idle');
@@ -40,12 +47,32 @@ const AdminProfile: React.FC = () => {
       // Prefill form fields
       setDisplayName(data.displayName ?? data.username ?? '');
       setBio(data.bio ?? '');
-      setAvatarBase64(data.avatarBase64 ?? '');
-      setBannerBase64(data.bannerBase64 ?? '');
+      // Set preview từ URL hoặc base64
+      if (data.avatarUrl) {
+        setAvatarPreview(getImageUrl(data.avatarUrl));
+      } else if (data.avatarBase64) {
+        setAvatarPreview(data.avatarBase64);
+      } else {
+        setAvatarPreview(''); // Clear nếu không có
+      }
+      
+      if (data.bannerUrl) {
+        setBannerPreview(getImageUrl(data.bannerUrl));
+      } else if (data.bannerBase64) {
+        setBannerPreview(data.bannerBase64);
+      } else {
+        setBannerPreview(''); // Clear nếu không có
+      }
       setAvatarFrame(data.avatarFrame ?? '');
       
       // Log để debug
-      console.log('[AdminProfile] Loaded avatarFrame:', data.avatarFrame);
+      console.log('[AdminProfile] Loaded profile:', {
+        avatarUrl: data.avatarUrl,
+        avatarBase64: data.avatarBase64 ? 'exists' : 'none',
+        bannerUrl: data.bannerUrl,
+        bannerBase64: data.bannerBase64 ? 'exists' : 'none',
+        avatarFrame: data.avatarFrame,
+      });
 
       setLoadState('idle');
     } catch (e) {
@@ -59,24 +86,40 @@ const AdminProfile: React.FC = () => {
   }, [fetchProfile]);
 
   const onAvatarFile = useCallback((file: File) => {
+    setAvatarFile(file);
     const reader = new FileReader();
     reader.onload = () => {
-      const result = String(reader.result || '');
-      setAvatarBase64(result);
+      setAvatarPreview(String(reader.result || ''));
     };
     reader.readAsDataURL(file);
   }, []);
 
   const onBannerFile = useCallback((file: File) => {
+    setBannerFile(file);
     const reader = new FileReader();
     reader.onload = () => {
-      const result = String(reader.result || '');
-      setBannerBase64(result);
+      setBannerPreview(String(reader.result || ''));
     };
     reader.readAsDataURL(file);
   }, []);
 
   const canSave = useMemo(() => saveState !== 'loading', [saveState]);
+
+  const publicProfileLink = useMemo(() => {
+    if (!profile?._id) return '';
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    return `${origin}/profile/${profile._id}`;
+  }, [profile?._id]);
+
+  const copyProfileLink = useCallback(async () => {
+    if (!publicProfileLink) return;
+    try {
+      await navigator.clipboard.writeText(publicProfileLink);
+      toast.success('Đã sao chép link hồ sơ');
+    } catch {
+      toast.error('Không thể sao chép. Hãy copy thủ công.');
+    }
+  }, [publicProfileLink]);
 
   // Danh sách frames theo gói
   const framesByPackage: Record<string, string[]> = {
@@ -92,15 +135,36 @@ const AdminProfile: React.FC = () => {
       setSaveState('loading');
       setError(null);
 
-      const { data } = await api.put<Profile>('/admin/profile', {
-        displayName: displayName.trim(),
-        bio,
-        avatarBase64,
-        bannerBase64,
-        avatarFrame,
-      });
+      const formData = new FormData();
+      formData.append('displayName', displayName.trim());
+      formData.append('bio', bio);
+      if (avatarFile) formData.append('avatar', avatarFile);
+      if (bannerFile) formData.append('banner', bannerFile);
+      formData.append('avatarFrame', avatarFrame);
+
+      const { data } = await api.put<Profile>('/admin/profile', formData);
 
       setProfile(data);
+      
+      // Cập nhật preview từ response (nếu có URL mới)
+      if (data.avatarUrl) {
+        setAvatarPreview(getImageUrl(data.avatarUrl));
+        setAvatarFile(null); // Clear file sau khi upload thành công
+      } else if (data.avatarBase64) {
+        setAvatarPreview(data.avatarBase64);
+      } else {
+        setAvatarPreview(''); // Clear nếu không có
+      }
+      
+      if (data.bannerUrl) {
+        setBannerPreview(getImageUrl(data.bannerUrl));
+        setBannerFile(null); // Clear file sau khi upload thành công
+      } else if (data.bannerBase64) {
+        setBannerPreview(data.bannerBase64);
+      } else {
+        setBannerPreview(''); // Clear nếu không có
+      }
+      
       setSaveState('idle');
       toast.success('Cập nhật hồ sơ thành công');
     } catch (e) {
@@ -110,78 +174,77 @@ const AdminProfile: React.FC = () => {
     } finally {
       setSaveState('idle');
     }
-  }, [avatarBase64, bannerBase64, bio, displayName]);
+  }, [avatarFile, bannerFile, bio, displayName, avatarFrame]);
 
   return (
-    <div style={{ maxWidth: 720 }}>
-      <h2 style={{ marginTop: 0, fontWeight: 900 }}>Hồ sơ Admin</h2>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Icon name="user" size={28} color="rgba(255, 255, 255, 0.9)" /> Hồ sơ Admin
+        </h2>
+      </div>
 
       {error ? (
-        <div style={{ marginBottom: 12, padding: 10, borderRadius: 10, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.12)', color: '#fecaca' }}>
-          {error}
-        </div>
+        <div className={styles.error}>{error}</div>
       ) : null}
 
-      {loadState === 'loading' ? <div>Đang tải...</div> : null}
+      {loadState === 'loading' ? <div className={styles.loading}>Đang tải...</div> : null}
 
-      <div
-        style={{
-          border: '1px solid rgba(255,255,255,0.10)',
-          background: 'rgba(255,255,255,0.06)',
-          borderRadius: 16,
-          padding: 16,
-        }}
-      >
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 14 }}>
-          <div
-            style={{
-              width: 72,
-              height: 72,
-              borderRadius: 16,
-              overflow: 'hidden',
-              border: '1px solid rgba(255,255,255,0.10)',
-              background: 'rgba(0,0,0,0.25)',
-            }}
-          >
-            {avatarBase64 ? (
-              <img src={avatarBase64} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : null}
+      <div className={styles.card}>
+        <div className={styles.avatarSection}>
+          <div className={styles.avatarPreview}>
+            {avatarPreview ? (
+              <img 
+                src={avatarPreview} 
+                alt="avatar" 
+                onError={() => {
+                  console.error('[AdminProfile] Failed to load avatar:', avatarPreview);
+                  // Fallback: clear preview nếu load lỗi
+                  setAvatarPreview('');
+                }}
+              />
+            ) : (
+              <div className={styles.avatarPlaceholder}>
+                <span>Chưa có ảnh đại diện</span>
+              </div>
+            )}
           </div>
 
-          <div>
-            <div style={{ fontWeight: 900 }}>{profile?.username ?? '...'}</div>
-            <div style={{ color: 'rgba(229,231,255,0.7)' }}>{profile?.email ?? ''}</div>
-            <div style={{ color: 'rgba(229,231,255,0.7)' }}>Role: {profile?.role ?? '...'}</div>
+          <div className={styles.userInfo}>
+            <div className={styles.username}>{profile?.username ?? '...'}</div>
+            <div className={styles.email}>{profile?.email ?? ''}</div>
+            <div className={styles.role}>Role: {profile?.role ?? '...'}</div>
           </div>
         </div>
 
-        <div style={{ display: 'grid', gap: 12 }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: 6, color: 'rgba(229,231,235,0.75)', fontWeight: 800 }}>Tên hiển thị</label>
+        <div>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Tên hiển thị</label>
             <input
+              className={styles.input}
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="VD: Bomay"
-              style={{ width: '100%', padding: 12, borderRadius: 12, border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.95)' }}
             />
           </div>
 
-          <div>
-            <label style={{ display: 'block', marginBottom: 6, color: 'rgba(229,231,255,0.75)', fontWeight: 800 }}>Bio</label>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Bio</label>
             <textarea
+              className={styles.textarea}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               rows={4}
               placeholder="Mô tả ngắn về bạn..."
-              style={{ width: '100%', padding: 12, borderRadius: 12, border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.95)', resize: 'vertical' }}
             />
           </div>
 
-          <div>
-            <label style={{ display: 'block', marginBottom: 6, color: 'rgba(229,231,235,0.75)', fontWeight: 800 }}>Ảnh đại diện</label>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Ảnh đại diện</label>
             <input
               type="file"
               accept="image/*"
+              className={styles.fileInput}
               onChange={(e) => {
                 const f = e.target.files?.[0];
                 if (f) onAvatarFile(f);
@@ -189,24 +252,18 @@ const AdminProfile: React.FC = () => {
             />
           </div>
 
-          <div>
-            <label style={{ display: 'block', marginBottom: 6, color: 'rgba(229,231,235,0.75)', fontWeight: 800 }}>
-              Khung avatar
-            </label>
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', 
-              gap: 12,
-              marginBottom: 12,
-            }}>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Khung avatar</label>
+            <div className={styles.framesGrid}>
               <div
+                className={`${styles.frameItem} ${avatarFrame === '' ? styles.selected : ''}`}
                 onClick={async () => {
                   setAvatarFrame('');
                   // Tự động lưu khi chọn "Không" (xóa khung)
                   try {
-                    const response = await api.put<Profile>('/admin/profile', {
-                      avatarFrame: '',
-                    });
+                    const formData = new FormData();
+                    formData.append('avatarFrame', '');
+                    const response = await api.put<Profile>('/admin/profile', formData);
                     // Cập nhật profile từ response
                     setProfile(response.data);
                     // Đảm bảo state sync với server
@@ -225,43 +282,10 @@ const AdminProfile: React.FC = () => {
                     setAvatarFrame(profile?.avatarFrame || '');
                   }
                 }}
-                style={{
-                  width: '100%',
-                  aspectRatio: '1',
-                  borderRadius: 12,
-                  border: `2px solid ${avatarFrame === '' ? '#3b82f6' : 'rgba(255,255,255,0.1)'}`,
-                  background: 'rgba(255,255,255,0.04)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  position: 'relative',
-                }}
                 title="Không dùng khung"
               >
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>Không</span>
-                {avatarFrame === '' && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 4,
-                      right: 4,
-                      width: 20,
-                      height: 20,
-                      borderRadius: '50%',
-                      background: '#3b82f6',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#fff',
-                      fontSize: 12,
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    ✓
-                  </div>
-                )}
+                <span className={styles.noFrame}>Không</span>
+                {avatarFrame === '' && <div className={styles.frameCheck}>✓</div>}
               </div>
               {Object.entries(framesByPackage).map(([pkg, frames]) => {
                 const userPackage = (profile?.activePackage || 'basic').toLowerCase();
@@ -298,15 +322,16 @@ const AdminProfile: React.FC = () => {
                   return (
                     <div
                       key={frame}
+                      className={`${styles.frameItem} ${isSelected ? styles.selected : ''} ${isLocked ? styles.locked : ''}`}
                       onClick={async () => {
                         if (isAvailable) {
                           const newFrame = frame;
                           setAvatarFrame(newFrame);
                           // Tự động lưu khi chọn khung
                           try {
-                            const response = await api.put<Profile>('/admin/profile', {
-                              avatarFrame: newFrame,
-                            });
+                            const formData = new FormData();
+                            formData.append('avatarFrame', newFrame);
+                            const response = await api.put<Profile>('/admin/profile', formData);
                             // Cập nhật profile từ response
                             setProfile(response.data);
                             // Đảm bảo state sync với server
@@ -325,69 +350,39 @@ const AdminProfile: React.FC = () => {
                             setAvatarFrame(profile?.avatarFrame || '');
                           }
                         } else {
-                          toast.error('Vui lòng nâng cấp gói để sử dụng khung này.');
+                          // Xác định gói cần thiết cho khung này
+                          const framePackage = frame.split('/')[0].toLowerCase();
+                          const requiredPackage = framePackage === 'basic' 
+                            ? null 
+                            : framePackage.charAt(0).toUpperCase() + framePackage.slice(1);
+                          const errorMessage = requiredPackage
+                            ? `Vui lòng nâng cấp gói ${requiredPackage} để sử dụng khung này.`
+                            : 'Vui lòng nâng cấp gói để sử dụng khung này.';
+                          toast.error(errorMessage);
                         }
                       }}
-                      style={{
-                        width: '100%',
-                        aspectRatio: '1',
-                        borderRadius: 12,
-                        border: `2px solid ${isSelected ? '#3b82f6' : isLocked ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.1)'}`,
-                        background: isLocked ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.04)',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        cursor: isAvailable ? 'pointer' : 'not-allowed',
-                        opacity: isLocked ? 0.5 : 1,
-                        transition: 'all 0.2s',
-                      }}
-                      title={isLocked ? 'Vui lòng nâng cấp gói để sử dụng' : frame}
+                      title={isLocked ? (() => {
+                        const framePackage = frame.split('/')[0].toLowerCase();
+                        const requiredPackage = framePackage === 'basic' 
+                          ? null 
+                          : framePackage.charAt(0).toUpperCase() + framePackage.slice(1);
+                        return requiredPackage
+                          ? `Vui lòng nâng cấp gói ${requiredPackage} để sử dụng`
+                          : 'Vui lòng nâng cấp gói để sử dụng';
+                      })() : frame}
                     >
                       <img
                         src={`/images/${frame}`}
                         alt={frame}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          pointerEvents: 'none',
-                        }}
                       />
                       {isLocked && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            background: 'rgba(0,0,0,0.6)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <span style={{ color: '#ef4444', fontSize: 20 }}>🔒</span>
+                        <div className={styles.frameLockOverlay}>
+                          <Icon name="lock" size={24} color="rgba(255, 255, 255, 0.9)" />
                         </div>
                       )}
                       {isSelected && !isLocked && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: 4,
-                            right: 4,
-                            width: 20,
-                            height: 20,
-                            borderRadius: '50%',
-                            background: '#3b82f6',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#fff',
-                            fontSize: 12,
-                            fontWeight: 'bold',
-                          }}
-                        >
-                          ✓
+                        <div className={styles.frameCheck}>
+                          <Icon name="check" size={14} color="rgba(34, 197, 94, 0.9)" />
                         </div>
                       )}
                     </div>
@@ -395,22 +390,23 @@ const AdminProfile: React.FC = () => {
                 });
               })}
             </div>
-            <div style={{ marginTop: 6, color: 'rgba(229,231,235,0.6)', fontSize: 13 }}>
+            <div className={styles.frameHint}>
               Gói hiện tại: <strong>{profile?.activePackage?.toUpperCase() || 'BASIC'}</strong>. 
               Chỉ có thể chọn khung của gói hiện tại hoặc gói thấp hơn.
             </div>
           </div>
 
-          <div>
-            <label style={{ display: 'block', marginBottom: 6, color: 'rgba(229,231,235,0.75)', fontWeight: 800 }}>Banner (cho slider)</label>
-            {bannerBase64 && (
-              <div style={{ marginBottom: 8, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.10)' }}>
-                <img src={bannerBase64} alt="banner preview" style={{ width: '100%', maxHeight: 200, objectFit: 'cover' }} />
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Banner (cho slider)</label>
+            {bannerPreview && (
+              <div className={styles.bannerPreview}>
+                <img src={bannerPreview} alt="banner preview" />
               </div>
             )}
             <input
               type="file"
               accept="image/*"
+              className={styles.fileInput}
               onChange={(e) => {
                 const f = e.target.files?.[0];
                 if (f) onBannerFile(f);
@@ -418,27 +414,42 @@ const AdminProfile: React.FC = () => {
             />
           </div>
 
+          {publicProfileLink && (
+            <div className={styles.shareCard}>
+              <div>
+                <div className={styles.shareLabel}>Chia sẻ link hồ sơ công khai</div>
+                <div className={styles.shareLink} title={publicProfileLink}>
+                  {publicProfileLink}
+                </div>
+              </div>
+              <div className={styles.shareActions}>
+                <LinkPreviewButton href={publicProfileLink} />
+                <button type="button" className={styles.copyButton} onClick={() => void copyProfileLink()}>
+                  Sao chép
+                </button>
+              </div>
+            </div>
+          )}
+
           <button
             type="button"
+            className={styles.saveButton}
             disabled={!canSave}
             onClick={() => void save()}
-            style={{
-              marginTop: 6,
-              padding: '12px 14px',
-              borderRadius: 12,
-              border: 0,
-              background: 'linear-gradient(135deg, #0f766e, #f59e0b)',
-              color: '#fff',
-              fontWeight: 900,
-              cursor: 'pointer',
-              opacity: canSave ? 1 : 0.7,
-            }}
           >
             {saveState === 'loading' ? 'Đang lưu...' : 'Lưu hồ sơ'}
           </button>
         </div>
       </div>
     </div>
+  );
+};
+
+const LinkPreviewButton: React.FC<{ href: string }> = ({ href }) => {
+  return (
+    <a className={styles.previewButton} href={href} target="_blank" rel="noreferrer">
+      Xem hồ sơ
+    </a>
   );
 };
 

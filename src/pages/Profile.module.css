@@ -52,6 +52,13 @@
   z-index: 1;
 }
 
+.backIcon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
 .backButton {
   display: inline-flex;
   align-items: center;
@@ -219,7 +226,7 @@
 
 .profileCard:hover .profileAvatar {
   border-color: rgba(59, 130, 246, 0.8);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 6px 5px rgba(59, 130, 246, 0.4);
   transform: scale(1.05);
 }
 
@@ -398,12 +405,235 @@
   max-width: 600px;
 }
 
+.profileLegalNote {
+  margin: 10px 0 0 0;
+  color: rgba(229, 231, 235, 0.65);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  max-width: 720px;
+}
+
 .profileStats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   padding-top: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profileActionsRow {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.reportAdminButton {
+  cursor: pointer;
+  border: 2px solid rgba(239, 68, 68, 0.22);
+  background: rgba(239, 68, 68, 0.08);
+  color: rgba(254, 202, 202, 0.95);
+  font-weight: 900;
+  font-size: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.reportAdminButton:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.35);
+  transform: translateY(-1px);
+}
+
+.reportOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 100000;
+}
+
+.reportModal {
+  width: min(520px, 96vw);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(145deg, rgba(30, 30, 40, 0.98) 0%, rgba(20, 20, 30, 0.98) 100%);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+.reportHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.reportTitle {
+  font-size: 16px;
+  font-weight: 900;
+  color: #fff;
+}
+
+.reportSubtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(229, 231, 235, 0.7);
+}
+
+.reportClose {
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 900;
+  transition: all 0.2s ease;
+}
+
+.reportClose:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.reportBody {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reportLabel {
+  color: rgba(229, 231, 235, 0.85);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.reportInput {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.95);
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  transition: all 0.2s ease;
+}
+
+.reportInput:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.45);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.reportInput:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reportTextarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.95);
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 96px;
+  transition: all 0.2s ease;
+}
+
+.reportTextarea:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.45);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.reportTextarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reportInputError,
+.reportTextareaError {
+  border-color: rgba(239, 68, 68, 0.5) !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+}
+
+.reportInputError:focus,
+.reportTextareaError:focus {
+  border-color: rgba(239, 68, 68, 0.7) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.reportError {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #fca5a5;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.reportActions {
+  padding: 14px 18px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.reportCancel,
+.reportSubmit {
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 900;
+  font-size: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.2s ease;
+}
+
+.reportCancel {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.reportCancel:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.reportSubmit {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.28);
+  color: rgba(254, 202, 202, 0.98);
+}
+
+.reportSubmit:hover {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.38);
+  transform: translateY(-1px);
+}
+
+.reportCancel:disabled,
+.reportSubmit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 @media (max-width: 640px) {
@@ -719,7 +949,7 @@
   border-color: rgba(59, 130, 246, 0.5);
   color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 6px 5px rgba(59, 130, 246, 0.4);
 }
 
 .modalResetZoom:active {

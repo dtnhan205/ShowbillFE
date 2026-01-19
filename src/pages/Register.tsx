@@ -22,6 +22,7 @@ const Register: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
   const [submitState, setSubmitState] = useState<SubmitState>('idle');
@@ -32,8 +33,9 @@ const Register: React.FC = () => {
     if (!username.trim()) return false;
     if (!email.trim()) return false;
     if (!password) return false;
+    if (!ageConfirmed) return false;
     return true;
-  }, [email, password, submitState, username]);
+  }, [ageConfirmed, email, password, submitState, username]);
 
   const handleRegister = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -145,6 +147,17 @@ const Register: React.FC = () => {
               required
             />
           </div>
+
+          <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginTop: 6, color: 'rgba(229,231,235,0.8)', fontWeight: 700, fontSize: 13 }}>
+            <input
+              type="checkbox"
+              checked={ageConfirmed}
+              onChange={(e) => setAgeConfirmed(e.target.checked)}
+              style={{ marginTop: 3 }}
+              required
+            />
+            Tôi đủ năng lực hành vi dân sự để sử dụng dịch vụ.
+          </label>
 
           <button type="submit" className={styles.button} disabled={!canSubmit}>
             {submitState === 'submitting' ? 'Đang đăng ký...' : 'Đăng ký'}
