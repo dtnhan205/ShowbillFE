@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import Icon from '../components/Icons/Icon';
 import ClientLayout from '../components/ClientLayout/ClientLayout';
 import styles from './Guide.module.css';
 
@@ -13,7 +14,10 @@ const Guide: React.FC = () => {
           transition={{ duration: 0.5 }}
           className={styles.hero}
         >
-          <h1 className={styles.title}>Hướng Dẫn Sử Dụng</h1>
+          <h1 className={styles.title}>
+            <Icon name="book" size={40} color="rgba(96, 165, 250, 0.9)" />
+            <span>Hướng Dẫn Sử Dụng</span>
+          </h1>
           <p className={styles.subtitle}>
             Hướng dẫn chi tiết cách sử dụng nền tảng ShowBill để quản lý và chia sẻ bill của bạn
           </p>
@@ -25,7 +29,10 @@ const Guide: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
           className={styles.section}
         >
-          <h2 className={styles.sectionTitle}>1. Đăng ký tài khoản Admin</h2>
+          <h2 className={styles.sectionTitle}>
+            <Icon name="user" size={24} color="rgba(96, 165, 250, 0.9)" style={{ marginRight: 8, verticalAlign: 'middle' }} />
+            1. Đăng ký tài khoản Admin
+          </h2>
           <div className={styles.stepCard}>
             <div className={styles.stepNumber}>1</div>
             <div className={styles.stepContent}>
@@ -61,7 +68,10 @@ const Guide: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className={styles.section}
         >
-          <h2 className={styles.sectionTitle}>2. Đăng nhập và quản lý hồ sơ</h2>
+          <h2 className={styles.sectionTitle}>
+            <Icon name="folder" size={24} color="rgba(34, 197, 94, 0.9)" style={{ marginRight: 8, verticalAlign: 'middle' }} />
+            2. Đăng nhập và quản lý hồ sơ
+          </h2>
           <div className={styles.stepCard}>
             <div className={styles.stepNumber}>1</div>
             <div className={styles.stepContent}>
@@ -88,14 +98,17 @@ const Guide: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className={styles.section}
         >
-          <h2 className={styles.sectionTitle}>3. Tải lên và quản lý Bill</h2>
+          <h2 className={styles.sectionTitle}>
+            <Icon name="file-text" size={24} color="rgba(168, 85, 247, 0.9)" style={{ marginRight: 8, verticalAlign: 'middle' }} />
+            3. Tải lên và quản lý Bill
+          </h2>
           <div className={styles.stepCard}>
             <div className={styles.stepNumber}>1</div>
             <div className={styles.stepContent}>
               <h3 className={styles.stepTitle}>Tạo bill mới</h3>
               <p className={styles.stepText}>
                 Vào mục "Sản phẩm" → "Thêm sản phẩm" để tạo bill mới. Điền thông tin: tên bill, chọn OB version, 
-                chọn Category, và tải lên hình ảnh bill.
+                chọn Category, và tải lên hình ảnh bill. Lưu ý: Hãy che các thông tin nhạy cảm trước khi tải lên.
               </p>
             </div>
           </div>
@@ -104,7 +117,8 @@ const Guide: React.FC = () => {
             <div className={styles.stepContent}>
               <h3 className={styles.stepTitle}>Chờ duyệt</h3>
               <p className={styles.stepText}>
-                Sau khi tải lên, bill của bạn sẽ ở trạng thái "Chờ duyệt". Hệ thống sẽ xem xét và duyệt bill trong thời gian ngắn.
+                Sau khi tải lên, bill của bạn sẽ ở trạng thái "Chờ duyệt". Hệ thống sẽ tự động xem xét và duyệt bill trong thời gian ngắn. 
+                Bạn có thể theo dõi trạng thái trong danh sách sản phẩm.
               </p>
             </div>
           </div>
@@ -125,7 +139,10 @@ const Guide: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.4 }}
           className={styles.section}
         >
-          <h2 className={styles.sectionTitle}>4. Xem và chia sẻ Profile</h2>
+          <h2 className={styles.sectionTitle}>
+            <Icon name="globe" size={24} color="rgba(249, 115, 22, 0.9)" style={{ marginRight: 8, verticalAlign: 'middle' }} />
+            4. Xem và chia sẻ Profile
+          </h2>
           <div className={styles.stepCard}>
             <div className={styles.stepNumber}>1</div>
             <div className={styles.stepContent}>
@@ -162,13 +179,13 @@ const Guide: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.5 }}
           className={styles.section}
         >
-          <h2 className={styles.sectionTitle}>5. Tính năng bảo mật</h2>
+          <h2 className={styles.sectionTitle}>
+            <Icon name="lock" size={24} color="rgba(236, 72, 153, 0.9)" style={{ marginRight: 8, verticalAlign: 'middle' }} />
+            5. Tính năng bảo mật
+          </h2>
           <div className={styles.featureCard}>
             <div className={styles.featureIcon}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
+              <Icon name="lock" size={24} color="rgba(96, 165, 250, 0.9)" />
             </div>
             <div className={styles.featureContent}>
               <h3 className={styles.featureTitle}>Bảo vệ hình ảnh</h3>
@@ -180,9 +197,7 @@ const Guide: React.FC = () => {
           </div>
           <div className={styles.featureCard}>
             <div className={styles.featureIcon}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
+              <Icon name="shield" size={24} color="rgba(34, 197, 94, 0.9)" />
             </div>
             <div className={styles.featureContent}>
               <h3 className={styles.featureTitle}>Kiểm soát truy cập</h3>
@@ -199,7 +214,10 @@ const Guide: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className={styles.section}
         >
-          <h2 className={styles.sectionTitle}>6. Quản lý OB và Category</h2>
+          <h2 className={styles.sectionTitle}>
+            <Icon name="package" size={24} color="rgba(234, 179, 8, 0.9)" style={{ marginRight: 8, verticalAlign: 'middle' }} />
+            6. Quản lý OB và Category
+          </h2>
           <div className={styles.stepCard}>
             <div className={styles.stepNumber}>1</div>
             <div className={styles.stepContent}>
@@ -227,15 +245,19 @@ const Guide: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.7 }}
           className={styles.section}
         >
-          <h2 className={styles.sectionTitle}>7. Thống kê và báo cáo</h2>
+          <h2 className={styles.sectionTitle}>
+            <Icon name="chart" size={24} color="rgba(59, 130, 246, 0.9)" style={{ marginRight: 8, verticalAlign: 'middle' }} />
+            7. Thống kê và báo cáo
+          </h2>
           <p className={styles.text}>
             Trên Dashboard, bạn có thể xem các thống kê về:
           </p>
           <ul className={styles.list}>
-            <li className={styles.listItem}>Tổng số bill đã tải lên</li>
-            <li className={styles.listItem}>Tổng lượt xem của tất cả bill</li>
-            <li className={styles.listItem}>Bill được xem nhiều nhất</li>
-            <li className={styles.listItem}>Thống kê theo OB và Category</li>
+            <li className={styles.listItem}>Tổng số bill đã tải lên và bill đã được duyệt</li>
+            <li className={styles.listItem}>Tổng lượt xem của tất cả bill theo tuần, tháng, năm</li>
+            <li className={styles.listItem}>Biểu đồ thống kê lượt xem và bill theo thời gian</li>
+            <li className={styles.listItem}>Thống kê theo OB version và Category</li>
+            <li className={styles.listItem}>Thông tin gói dịch vụ hiện tại và số lượng bill đã upload</li>
           </ul>
         </motion.div>
 
@@ -245,14 +267,18 @@ const Guide: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.8 }}
           className={styles.section}
         >
-          <h2 className={styles.sectionTitle}>8. Hỗ trợ và liên hệ</h2>
+          <h2 className={styles.sectionTitle}>
+            <Icon name="message" size={24} color="rgba(34, 197, 94, 0.9)" style={{ marginRight: 8, verticalAlign: 'middle' }} />
+            8. Hỗ trợ và liên hệ
+          </h2>
           <p className={styles.text}>
             Nếu bạn gặp vấn đề hoặc có câu hỏi, vui lòng:
           </p>
           <ul className={styles.list}>
-            <li className={styles.listItem}>Xem phần "Câu hỏi thường gặp" (FAQ)</li>
-            <li className={styles.listItem}>Liên hệ qua trang <a href="/contact" className={styles.link}>Liên hệ</a></li>
-            <li className={styles.listItem}>Gửi email đến bộ phận hỗ trợ</li>
+            <li className={styles.listItem}>Liên hệ qua trang <a href="/contact" className={styles.link}>Liên hệ</a> để được hỗ trợ nhanh chóng</li>
+            <li className={styles.listItem}>Gửi email đến support@showbill.com</li>
+            <li className={styles.listItem}>Liên hệ qua Zalo: 0342031354 hoặc Telegram: @dtnregedit</li>
+            <li className={styles.listItem}>Thời gian hỗ trợ: Thứ 2 - Thứ 6: 9:00 - 18:00</li>
           </ul>
         </motion.div>
       </div>

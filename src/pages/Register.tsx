@@ -63,7 +63,7 @@ const Register: React.FC = () => {
         } else {
           localStorage.removeItem('adminRole');
         }
-        navigate('/', { replace: true });
+        navigate('/admin', { replace: true });
       } catch (err: unknown) {
         let message = 'Đăng ký thất bại.';
 

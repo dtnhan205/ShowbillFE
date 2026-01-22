@@ -37,6 +37,22 @@
   min-width: 840px;
 }
 
+@media (max-width: 768px) {
+  .table {
+    min-width: 600px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+  
+  .table th {
+    font-size: 11px;
+  }
+}
+
 .table th,
 .table td {
   padding: 12px 14px;
@@ -98,6 +114,18 @@
   flex-wrap: wrap;
 }
 
+@media (max-width: 768px) {
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .btn {
   cursor: pointer;
   border-radius: 10px;
@@ -156,6 +184,27 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   background: rgba(18, 18, 24, 0.6);
+}
+
+@media (max-width: 768px) {
+  .filtersRow {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+    gap: 10px;
+  }
+  
+  .searchBox {
+    min-width: 100%;
+  }
+  
+  .filterGroup {
+    width: 100%;
+  }
+  
+  .select {
+    width: 100%;
+  }
 }
 
 .searchBox {
@@ -254,6 +303,36 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .modal {
+    width: 95vw;
+    max-height: 95vh;
+    border-radius: 12px;
+  }
+  
+  .modalHeader {
+    padding: 14px 16px;
+  }
+  
+  .modalTitle {
+    font-size: 16px;
+  }
+  
+  .modalBody {
+    padding: 16px;
+    max-height: calc(95vh - 200px);
+  }
+  
+  .modalFooter {
+    padding: 12px 16px;
+    flex-direction: column;
+  }
+  
+  .modalFooter .btn {
+    width: 100%;
+  }
 }
 
 .modalHeader {
@@ -373,5 +452,37 @@
   font-size: 11px;
   color: rgba(229, 231, 235, 0.6) !important;
   font-family: 'Courier New', monospace;
+}
+
+@media (max-width: 768px) {
+  .headerRow {
+    padding: 16px;
+  }
+  
+  .title {
+    font-size: 18px;
+  }
+  
+  .subtitle {
+    font-size: 13px;
+  }
+  
+  .reportCard {
+    padding: 12px;
+  }
+  
+  .reportCardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .reportCardName {
+    font-size: 13px;
+  }
+  
+  .reportCardReason {
+    font-size: 12px;
+  }
 }
 

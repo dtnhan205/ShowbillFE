@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import Icon from '../components/Icons/Icon';
 import ClientLayout from '../components/ClientLayout/ClientLayout';
 import styles from './Terms.module.css';
 
@@ -13,7 +14,10 @@ const Terms: React.FC = () => {
           transition={{ duration: 0.5 }}
           className={styles.hero}
         >
-          <h1 className={styles.title}>Điều Khoản Sử Dụng</h1>
+          <h1 className={styles.title}>
+            <Icon name="book" size={40} color="rgba(96, 165, 250, 0.9)" />
+            <span>Điều Khoản Sử Dụng</span>
+          </h1>
           <p className={styles.subtitle}>
             Quy định và điều khoản khi sử dụng dịch vụ ShowBill
           </p>

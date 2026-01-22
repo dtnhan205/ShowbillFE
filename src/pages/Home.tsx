@@ -5,6 +5,7 @@ import api from '../utils/api';
 import ClientLayout from '../components/ClientLayout/ClientLayout';
 import { shortenId } from '../utils/idUtils';
 import { getImageUrl } from '../utils/imageUrl';
+import Icon from '../components/Icons/Icon';
 import styles from './Home.module.css';
 
 type PublicAdminItem = {
@@ -306,16 +307,19 @@ const Home: React.FC = () => {
                   viewport={{ once: true, margin: '-100px' }}
                   transition={{ duration: 0.6 }}
                 >
-                  <motion.div
-                    className={styles.sectionHeader}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-100px' }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <h2 className={styles.sectionTitle}>Top 10 Admin Nổi Bật</h2>
-                    <p className={styles.sectionSubtitle}>Những admin có lượt xem cao nhất</p>
-                  </motion.div>
+                <motion.div
+                  className={styles.sectionHeader}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-100px' }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <h2 className={styles.sectionTitle}>
+                    <Icon name="users" size={40} color="rgba(255, 255, 255, 0.9)" style={{ marginRight: 12 }} />
+                    Top 10 Admin Nổi Bật
+                  </h2>
+                  <p className={styles.sectionSubtitle}>Những admin có lượt xem cao nhất</p>
+                </motion.div>
                   
                   {/* Progress Indicator */}
                   <div className={styles.progressIndicator}>
@@ -509,7 +513,10 @@ const Home: React.FC = () => {
                   viewport={{ once: true, margin: '-100px' }}
                   transition={{ duration: 0.5 }}
                 >
-                  <h2 className={styles.sectionTitle}>Tất Cả Admin</h2>
+                  <h2 className={styles.sectionTitle}>
+                    <Icon name="users" size={40} color="rgba(255, 255, 255, 0.9)" style={{ marginRight: 12 }} />
+                    Tất Cả Admin
+                  </h2>
                   <p className={styles.sectionSubtitle}>
                     {filteredAdmins.length} admin{filteredAdmins.length !== 1 ? 's' : ''} tổng cộng
                   </p>
@@ -523,16 +530,19 @@ const Home: React.FC = () => {
                   viewport={{ once: true, margin: '-100px' }}
                   transition={{ duration: 0.5, delay: 0.1 }}
                 >
-                  <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => {
-                      setQuery(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    placeholder="Tìm kiếm admin..."
-                    className={styles.searchInput}
-                  />
+                  <div className={styles.searchInputWrapper}>
+                    <Icon name="search" size={20} color="rgba(148, 163, 184, 0.8)" className={styles.searchIcon} />
+                    <input
+                      type="text"
+                      value={query}
+                      onChange={(e) => {
+                        setQuery(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      placeholder="Tìm kiếm admin..."
+                      className={styles.searchInput}
+                    />
+                  </div>
                 </motion.div>
 
                 {filteredAdmins.length === 0 ? (

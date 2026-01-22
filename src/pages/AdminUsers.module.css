@@ -194,6 +194,58 @@
   }
 }
 
+@media (max-width: 768px) {
+  .headerRow {
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: 20px;
+  }
+  
+  .subtitle {
+    font-size: 13px;
+  }
+  
+  .tableWrapper {
+    overflow-x: auto;
+  }
+  
+  .table {
+    min-width: 800px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+  
+  .table th {
+    font-size: 12px;
+  }
+  
+  .actionButton {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .filters {
+    padding: 16px;
+  }
+  
+  .filterInput,
+  .filterSelect {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  .resetBtn {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}
+
 .filterInput,
 .filterSelect {
   width: 100%;
@@ -300,4 +352,34 @@
   font-size: 11px;
   color: #ef4444;
   font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .headerRow {
+    padding: 16px;
+  }
+  
+  .title {
+    font-size: 18px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+  
+  .packageInfo {
+    gap: 2px;
+  }
+  
+  .packageBadge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+  
+  .packageExpiry,
+  .packageExpired {
+    font-size: 10px;
+  }
 }

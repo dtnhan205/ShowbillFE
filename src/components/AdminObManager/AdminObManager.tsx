@@ -99,7 +99,7 @@ const AdminObManager: React.FC = () => {
     <div className={styles.wrap}>
       <div className={styles.header}>
         <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Icon name="game" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý OB (Free Fire)
+          <Icon name="game" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý OB/Mùa Game
         </h2>
         <div className={styles.muted}>Tổng: {items.length} | Hiển thị: {filteredItems.length}</div>
       </div>

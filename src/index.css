@@ -123,3 +123,22 @@ html {
   scrollbar-width: thin;
   scrollbar-color: var(--accent) rgba(15, 15, 20, 0.8);
 }
+
+/* Dark theme for select options - prevent white flash */
+select option {
+  background: #1e1e28 !important;
+  color: #ffffff !important;
+  padding: 8px 12px;
+}
+
+select option:hover,
+select option:focus,
+select option:active {
+  background: #2d2d3a !important;
+  color: #ffffff !important;
+}
+
+select option:checked {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+}

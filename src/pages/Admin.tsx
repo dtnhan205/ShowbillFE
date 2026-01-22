@@ -13,6 +13,7 @@ import AdminPackages from './AdminPackages';
 import AdminPayment from './AdminPayment';
 import PaymentDetail from './PaymentDetail';
 import PaymentHistory from './PaymentHistory';
+import AdminPaymentHistory from './AdminPaymentHistory';
 import AdminGuide from './AdminGuide';
 import AdminReports from './AdminReports';
 
@@ -31,6 +32,7 @@ const Admin: React.FC = () => {
         <Route path="/reports" element={<AdminReports />} />
         <Route path="/payment" element={<AdminPayment />} />
         <Route path="/payment/history" element={<PaymentHistory />} />
+        <Route path="/payment/admin/history" element={<AdminPaymentHistory />} />
         <Route path="/payment/:id" element={<PaymentDetail />} />
         <Route path="/profile" element={<AdminProfile />} />
         <Route path="/guide" element={<AdminGuide />} />

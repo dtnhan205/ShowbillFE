@@ -512,18 +512,9 @@
   gap: 12px;
 }
 
-.sectionTitle::before {
-  content: '👥';
-  font-size: 40px;
-}
-
 @media (max-width: 768px) {
   .sectionTitle {
     font-size: 28px;
-  }
-  
-  .sectionTitle::before {
-    font-size: 32px;
   }
 }
 
@@ -839,9 +830,30 @@
   display: flex;
 }
 
-.searchInput {
+.searchInputWrapper {
+  position: relative;
   width: 100%;
   max-width: 600px;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 1;
+  transition: color 0.3s;
+}
+
+.searchInputWrapper:focus-within .searchIcon {
+  color: rgba(59, 130, 246, 0.9);
+}
+
+.searchInput {
+  width: 100%;
   padding: 16px 24px 16px 52px;
   border-radius: 12px;
   border: 2px solid rgba(255, 255, 255, 0.1);
@@ -863,17 +875,8 @@
 .searchInput:focus {
   border-color: rgba(59, 130, 246, 0.5);
   background: linear-gradient(145deg, rgba(30, 30, 40, 0.98) 0%, rgba(20, 20, 30, 0.98) 100%);
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2), 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2), 0 8px 32px rgba(0, 0, 0, 0.3);
   transform: translateY(-2px);
-}
-
-.searchInput::before {
-  content: '🔍';
-  position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
 }
 
 /* Responsive for Banner & Carousel */

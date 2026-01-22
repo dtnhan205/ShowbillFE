@@ -9,6 +9,7 @@ type PackageConfig = {
   packageType: string;
   price: number;
   billLimit: number;
+  descriptions?: string[];
 };
 
 type BankAccount = {
@@ -28,12 +29,14 @@ const AdminPackages: React.FC = () => {
   const [editingPackage, setEditingPackage] = useState<string | null>(null);
   const [editingPrice, setEditingPrice] = useState<number>(0);
   const [editingBillLimit, setEditingBillLimit] = useState<number>(100);
+  const [editingDescriptions, setEditingDescriptions] = useState<string[]>([]);
   const [showAddBank, setShowAddBank] = useState(false);
   const [showAddPackage, setShowAddPackage] = useState(false);
   const [newPackage, setNewPackage] = useState({
     packageType: '',
     price: 0,
     billLimit: 100,
+    descriptions: [] as string[],
   });
   const [newBank, setNewBank] = useState({
     bankName: '',
@@ -69,9 +72,11 @@ const AdminPackages: React.FC = () => {
       await api.put(`/payment/admin/packages/config/${type}`, {
         price: editingPrice,
         billLimit: editingBillLimit,
+        descriptions: editingDescriptions,
       });
       await fetchData();
       setEditingPackage(null);
+      setEditingDescriptions([]);
       toast.success('Đã cập nhật gói thành công!');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Không thể cập nhật gói');
@@ -89,7 +94,7 @@ const AdminPackages: React.FC = () => {
         return;
       }
       await api.post('/payment/admin/packages/config', newPackage);
-      setNewPackage({ packageType: '', price: 0, billLimit: 100 });
+      setNewPackage({ packageType: '', price: 0, billLimit: 100, descriptions: [] });
       setShowAddPackage(false);
       await fetchData();
       toast.success('Đã thêm gói mới thành công!');
@@ -201,6 +206,46 @@ const AdminPackages: React.FC = () => {
               className={styles.input}
               min="-1"
             />
+            <div className={styles.descriptionsSection}>
+              <label style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: 8, display: 'block', fontSize: 14, fontWeight: 600 }}>
+                Mô tả gói:
+              </label>
+              {newPackage.descriptions.map((desc, index) => (
+                <div key={index} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                  <input
+                    type="text"
+                    value={desc}
+                    onChange={(e) => {
+                      const newDescs = [...newPackage.descriptions];
+                      newDescs[index] = e.target.value;
+                      setNewPackage({ ...newPackage, descriptions: newDescs });
+                    }}
+                    placeholder="Nhập mô tả..."
+                    className={styles.input}
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newDescs = newPackage.descriptions.filter((_, i) => i !== index);
+                      setNewPackage({ ...newPackage, descriptions: newDescs });
+                    }}
+                    className={styles.deleteButton}
+                    style={{ padding: '8px 12px', fontSize: 12 }}
+                  >
+                    Xóa
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => setNewPackage({ ...newPackage, descriptions: [...newPackage.descriptions, ''] })}
+                className={styles.addButton}
+                style={{ padding: '8px 12px', fontSize: 12, width: '100%' }}
+              >
+                + Thêm mô tả
+              </button>
+            </div>
             <div className={styles.formActions}>
               <button onClick={handleAddPackage} className={styles.saveButton}>
                 Thêm
@@ -208,7 +253,7 @@ const AdminPackages: React.FC = () => {
               <button
                 onClick={() => {
                   setShowAddPackage(false);
-                  setNewPackage({ packageType: '', price: 0, billLimit: 100 });
+                  setNewPackage({ packageType: '', price: 0, billLimit: 100, descriptions: [] });
                 }}
                 className={styles.cancelButton}
               >
@@ -244,6 +289,46 @@ const AdminPackages: React.FC = () => {
                     disabled={config.packageType === 'basic'}
                     min="-1"
                   />
+                  <div className={styles.descriptionsSection}>
+                    <label style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: 8, display: 'block', fontSize: 14, fontWeight: 600 }}>
+                      Mô tả gói:
+                    </label>
+                    {editingDescriptions.map((desc, index) => (
+                      <div key={index} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                        <input
+                          type="text"
+                          value={desc}
+                          onChange={(e) => {
+                            const newDescs = [...editingDescriptions];
+                            newDescs[index] = e.target.value;
+                            setEditingDescriptions(newDescs);
+                          }}
+                          placeholder="Nhập mô tả..."
+                          className={styles.input}
+                          style={{ flex: 1 }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newDescs = editingDescriptions.filter((_, i) => i !== index);
+                            setEditingDescriptions(newDescs);
+                          }}
+                          className={styles.deleteButton}
+                          style={{ padding: '8px 12px', fontSize: 12 }}
+                        >
+                          Xóa
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setEditingDescriptions([...editingDescriptions, ''])}
+                      className={styles.addButton}
+                      style={{ padding: '8px 12px', fontSize: 12, width: '100%' }}
+                    >
+                      + Thêm mô tả
+                    </button>
+                  </div>
                   <div className={styles.editActions}>
                     <button
                       onClick={() => handleUpdatePackage(config.packageType)}
@@ -256,6 +341,7 @@ const AdminPackages: React.FC = () => {
                         setEditingPackage(null);
                         setEditingPrice(0);
                         setEditingBillLimit(100);
+                        setEditingDescriptions([]);
                       }}
                       className={styles.cancelButton}
                     >
@@ -276,6 +362,16 @@ const AdminPackages: React.FC = () => {
                         {config.billLimit === -1 ? 'Không giới hạn' : `${config.billLimit} bill/tháng`}
                       </strong>
                     </div>
+                    {config.descriptions && config.descriptions.length > 0 && (
+                      <div className={styles.infoRow} style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
+                        <span>Mô tả:</span>
+                        <ul style={{ margin: 0, paddingLeft: 20, color: 'rgba(255, 255, 255, 0.8)' }}>
+                          {config.descriptions.map((desc, index) => (
+                            <li key={index}>{desc}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                   <div className={styles.packageActions}>
                     {config.packageType !== 'basic' && (
@@ -285,6 +381,7 @@ const AdminPackages: React.FC = () => {
                             setEditingPackage(config.packageType);
                             setEditingPrice(config.price);
                             setEditingBillLimit(config.billLimit);
+                            setEditingDescriptions(config.descriptions || []);
                           }}
                           className={styles.editButton}
                         >

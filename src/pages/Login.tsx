@@ -52,7 +52,7 @@ const Login: React.FC = () => {
         } else {
           localStorage.removeItem('adminRole');
         }
-        navigate('/', { replace: true });
+        navigate('/admin', { replace: true });
       } catch (err: unknown) {
         let message = 'Đăng nhập thất bại.';
 

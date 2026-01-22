@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import Icon from '../components/Icons/Icon';
 import ClientLayout from '../components/ClientLayout/ClientLayout';
 import styles from './About.module.css';
 
@@ -13,7 +14,10 @@ const About: React.FC = () => {
           transition={{ duration: 0.5 }}
           className={styles.hero}
         >
-          <h1 className={styles.title}>Giới thiệu về ShowBill</h1>
+          <h1 className={styles.title}>
+            <Icon name="info" size={40} color="rgba(96, 165, 250, 0.9)" />
+            <span>Giới thiệu về ShowBill</span>
+          </h1>
           <p className={styles.subtitle}>
             Nền tảng công nghệ hiện đại giúp khẳng định thương hiệu và tạo niềm tin cho khách hàng
           </p>
@@ -27,8 +31,9 @@ const About: React.FC = () => {
         >
           <h2 className={styles.sectionTitle}>ShowBill là gì?</h2>
           <p className={styles.text}>
-            ShowBill là nền tảng tổng hợp và trưng bày tất cả các bill uy tín, giúp khách hàng dễ dàng kiểm chứng độ tin cậy của bạn. 
-            Tại đây, người dùng có thể chọn admin để xem hồ sơ, bộ sưu tập bill giao dịch, đối chiếu thông tin và phóng to hình ảnh để xem chi tiết.
+            ShowBill là nền tảng công nghệ hiện đại được thiết kế để giúp các doanh nghiệp và cá nhân khẳng định uy tín thương hiệu 
+            thông qua việc trưng bày minh bạch các bill giao dịch thực tế. Nền tảng cho phép khách hàng dễ dàng tìm kiếm, xem và đối chiếu 
+            thông tin bill một cách chi tiết, tạo niềm tin tuyệt đối trước khi quyết định sử dụng dịch vụ.
           </p>
         </motion.div>
 
@@ -56,11 +61,7 @@ const About: React.FC = () => {
               }}
             >
               <div className={styles.featureIconWrapper}>
-                <svg className={styles.featureIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <circle cx="12" cy="12" r="2" fill="currentColor"/>
-                </svg>
+                <Icon name="star" size={32} color="rgba(96, 165, 250, 0.9)" />
               </div>
               <h3 className={styles.featureTitle}>Khẳng định thương hiệu</h3>
               <p className={styles.featureText}>
@@ -83,11 +84,7 @@ const About: React.FC = () => {
               }}
             >
               <div className={styles.featureIconWrapper}>
-                <svg className={styles.featureIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+                <Icon name="package" size={32} color="rgba(34, 197, 94, 0.9)" />
               </div>
               <h3 className={styles.featureTitle}>Tăng sự chuyên nghiệp</h3>
               <p className={styles.featureText}>
@@ -110,12 +107,7 @@ const About: React.FC = () => {
               }}
             >
               <div className={styles.featureIconWrapper}>
-                <svg className={styles.featureIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+                <Icon name="users" size={32} color="rgba(168, 85, 247, 0.9)" />
               </div>
               <h3 className={styles.featureTitle}>Tạo niềm tin tuyệt đối</h3>
               <p className={styles.featureText}>
@@ -134,19 +126,22 @@ const About: React.FC = () => {
           <h2 className={styles.sectionTitle}>Tính năng nổi bật</h2>
           <ul className={styles.list}>
             <li className={styles.listItem}>
-              <strong>Hồ sơ Admin chi tiết:</strong> Mỗi admin có trang profile riêng với thông tin, mô tả và avatar
+              <strong>Hồ sơ Admin chuyên nghiệp:</strong> Mỗi admin có trang profile riêng với thông tin chi tiết, mô tả, avatar và banner tùy chỉnh
             </li>
             <li className={styles.listItem}>
-              <strong>Bộ sưu tập Bill:</strong> Trưng bày tất cả các bill giao dịch một cách có tổ chức và dễ xem
+              <strong>Bộ sưu tập Bill đa dạng:</strong> Trưng bày tất cả các bill giao dịch được phân loại theo OB version và Category một cách có tổ chức
             </li>
             <li className={styles.listItem}>
-              <strong>Xem chi tiết:</strong> Phóng to hình ảnh để xem rõ từng chi tiết của bill
+              <strong>Xem chi tiết nâng cao:</strong> Phóng to, zoom và pan hình ảnh để xem rõ từng chi tiết của bill với công nghệ bảo vệ chống screenshot
             </li>
             <li className={styles.listItem}>
-              <strong>Tìm kiếm thông minh:</strong> Dễ dàng tìm kiếm admin theo tên hoặc mô tả
+              <strong>Tìm kiếm và lọc thông minh:</strong> Dễ dàng tìm kiếm admin theo tên, mô tả hoặc lọc theo OB version và Category
             </li>
             <li className={styles.listItem}>
-              <strong>Thống kê lượt xem:</strong> Theo dõi số lượt xem profile và bill của bạn
+              <strong>Thống kê chi tiết:</strong> Theo dõi số lượt xem profile và bill theo tuần, tháng, năm với biểu đồ trực quan
+            </li>
+            <li className={styles.listItem}>
+              <strong>Bảo mật cao cấp:</strong> Hệ thống tự động bảo vệ hình ảnh khỏi screenshot, download và copy
             </li>
           </ul>
         </motion.div>
@@ -159,7 +154,9 @@ const About: React.FC = () => {
         >
           <h2 className={styles.sectionTitle}>Bắt đầu ngay hôm nay</h2>
           <p className={styles.text}>
-            Tham gia ShowBill để xây dựng thương hiệu và tạo niềm tin với khách hàng. Đăng ký tài khoản admin ngay để bắt đầu trưng bày các bill giao dịch của bạn.
+            Tham gia ShowBill để xây dựng thương hiệu uy tín và tạo niềm tin tuyệt đối với khách hàng. Đăng ký tài khoản admin ngay để bắt đầu 
+            trưng bày các bill giao dịch của bạn một cách chuyên nghiệp. Với các gói dịch vụ linh hoạt từ Basic đến VIP, bạn có thể chọn gói phù hợp 
+            với nhu cầu của mình.
           </p>
         </motion.div>
       </div>

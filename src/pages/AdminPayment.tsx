@@ -12,6 +12,7 @@ type PackageConfig = {
   price: number;
   billLimit: number;
   color?: string;
+  descriptions?: string[];
 };
 
 type OwnedPackage = {
@@ -117,9 +118,7 @@ const AdminPayment: React.FC = () => {
             <strong>
               {myPackage.activePackage === 'basic'
                 ? 'Basic'
-                : myPackage.activePackage === 'pro'
-                ? 'Pro'
-                : 'Premium'}
+                : myPackage.activePackage.charAt(0).toUpperCase() + myPackage.activePackage.slice(1)}
             </strong>
           </div>
           <div className={styles.infoItem}>
@@ -163,7 +162,7 @@ const AdminPayment: React.FC = () => {
                 disabled={myPackage.activePackage === 'basic'}
               >
                 {myPackage.activePackage === 'basic' ? (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                     <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Đang sử dụng
                   </span>
                 ) : (
@@ -213,15 +212,25 @@ const AdminPayment: React.FC = () => {
                     {packageConfig ? `${packageConfig.price.toLocaleString()} VNĐ` : 'Đã mua'}
                   </div>
                   <div className={styles.features}>
-                    <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Upload {packageConfig?.billLimit === -1 ? 'không giới hạn' : `${packageConfig?.billLimit} bill`}/tháng
-                    </p>
-                    <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Hết hạn: {new Date(pkg.expiryDate).toLocaleDateString('vi-VN')}
-                    </p>
-                    <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Mua ngày: {new Date(pkg.purchasedAt).toLocaleDateString('vi-VN')}
-                    </p>
+                    {packageConfig?.descriptions && packageConfig.descriptions.length > 0 ? (
+                      packageConfig.descriptions.map((desc, idx) => (
+                        <p key={idx} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> {desc}
+                        </p>
+                      ))
+                    ) : (
+                      <>
+                        <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Upload {packageConfig?.billLimit === -1 ? 'không giới hạn' : `${packageConfig?.billLimit} bill`}/tháng
+                        </p>
+                        <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Hết hạn: {new Date(pkg.expiryDate).toLocaleDateString('vi-VN')}
+                        </p>
+                        <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Mua ngày: {new Date(pkg.purchasedAt).toLocaleDateString('vi-VN')}
+                        </p>
+                      </>
+                    )}
                   </div>
                   {isExpired ? (
                     <div className={styles.expiredBadge}>Đã hết hạn</div>
@@ -232,7 +241,7 @@ const AdminPayment: React.FC = () => {
                       disabled={isActive}
                     >
                       {isActive ? (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                           <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Đang sử dụng
                         </span>
                       ) : (
@@ -302,12 +311,22 @@ const AdminPayment: React.FC = () => {
                   {pkg.price.toLocaleString()} VNĐ
                 </div>
                 <div className={styles.features}>
-                  <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Upload {pkg.billLimit === -1 ? 'không giới hạn' : `${pkg.billLimit} bill`}/tháng
-                  </p>
-                  <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Thời hạn: 1 tháng
-                  </p>
+                  {pkg.descriptions && pkg.descriptions.length > 0 ? (
+                    pkg.descriptions.map((desc, idx) => (
+                      <p key={idx} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> {desc}
+                      </p>
+                    ))
+                  ) : (
+                    <>
+                      <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Upload {pkg.billLimit === -1 ? 'không giới hạn' : `${pkg.billLimit} bill`}/tháng
+                      </p>
+                      <p style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <Icon name="check" size={14} color="rgba(34, 197, 94, 0.8)" /> Thời hạn: 1 tháng
+                      </p>
+                    </>
+                  )}
                 </div>
                 {hasPackage && !isActive && (
                   <div className={styles.ownedBadge}>Đã mua gói này</div>

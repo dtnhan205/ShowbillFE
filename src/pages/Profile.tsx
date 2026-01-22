@@ -683,9 +683,16 @@ const Profile: React.FC = () => {
                     )}
                   </h1>
                   <p className={styles.profileBio}>{maskSensitiveText(data.admin.bio || 'Chưa có mô tả')}</p>
-                  {(data.admin.activePackage || 'basic') !== 'basic' && (
-                    <p className={styles.profileLegalNote}>{UPGRADE_DISCLAIMER}</p>
-                  )}
+                  <div className={styles.profileActionsRowMobile}>
+                    <button
+                      type="button"
+                      className={styles.reportAdminButton}
+                      onClick={() => setReportModalOpen(true)}
+                      title="Báo cáo admin (xử lý 24–72 giờ)"
+                    >
+                      Report Admin
+                    </button>
+                  </div>
                 </div>
               </div>
 

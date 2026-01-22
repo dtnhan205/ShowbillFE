@@ -182,6 +182,10 @@
   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
   position: relative;
   overflow: hidden;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .upgradeButton::before {
@@ -353,6 +357,10 @@
   transition: all 0.3s;
   position: relative;
   overflow: hidden;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .switchButton::before {
@@ -387,5 +395,97 @@
   color: white;
   border-color: #10b981;
   box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.switchButton:disabled span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 20px;
+  }
+  
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .sectionTitle {
+    font-size: 20px;
+  }
+  
+  .sectionTitle span {
+    font-size: 24px;
+  }
+  
+  .packagesGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .packageCard {
+    padding: 20px;
+  }
+  
+  .packageName {
+    font-size: 18px;
+  }
+  
+  .infoRow {
+    font-size: 13px;
+  }
+  
+  .infoRow strong {
+    font-size: 14px;
+  }
+  
+  .editButton,
+  .addButton {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  .bankCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .bankActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .toggleButton,
+  .deleteButton {
+    flex: 1;
+  }
+  
+  .modalContent {
+    padding: 24px;
+    max-width: 95vw;
+  }
+  
+  .modalTitle {
+    font-size: 20px;
+  }
+  
+  .modalActions {
+    flex-direction: column;
+  }
+  
+  .modalConfirmButton,
+  .modalCancelButton {
+    width: 100%;
+  }
+}

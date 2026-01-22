@@ -350,3 +350,29 @@
   }
 }
 
+/* Dark theme for select options */
+.filterSelect {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.filterSelect option {
+  background: #1e1e28 !important;
+  color: #ffffff !important;
+  padding: 8px 12px;
+}
+
+.filterSelect option:hover {
+  background: #2d2d3a !important;
+}
+
+.filterSelect option:checked {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.filterSelect option:focus {
+  background: #2d2d3a !important;
+}
+

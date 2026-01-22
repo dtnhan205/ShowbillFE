@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import Icon from '../components/Icons/Icon';
 import ClientLayout from '../components/ClientLayout/ClientLayout';
 import styles from './Privacy.module.css';
 
@@ -13,7 +14,10 @@ const Privacy: React.FC = () => {
           transition={{ duration: 0.5 }}
           className={styles.hero}
         >
-          <h1 className={styles.title}>Chính Sách Bảo Mật</h1>
+          <h1 className={styles.title}>
+            <Icon name="shield" size={40} color="rgba(34, 197, 94, 0.9)" />
+            <span>Chính Sách Bảo Mật</span>
+          </h1>
           <p className={styles.subtitle}>
             Cam kết bảo vệ thông tin cá nhân và quyền riêng tư của người dùng
           </p>

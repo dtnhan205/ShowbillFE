@@ -167,8 +167,8 @@
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
   margin-bottom: 32px;
 }
 
@@ -179,12 +179,150 @@
   background: linear-gradient(145deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.statCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, currentColor 50%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.statCard:hover::before {
+  opacity: 1;
 }
 
 .statCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-6px);
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Màu viền cho từng card */
+.statCardBlue {
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #3b82f6;
+}
+
+.statCardBlue:hover {
+  border-color: rgba(59, 130, 246, 0.7);
+  box-shadow: 0 4px 5px rgba(59, 130, 246, 0.3);
+}
+
+.statCardGreen {
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #22c55e;
+}
+
+.statCardGreen:hover {
+  border-color: rgba(34, 197, 94, 0.7);
+  box-shadow: 0 4px 5px rgba(34, 197, 94, 0.3);
+}
+
+.statCardPurple {
+  border-color: rgba(168, 85, 247, 0.4);
+  color: #a855f7;
+}
+
+.statCardPurple:hover {
+  border-color: rgba(168, 85, 247, 0.7);
+  box-shadow: 0 4px 5px rgba(168, 85, 247, 0.3);
+}
+
+.statCardOrange {
+  border-color: rgba(249, 115, 22, 0.4);
+  color: #f97316;
+}
+
+.statCardOrange:hover {
+  border-color: rgba(249, 115, 22, 0.7);
+  box-shadow: 0 4px 5px rgba(249, 115, 22, 0.3);
+}
+
+.statCardPink {
+  border-color: rgba(236, 72, 153, 0.4);
+  color: #ec4899;
+}
+
+.statCardPink:hover {
+  border-color: rgba(236, 72, 153, 0.7);
+  box-shadow: 0 4px 5px rgba(236, 72, 153, 0.3);
+}
+
+.statCardYellow {
+  border-color: rgba(234, 179, 8, 0.4);
+  color: #eab308;
+}
+
+.statCardYellow:hover {
+  border-color: rgba(234, 179, 8, 0.7);
+  box-shadow: 0 4px 5px rgba(234, 179, 8, 0.3);
+}
+
+.statCardLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  opacity: 0.9;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.statCard:hover .statIcon {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Màu nền icon theo từng card */
+.statCardBlue .statIcon {
+  background: rgba(59, 130, 246, 0.15);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+.statCardGreen .statIcon {
+  background: rgba(34, 197, 94, 0.15);
+  border: 2px solid rgba(34, 197, 94, 0.3);
+}
+
+.statCardPurple .statIcon {
+  background: rgba(168, 85, 247, 0.15);
+  border: 2px solid rgba(168, 85, 247, 0.3);
+}
+
+.statCardOrange .statIcon {
+  background: rgba(249, 115, 22, 0.15);
+  border: 2px solid rgba(249, 115, 22, 0.3);
+}
+
+.statCardPink .statIcon {
+  background: rgba(236, 72, 153, 0.15);
+  border: 2px solid rgba(236, 72, 153, 0.3);
+}
+
+.statCardYellow .statIcon {
+  background: rgba(234, 179, 8, 0.15);
+  border: 2px solid rgba(234, 179, 8, 0.3);
 }
 
 .statValue {
@@ -194,8 +332,52 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin: 8px 0 4px;
   line-height: 1.2;
+  transition: all 0.3s;
+  margin: 0;
+}
+
+/* Màu giá trị theo từng card */
+.statCardBlue .statValue {
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.statCardGreen .statValue {
+  background: linear-gradient(135deg, #22c55e 0%, #4ade80 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.statCardPurple .statValue {
+  background: linear-gradient(135deg, #a855f7 0%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.statCardOrange .statValue {
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.statCardPink .statValue {
+  background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.statCardYellow .statValue {
+  background: linear-gradient(135deg, #eab308 0%, #facc15 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .statLabel {
@@ -204,6 +386,54 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.statBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
+  width: fit-content;
+}
+
+/* Màu badge theo từng card */
+.statCardBlue .statBadge {
+  background: rgba(59, 130, 246, 0.2);
+  color: rgba(147, 197, 253, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.statCardGreen .statBadge {
+  background: rgba(34, 197, 94, 0.2);
+  color: rgba(134, 239, 172, 0.9);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.statCardPurple .statBadge {
+  background: rgba(168, 85, 247, 0.2);
+  color: rgba(196, 181, 253, 0.9);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.statCardOrange .statBadge {
+  background: rgba(249, 115, 22, 0.2);
+  color: rgba(254, 215, 170, 0.9);
+  border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+.statCardPink .statBadge {
+  background: rgba(236, 72, 153, 0.2);
+  color: rgba(251, 182, 206, 0.9);
+  border: 1px solid rgba(236, 72, 153, 0.4);
+}
+
+.statCardYellow .statBadge {
+  background: rgba(234, 179, 8, 0.2);
+  color: rgba(253, 230, 138, 0.9);
+  border: 1px solid rgba(234, 179, 8, 0.4);
 }
 
 .section {

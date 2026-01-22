@@ -237,11 +237,17 @@ const PaymentDetail: React.FC = () => {
               <div className={styles.bankCard}>
                 <div className={styles.bankDetail}>
                   <div className={styles.detailRow}>
-                    <span>Ngân hàng:</span>
+                    <span>
+                      <Icon name="building" size={16} color="#3b82f6" />
+                      Ngân hàng:
+                    </span>
                     <strong>{payment.bankAccountId.bankName}</strong>
                   </div>
                   <div className={styles.detailRow}>
-                    <span>Số tài khoản:</span>
+                    <span>
+                      <Icon name="credit-card" size={16} color="#8b5cf6" />
+                      Số tài khoản:
+                    </span>
                     <div className={styles.copyable}>
                       <strong>{payment.bankAccountId.accountNumber}</strong>
                       <button onClick={() => copyToClipboard(payment.bankAccountId.accountNumber)}>
@@ -250,11 +256,17 @@ const PaymentDetail: React.FC = () => {
                     </div>
                   </div>
                   <div className={styles.detailRow}>
-                    <span>Chủ tài khoản:</span>
+                    <span>
+                      <Icon name="user" size={16} color="#10b981" />
+                      Chủ tài khoản:
+                    </span>
                     <strong>{payment.bankAccountId.accountHolder}</strong>
                   </div>
                   <div className={styles.detailRow}>
-                    <span>Nội dung CK:</span>
+                    <span>
+                      <Icon name="file-text" size={16} color="#f59e0b" />
+                      Nội dung CK:
+                    </span>
                     <div className={styles.copyable}>
                       <strong>{payment.transferContent}</strong>
                       <button onClick={() => copyToClipboard(payment.transferContent)}>
@@ -263,7 +275,10 @@ const PaymentDetail: React.FC = () => {
                     </div>
                   </div>
                   <div className={styles.detailRow}>
-                    <span>Số tiền:</span>
+                    <span>
+                      <Icon name="dollar-sign" size={16} color="#ef4444" />
+                      Số tiền:
+                    </span>
                     <strong>{payment.amount.toLocaleString()} VNĐ</strong>
                   </div>
                 </div>

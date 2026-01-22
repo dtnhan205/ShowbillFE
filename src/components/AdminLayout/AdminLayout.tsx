@@ -1,8 +1,9 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import CursorTrail from '../CursorTrail/CursorTrail';
 import styles from './AdminLayout.module.css';
 import { PLATFORM_DISCLAIMER } from '../../utils/legal';
+import Icon from '../Icons/Icon';
 
 type Props = {
   title?: string;
@@ -12,6 +13,7 @@ type Props = {
 const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const activePath = useMemo(() => location.pathname, [location.pathname]);
 
@@ -37,10 +39,35 @@ const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
 
+  // Close sidebar when route changes on mobile
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Prevent body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [sidebarOpen]);
+
   return (
     <div className={styles.layout}>
       <CursorTrail />
-      <aside className={styles.sidebar}>
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className={styles.overlay}
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.brand}>
           <h1 className={styles.brandTitle}>
             <span className={styles.brandAccent}>Show</span>Bill Admin
@@ -109,6 +136,14 @@ const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
           >
             Lịch sử thanh toán
           </Link>
+          {isSuperAdmin && (
+            <Link
+              to="/admin/payment/admin/history"
+              className={`${styles.navItem} ${isActive('/admin/payment/admin/history') ? styles.navItemActive : ''}`}
+            >
+              Lịch sử giao dịch (Tất cả)
+            </Link>
+          )}
 
           <Link
             to="/admin/profile"
@@ -136,6 +171,14 @@ const AdminLayout: React.FC<Props> = ({ title = 'Admin', children }) => {
 
       <div className={styles.main}>
         <div className={styles.header}>
+          <button
+            type="button"
+            className={styles.menuButton}
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            aria-label="Toggle menu"
+          >
+            <Icon name="menu" size={24} />
+          </button>
           <h1 className={styles.pageTitle}>{title}</h1>
         </div>
 

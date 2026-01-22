@@ -64,7 +64,10 @@ const Contact: React.FC = () => {
           transition={{ duration: 0.5 }}
           className={styles.hero}
         >
-          <h1 className={styles.title}>Liên hệ với chúng tôi</h1>
+          <h1 className={styles.title}>
+            <Icon name="message" size={40} color="rgba(96, 165, 250, 0.9)" />
+            <span>Liên hệ với chúng tôi</span>
+          </h1>
           <p className={styles.subtitle}>
             Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Hãy gửi tin nhắn cho chúng tôi!
           </p>
@@ -79,7 +82,9 @@ const Contact: React.FC = () => {
           >
             <h2 className={styles.infoTitle}>Thông tin liên hệ</h2>
             <div className={styles.infoItem}>
-              <div className={styles.infoIcon}>📧</div>
+              <div className={styles.infoIcon}>
+                <Icon name="email" size={24} color="rgba(255, 255, 255, 0.9)" />
+              </div>
               <div>
                 <h3 className={styles.infoLabel}>Email</h3>
                 <p className={styles.infoText}>support@showbill.com</p>

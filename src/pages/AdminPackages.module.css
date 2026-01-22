@@ -448,3 +448,70 @@
   transform: translateY(-2px);
 }
 
+@media (max-width: 768px) {
+  .currentPackage {
+    padding: 20px;
+  }
+  
+  .currentPackage h2 {
+    font-size: 20px;
+  }
+  
+  .packageInfo {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .infoItem strong {
+    font-size: 16px;
+  }
+  
+  .upgradeSection h2,
+  .ownedPackages h2 {
+    font-size: 20px;
+  }
+  
+  .packagesGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .packageCard {
+    padding: 24px 20px;
+  }
+  
+  .packageCard h3 {
+    font-size: 20px;
+  }
+  
+  .price {
+    font-size: 28px;
+  }
+  
+  .features {
+    padding: 16px;
+  }
+  
+  .features p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .currentPackage {
+    padding: 16px;
+  }
+  
+  .packageCard {
+    padding: 20px 16px;
+  }
+  
+  .packageCard h3 {
+    font-size: 18px;
+  }
+  
+  .price {
+    font-size: 24px;
+  }
+}
+
