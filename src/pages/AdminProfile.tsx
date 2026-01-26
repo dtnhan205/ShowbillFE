@@ -35,6 +35,13 @@ const AdminProfile: React.FC = () => {
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [saveState, setSaveState] = useState<LoadState>('idle');
   const [error, setError] = useState<string | null>(null);
+  
+  // Change password states
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changePasswordState, setChangePasswordState] = useState<LoadState>('idle');
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -176,6 +183,60 @@ const AdminProfile: React.FC = () => {
     }
   }, [avatarFile, bannerFile, bio, displayName, avatarFrame]);
 
+  const handleChangePassword = useCallback(async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error('Vui lòng nhập đầy đủ thông tin');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error('Mật khẩu mới tối thiểu 6 ký tự');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error('Mật khẩu xác nhận không khớp');
+      return;
+    }
+
+    try {
+      setChangePasswordState('loading');
+      
+      await api.post('/admin/change-password', {
+        currentPassword,
+        newPassword,
+      });
+      
+      toast.success('Đổi mật khẩu thành công');
+      setShowChangePassword(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (e: any) {
+      // Extract error message from response
+      let errorMessage = 'Đổi mật khẩu thất bại';
+      
+      if (e?.response?.data?.message) {
+        errorMessage = e.response.data.message;
+      } else if (e?.response?.status === 401) {
+        errorMessage = 'Mật khẩu hiện tại không đúng';
+      } else if (e?.response?.status === 400) {
+        errorMessage = e?.response?.data?.message || 'Dữ liệu không hợp lệ';
+      } else if (e?.response?.status === 404) {
+        errorMessage = 'Không tìm thấy tài khoản. Vui lòng đăng nhập lại.';
+      } else if (e?.response?.status === 500) {
+        errorMessage = 'Lỗi máy chủ. Vui lòng thử lại sau.';
+      } else if (e?.message) {
+        errorMessage = e.message;
+      }
+      
+      toast.error(errorMessage);
+      console.error('[AdminProfile] Change password error:', e);
+    } finally {
+      setChangePasswordState('idle');
+    }
+  }, [currentPassword, newPassword, confirmPassword]);
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -214,6 +275,96 @@ const AdminProfile: React.FC = () => {
             <div className={styles.username}>{profile?.username ?? '...'}</div>
             <div className={styles.email}>{profile?.email ?? ''}</div>
             <div className={styles.role}>Role: {profile?.role ?? '...'}</div>
+          </div>
+
+          {/* Change Password Section */}
+          <div className={styles.passwordSection}>
+            <div className={styles.passwordHeader}>
+              <h3 className={styles.passwordTitle} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Icon name="lock" size={18} color="rgba(59, 130, 246, 0.8)" />
+                Đổi mật khẩu
+              </h3>
+              {!showChangePassword && (
+                <button
+                  type="button"
+                  className={styles.togglePasswordButton}
+                  onClick={() => setShowChangePassword(true)}
+                >
+                  Đổi mật khẩu
+                </button>
+              )}
+            </div>
+
+            {showChangePassword && (
+              <div className={styles.passwordForm}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Mật khẩu hiện tại</label>
+                  <input
+                    type="password"
+                    className={styles.input}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Nhập mật khẩu hiện tại"
+                    autoComplete="current-password"
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Mật khẩu mới</label>
+                  <input
+                    type="password"
+                    className={styles.input}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)"
+                    autoComplete="new-password"
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Xác nhận mật khẩu mới</label>
+                  <input
+                    type="password"
+                    className={styles.input}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Nhập lại mật khẩu mới"
+                    autoComplete="new-password"
+                  />
+                </div>
+
+                <div className={styles.passwordActions}>
+                  <button
+                    type="button"
+                    className={styles.secondaryButton}
+                    onClick={() => {
+                      setShowChangePassword(false);
+                      setCurrentPassword('');
+                      setNewPassword('');
+                      setConfirmPassword('');
+                    }}
+                    disabled={changePasswordState === 'loading'}
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.saveButton}
+                    onClick={() => void handleChangePassword()}
+                    disabled={
+                      changePasswordState === 'loading' ||
+                      !currentPassword ||
+                      !newPassword ||
+                      !confirmPassword ||
+                      newPassword !== confirmPassword ||
+                      newPassword.length < 6
+                    }
+                  >
+                    {changePasswordState === 'loading' ? 'Đang xử lý...' : 'Đổi mật khẩu'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

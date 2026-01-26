@@ -5,6 +5,200 @@
     <link rel="icon" type="image/png" href="/images/logoweb.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ShowBill - Nền tảng công nghệ</title>
+    <script>
+      // DevTools Protection - Run BEFORE React loads
+      (function() {
+        'use strict';
+        
+        // Global flag to track DevTools state
+        window.__DEVTOOLS_DETECTED__ = false;
+        window.__API_BLOCKED__ = false;
+        
+        // Enhanced detection function
+        function detectDevTools() {
+          try {
+            // Method 1: Window size difference (most reliable)
+            const widthDiff = window.outerWidth - window.innerWidth;
+            const heightDiff = window.outerHeight - window.innerHeight;
+            if (widthDiff > 160 || heightDiff > 160) {
+              return true;
+            }
+            
+            // Method 2: Console detection with getter trap
+            let detected = false;
+            const img = new Image();
+            Object.defineProperty(img, 'id', {
+              get: function() {
+                detected = true;
+                return '';
+              }
+            });
+            console.log(img);
+            console.clear();
+            if (detected) return true;
+            
+            // Method 3: Property access detection
+            let propAccessed = false;
+            const obj = {};
+            Object.defineProperty(obj, 'devtools', {
+              get: function() {
+                propAccessed = true;
+                return false;
+              }
+            });
+            console.log(obj);
+            console.clear();
+            if (propAccessed) return true;
+            
+            // Method 4: Debugger timing (if DevTools is open, debugger pauses)
+            const start = Date.now();
+            // eslint-disable-next-line no-eval
+            eval('debugger');
+            const end = Date.now();
+            if (end - start > 50) return true;
+            
+            return false;
+          } catch(e) {
+            return false;
+          }
+        }
+        
+        // Redirect function
+        function redirectToGoogle() {
+          window.__DEVTOOLS_DETECTED__ = true;
+          window.__API_BLOCKED__ = true;
+          try {
+            localStorage.clear();
+            sessionStorage.clear();
+          } catch(e) {}
+          window.location.href = 'https://www.google.com';
+        }
+        
+        // Block shortcuts immediately
+        function blockShortcuts(e) {
+          // F12
+          if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            redirectToGoogle();
+            return false;
+          }
+          // Ctrl+Shift+I
+          if (e.key === 'I' && e.ctrlKey && e.shiftKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            redirectToGoogle();
+            return false;
+          }
+          // Ctrl+Shift+C
+          if (e.key === 'C' && e.ctrlKey && e.shiftKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            redirectToGoogle();
+            return false;
+          }
+          // Ctrl+Shift+J
+          if (e.key === 'J' && e.ctrlKey && e.shiftKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            redirectToGoogle();
+            return false;
+          }
+          // Ctrl+U
+          if (e.key === 'u' && e.ctrlKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            redirectToGoogle();
+            return false;
+          }
+        }
+        
+        // Block context menu
+        function blockContextMenu(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          setTimeout(function() {
+            if (detectDevTools()) {
+              redirectToGoogle();
+            }
+          }, 100);
+          return false;
+        }
+        
+        // Immediate checks and setup
+        if (detectDevTools()) {
+          redirectToGoogle();
+        }
+        
+        // Setup event listeners
+        document.addEventListener('keydown', blockShortcuts, true);
+        window.addEventListener('keydown', blockShortcuts, true);
+        document.addEventListener('contextmenu', blockContextMenu, true);
+        
+        // Continuous monitoring
+        setInterval(function() {
+          if (!window.__DEVTOOLS_DETECTED__ && detectDevTools()) {
+            redirectToGoogle();
+          }
+        }, 200);
+        
+        // Check on resize
+        window.addEventListener('resize', function() {
+          setTimeout(function() {
+            if (!window.__DEVTOOLS_DETECTED__ && detectDevTools()) {
+              redirectToGoogle();
+            }
+          }, 50);
+        });
+        
+        // Check on focus
+        window.addEventListener('focus', function() {
+          setTimeout(function() {
+            if (!window.__DEVTOOLS_DETECTED__ && detectDevTools()) {
+              redirectToGoogle();
+            }
+          }, 50);
+        });
+        
+        // Block fetch and XMLHttpRequest when DevTools detected
+        const originalFetch = window.fetch;
+        window.fetch = function() {
+          if (window.__API_BLOCKED__) {
+            return Promise.reject(new Error('API calls blocked - DevTools detected'));
+          }
+          return originalFetch.apply(this, arguments);
+        };
+        
+        const originalXHROpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function() {
+          if (window.__API_BLOCKED__) {
+            throw new Error('API calls blocked - DevTools detected');
+          }
+          return originalXHROpen.apply(this, arguments);
+        };
+        
+        // Additional check after DOM ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function() {
+            if (detectDevTools()) {
+              redirectToGoogle();
+            }
+          });
+        } else {
+          setTimeout(function() {
+            if (detectDevTools()) {
+              redirectToGoogle();
+            }
+          }, 100);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

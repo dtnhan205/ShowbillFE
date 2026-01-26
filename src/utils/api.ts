@@ -5,6 +5,12 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  // Block all API calls if DevTools is detected
+  // @ts-ignore
+  if (window.__API_BLOCKED__ || window.__DEVTOOLS_DETECTED__) {
+    return Promise.reject(new Error('API calls blocked - DevTools detected'));
+  }
+  
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

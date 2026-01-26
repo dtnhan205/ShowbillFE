@@ -462,3 +462,107 @@
   font-size: 12px;
 }
 
+.passwordSection {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.passwordHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.passwordTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.togglePasswordButton {
+  padding: 8px 16px;
+  border: 2px solid rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.1);
+  color: rgba(59, 130, 246, 0.9);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.togglePasswordButton:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.7);
+  transform: translateY(-1px);
+}
+
+.passwordForm {
+  margin-top: 16px;
+}
+
+.passwordForm .formGroup {
+  margin-bottom: 16px;
+}
+
+.passwordForm .label {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.passwordActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.passwordActions .saveButton {
+  flex: 1;
+  padding: 10px 18px;
+  font-size: 14px;
+  width: auto;
+  margin-top: 0;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.passwordActions .saveButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 9px rgba(59, 130, 246, 0.25);
+}
+
+.passwordActions .secondaryButton {
+  flex: 1;
+  padding: 10px 18px;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.secondaryButton {
+  flex: 1;
+  padding: 14px 24px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.15);
+}
+
+.secondaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+

@@ -16,6 +16,7 @@ const AdminObManager: React.FC = () => {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [showForm, setShowForm] = useState(false);
 
   const canCreate = useMemo(() => name.trim() && slug.trim(), [name, slug]);
 
@@ -41,6 +42,7 @@ const AdminObManager: React.FC = () => {
       await api.post('/obs', { name: name.trim(), slug: slug.trim().toLowerCase() });
       setName('');
       setSlug('');
+      setShowForm(false);
       await fetchList();
       toast.success('Đã tạo OB thành công!');
     } catch (e) {
@@ -98,19 +100,37 @@ const AdminObManager: React.FC = () => {
   return (
     <div className={styles.wrap}>
       <div className={styles.header}>
-        <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Icon name="game" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý OB/Mùa Game
-        </h2>
-        <div className={styles.muted}>Tổng: {items.length} | Hiển thị: {filteredItems.length}</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+          <div>
+            <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <Icon name="game" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý OB/Mùa Game
+            </h2>
+            <div className={styles.muted}>Tổng: {items.length} | Hiển thị: {filteredItems.length}</div>
+          </div>
+          {!showForm && (
+            <button
+              type="button"
+              className={styles.addButton}
+              onClick={() => setShowForm(true)}
+            >
+              <Icon name="package" size={18} color="currentColor" style={{ marginRight: 8, display: 'inline-block', verticalAlign: 'middle' }} />
+              Thêm OB mới
+            </button>
+          )}
+        </div>
       </div>
 
       <div className={styles.filters}>
-        <input
-          className={styles.filterInput}
-          placeholder="Tìm theo tên hoặc slug..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div style={{ position: 'relative' }}>
+          <Icon name="search" size={18} color="rgba(255, 255, 255, 0.5)" style={{ position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+          <input
+            className={styles.filterInput}
+            placeholder="Tìm theo tên hoặc slug..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ paddingLeft: 48 }}
+          />
+        </div>
         <select
           className={styles.filterSelect}
           value={statusFilter}
@@ -121,32 +141,55 @@ const AdminObManager: React.FC = () => {
           <option value="inactive">Đã tắt</option>
         </select>
         <button type="button" className={styles.resetBtn} onClick={resetFilters}>
+          <Icon name="refresh-cw" size={16} color="currentColor" style={{ marginRight: 6, display: 'inline-block', verticalAlign: 'middle' }} />
           Reset
         </button>
       </div>
 
-      <div className={styles.card}>
-        <div className={styles.form}>
-          <input
-            className={styles.input}
-            placeholder="Tên hiển thị (VD: OB51)"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            className={styles.input}
-            placeholder="Slug (VD: ob51)"
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-          />
-          <button className={styles.btn} type="button" disabled={!canCreate} onClick={() => void createItem()}>
-            Thêm
-          </button>
+      {showForm && (
+        <div className={styles.card}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.95)', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <Icon name="package" size={20} color="rgba(59, 130, 246, 0.8)" />
+              Thêm OB mới
+            </h3>
+            <button
+              type="button"
+              className={styles.closeButton}
+              onClick={() => {
+                setShowForm(false);
+                setName('');
+                setSlug('');
+              }}
+              title="Đóng"
+            >
+              <Icon name="close" size={20} color="currentColor" />
+            </button>
+          </div>
+          <div className={styles.form}>
+            <input
+              className={styles.input}
+              placeholder="Tên hiển thị (VD: OB51)"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <input
+              className={styles.input}
+              placeholder="Slug (VD: ob51)"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+            />
+            <button className={styles.btn} type="button" disabled={!canCreate} onClick={() => void createItem()}>
+              <Icon name="check" size={16} color="currentColor" style={{ marginRight: 6, display: 'inline-block', verticalAlign: 'middle' }} />
+              Thêm
+            </button>
+          </div>
+          <div className={styles.muted} style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Icon name="info" size={16} color="rgba(255, 255, 255, 0.5)" />
+            Gợi ý: slug nên viết thường, không dấu, không khoảng trắng.
+          </div>
         </div>
-        <div className={styles.muted} style={{ marginTop: 10 }}>
-          Gợi ý: slug nên viết thường, không dấu, không khoảng trắng.
-        </div>
-      </div>
+      )}
 
       <div className={styles.card}>
         {loadState === 'loading' ? <div className={styles.muted}>Đang tải...</div> : null}
@@ -165,7 +208,8 @@ const AdminObManager: React.FC = () => {
             {filteredItems.length === 0 ? (
               <tr>
                 <td colSpan={4} className={styles.emptyMessage}>
-                  Không tìm thấy OB nào phù hợp với bộ lọc.
+                  <Icon name="alert-circle" size={48} color="rgba(255, 255, 255, 0.3)" style={{ marginBottom: 16, display: 'block', margin: '0 auto 16px' }} />
+                  <div>Không tìm thấy OB nào phù hợp với bộ lọc.</div>
                 </td>
               </tr>
             ) : (
@@ -184,6 +228,7 @@ const AdminObManager: React.FC = () => {
                       type="button"
                       className={styles.actionBtn}
                       onClick={() => void toggleActive(x._id, !x.isActive)}
+                      title={x.isActive ? 'Tắt OB này' : 'Bật OB này'}
                     >
                       {x.isActive ? 'Tắt' : 'Bật'}
                     </button>
@@ -191,7 +236,9 @@ const AdminObManager: React.FC = () => {
                       type="button"
                       className={`${styles.actionBtn} ${styles.danger}`}
                       onClick={() => void removeItem(x._id)}
+                      title="Xóa OB này"
                     >
+                      <Icon name="trash" size={14} color="currentColor" style={{ marginRight: 6, display: 'inline-block', verticalAlign: 'middle' }} />
                       Xóa
                     </button>
                   </div>

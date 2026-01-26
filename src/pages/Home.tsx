@@ -589,9 +589,7 @@ const Home: React.FC = () => {
                             </div>
                             <h3 className={styles.cardName}>{admin.displayName}</h3>
                           </div>
-                          {admin.bio && (
-                            <p className={styles.cardBio}>{admin.bio}</p>
-                          )}
+                          <p className={styles.cardBio}>{admin.bio || '\u00A0'}</p>
                           <div className={styles.cardMetrics}>
                             <div className={styles.metric}>
                               <span className={styles.metricLabel}>Bills</span>

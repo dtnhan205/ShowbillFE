@@ -15,8 +15,15 @@ import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import Guide from './pages/Guide';
 import { enableScreenshotProtection } from './utils/screenshotProtection';
+import { enableDevToolsProtection } from './utils/devToolsProtection';
 
 function App() {
+  // Enable DevTools protection - redirects to Google if DevTools is detected
+  useEffect(() => {
+    const cleanupDevTools = enableDevToolsProtection();
+    return cleanupDevTools;
+  }, []);
+
   // Enable screenshot protection globally
   useEffect(() => {
     const cleanup = enableScreenshotProtection({

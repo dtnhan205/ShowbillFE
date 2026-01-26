@@ -97,3 +97,61 @@
   cursor: not-allowed;
 }
 
+.forgotLink {
+  display: block;
+  width: 100%;
+  text-align: right;
+  margin-top: -8px;
+  margin-bottom: 16px;
+  padding: 8px 0;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+.forgotLink:hover {
+  color: #00d9a5;
+  text-decoration: underline;
+}
+
+.description {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.secondaryButton {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondaryButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.secondaryButton:active {
+  transform: translateY(1px);
+}
+
