@@ -145,7 +145,6 @@ const AdminDashboard: React.FC = () => {
         // Parse month string: "Tháng 1" -> extract month number
         const monthMatch = selectedMonth.match(/Tháng (\d+)/);
         if (monthMatch) {
-          const monthNum = parseInt(monthMatch[1]);
           queryParams += `&month=${encodeURIComponent(selectedMonth)}&year=${selectedYear || currentYear}`;
         } else {
           queryParams += `&month=${encodeURIComponent(selectedMonth)}`;

@@ -9,7 +9,7 @@ import { base64ToBlobUrl, revokeBlobUrl } from '../utils/imageProtection';
 import ScreenshotProtectionOverlay from '../components/ScreenshotProtectionOverlay/ScreenshotProtectionOverlay';
 import styles from './Profile.module.css';
 import toast from 'react-hot-toast';
-import { UPGRADE_DISCLAIMER, maskSensitiveText } from '../utils/legal';
+import { maskSensitiveText } from '../utils/legal';
 import { getImageUrl } from '../utils/imageUrl';
 import Icon from '../components/Icons/Icon';
 

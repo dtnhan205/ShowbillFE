@@ -115,13 +115,11 @@ function redirectToGoogle(): void {
   
   // Block all ongoing and future API calls
   // Override fetch
-  const originalFetch = window.fetch;
   window.fetch = function() {
     return Promise.reject(new Error('API calls blocked - DevTools detected'));
   };
   
   // Override XMLHttpRequest
-  const originalXHROpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function() {
     throw new Error('API calls blocked - DevTools detected');
   };

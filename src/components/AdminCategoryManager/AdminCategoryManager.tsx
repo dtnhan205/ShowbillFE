@@ -20,16 +20,6 @@ const AdminCategoryManager: React.FC = () => {
 
   const canCreate = useMemo(() => name.trim() && slug.trim(), [name, slug]);
 
-  // Kiểm tra role super admin
-  const isSuperAdmin = useMemo(() => {
-    try {
-      const raw = localStorage.getItem('adminRole');
-      return raw === 'super';
-    } catch {
-      return false;
-    }
-  }, []);
-
   const fetchList = useCallback(async () => {
     try {
       setLoadState('loading');
@@ -52,7 +42,7 @@ const AdminCategoryManager: React.FC = () => {
 
   const createItem = useCallback(async () => {
     try {
-      const response = await api.post('/categories', { name: name.trim(), slug: slug.trim().toLowerCase() });
+      await api.post('/categories', { name: name.trim(), slug: slug.trim().toLowerCase() });
       setName('');
       setSlug('');
       setShowForm(false);

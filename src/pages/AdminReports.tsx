@@ -147,7 +147,7 @@ const AdminReports: React.FC = () => {
         setItems((prev) =>
           prev.map((item) => (item.adminId === adminId ? { ...item, isPublicHidden: data.admin.isPublicHidden } : item)),
         );
-        toast.success(data.message || 'Đã cập nhật trạng thái');
+        toast.success('Đã cập nhật trạng thái');
       } catch (err) {
         toast.error(err instanceof Error ? err.message : 'Không thể cập nhật trạng thái hiển thị');
       } finally {

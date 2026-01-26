@@ -47,16 +47,6 @@ const AdminProductForm: React.FC<Props> = ({ onSuccess, onCancel, inlineMode = f
   const [categories, setCategories] = useState<Category[]>([]);
   const [metaLoading, setMetaLoading] = useState(false);
 
-  // Kiểm tra role super admin
-  const isSuperAdmin = useMemo(() => {
-    try {
-      const raw = localStorage.getItem('adminRole');
-      return raw === 'super';
-    } catch {
-      return false;
-    }
-  }, []);
-
   useEffect(() => {
     return () => {
       if (preview.startsWith('blob:')) URL.revokeObjectURL(preview);
