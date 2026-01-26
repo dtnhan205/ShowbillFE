@@ -19,6 +19,7 @@ import { enableScreenshotProtection } from './utils/screenshotProtection';
 
 function App() {
   // Enable DevTools protection - redirects to Google if DevTools is detected
+  // TẠM THỜI TẮT ĐỂ TEST
   // useEffect(() => {
   //   const cleanupDevTools = enableDevToolsProtection();
   //   return cleanupDevTools;
