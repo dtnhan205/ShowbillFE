@@ -51,7 +51,7 @@ const AdminCategoryManager: React.FC = () => {
       // Refresh list sau khi tạo thành công
       // Thêm delay nhỏ để đảm bảo DB đã commit
       setTimeout(async () => {
-        await fetchList();
+      await fetchList();
       }, 100);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Tạo category thất bại');
@@ -110,10 +110,10 @@ const AdminCategoryManager: React.FC = () => {
       <div className={styles.header}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
           <div>
-            <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <Icon name="folder" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý Category
-            </h2>
-            <div className={styles.muted}>Tổng: {items.length} | Hiển thị: {filteredItems.length}</div>
+        <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Icon name="folder" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý Category
+        </h2>
+        <div className={styles.muted}>Tổng: {items.length} | Hiển thị: {filteredItems.length}</div>
           </div>
           {!showForm && (
             <button
@@ -131,13 +131,13 @@ const AdminCategoryManager: React.FC = () => {
       <div className={styles.filters}>
         <div style={{ position: 'relative' }}>
           <Icon name="search" size={18} color="rgba(255, 255, 255, 0.5)" style={{ position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-          <input
-            className={styles.filterInput}
-            placeholder="Tìm theo tên hoặc slug..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+        <input
+          className={styles.filterInput}
+          placeholder="Tìm theo tên hoặc slug..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
             style={{ paddingLeft: 48 }}
-          />
+        />
         </div>
         <select
           className={styles.filterSelect}
@@ -155,7 +155,7 @@ const AdminCategoryManager: React.FC = () => {
       </div>
 
       {showForm && (
-        <div className={styles.card}>
+      <div className={styles.card}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.95)', display: 'flex', alignItems: 'center', gap: 10 }}>
               <Icon name="folder" size={20} color="rgba(59, 130, 246, 0.8)" />
@@ -174,29 +174,29 @@ const AdminCategoryManager: React.FC = () => {
               <Icon name="close" size={20} color="currentColor" />
             </button>
           </div>
-          <div className={styles.form}>
-            <input
-              className={styles.input}
-              placeholder="Tên hiển thị (VD: Migul)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <input
-              className={styles.input}
-              placeholder="Slug (VD: migul)"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-            />
-            <button className={styles.btn} type="button" disabled={!canCreate} onClick={() => void createItem()}>
+        <div className={styles.form}>
+          <input
+            className={styles.input}
+            placeholder="Tên hiển thị (VD: Migul)"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <input
+            className={styles.input}
+            placeholder="Slug (VD: migul)"
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+          />
+          <button className={styles.btn} type="button" disabled={!canCreate} onClick={() => void createItem()}>
               <Icon name="check" size={16} color="currentColor" style={{ marginRight: 6, display: 'inline-block', verticalAlign: 'middle' }} />
-              Thêm
-            </button>
-          </div>
+            Thêm
+          </button>
+        </div>
           <div className={styles.muted} style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Icon name="info" size={16} color="rgba(255, 255, 255, 0.5)" />
-            Gợi ý: slug nên viết thường, không dấu, không khoảng trắng.
-          </div>
+          Gợi ý: slug nên viết thường, không dấu, không khoảng trắng.
         </div>
+      </div>
       )}
 
       <div className={styles.card}>

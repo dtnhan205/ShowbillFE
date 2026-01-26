@@ -1,11 +1,16 @@
 /**
  * Utility để lấy base URL cho hình ảnh từ backend
- * Sử dụng VITE_IMAGE_BASE_URL nếu có, fallback về VITE_API_URL
+ * Sử dụng VITE_IMAGE_BASE_URL nếu có, nếu không thì dùng empty string (relative path)
  */
 export function getImageBaseUrl(): string {
-  const imageBaseUrl = import.meta.env.VITE_IMAGE_BASE_URL || import.meta.env.VITE_API_URL || '';
-  // Remove trailing slash
-  return imageBaseUrl.replace(/\/$/, '');
+  // Nếu có VITE_IMAGE_BASE_URL, dùng nó
+  if (import.meta.env.VITE_IMAGE_BASE_URL) {
+    return import.meta.env.VITE_IMAGE_BASE_URL.replace(/\/$/, '');
+  }
+  
+  // Nếu không có, trả về empty string để dùng relative path
+  // Images sẽ được serve trực tiếp từ Nginx /uploads, không qua /api
+  return '';
 }
 
 /**
@@ -20,6 +25,8 @@ export function getImageUrl(imagePath: string | undefined | null): string {
   // Đảm bảo path bắt đầu bằng /
   const normalizedPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
   
-  return `${baseUrl}${normalizedPath}`;
+  // Nếu baseUrl rỗng, trả về path trực tiếp (relative path)
+  // Nếu có baseUrl, nối với path
+  return baseUrl ? `${baseUrl}${normalizedPath}` : normalizedPath;
 }
 
