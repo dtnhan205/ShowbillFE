@@ -35,6 +35,10 @@ const AdminProductList: React.FC = () => {
     status: 'all',
   });
 
+  const PAGE_SIZE = 20;
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+
   // Kiểm tra role super admin
   const isSuperAdmin = useMemo(() => {
     try {
@@ -62,15 +66,20 @@ const AdminProductList: React.FC = () => {
     }
   }, [isSuperAdmin]);
 
-  const fetchProducts = useCallback(async () => {
+  const fetchProducts = useCallback(async (pageParam: number = 1) => {
     try {
       setLoadState('loading');
       setErrorMessage(null);
 
       // Super admin có thể xem tất cả sản phẩm, admin thường chỉ xem của mình
-      const endpoint = isSuperAdmin ? '/products/all?page=1&limit=300' : '/products/mine?page=1&limit=300';
+      const endpoint = isSuperAdmin
+        ? `/products/all?page=${pageParam}&limit=${PAGE_SIZE}`
+        : `/products/mine?page=${pageParam}&limit=${PAGE_SIZE}`;
       const { data } = await api.get<Product[]>(endpoint);
-      setProducts(Array.isArray(data) ? data : []);
+      const list = Array.isArray(data) ? data : [];
+      setProducts(list);
+      setPage(pageParam);
+      setHasNextPage(list.length === PAGE_SIZE);
 
       setLoadState('idle');
     } catch (err) {
@@ -82,7 +91,7 @@ const AdminProductList: React.FC = () => {
 
   useEffect(() => {
     void fetchMeta();
-    void fetchProducts();
+    void fetchProducts(1);
   }, [fetchMeta, fetchProducts]);
 
   const handleDelete = useCallback((id: string) => {
@@ -146,7 +155,7 @@ const AdminProductList: React.FC = () => {
       return (
         <div className={styles.error}>
           <p>{errorMessage ?? 'Đã xảy ra lỗi.'}</p>
-          <button className={styles.retryButton} onClick={() => void fetchProducts()}>
+          <button className={styles.retryButton} onClick={() => void fetchProducts(page)}>
             Thử lại
           </button>
         </div>
@@ -158,78 +167,109 @@ const AdminProductList: React.FC = () => {
     }
 
     return (
-      <div className={styles.tableWrap}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Tên sản phẩm</th>
-              <th>Hình ảnh</th>
-              <th>OB</th>
-              <th>Category</th>
-              <th>Lượt xem</th>
-              <th>Trạng thái</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredProducts.map((p) => (
-              <tr key={p._id}>
-                <td>{p.name}</td>
-                <td>
-                  {p.imageUrl ? (
-                    <img src={getImageUrl(p.imageUrl)} alt={p.name} className={styles.image} />
-                  ) : p.imageBase64 ? (
-                    <img src={p.imageBase64} alt={p.name} className={styles.image} />
-                  ) : (
-                    <div className={styles.noImage}>No image</div>
-                  )}
-                </td>
-                <td>
-                  <span className={`${styles.badge} ${styles.badgeMeta}`}>{p.obVersion ?? '-'}</span>
-                </td>
-                <td>
-                  <span className={`${styles.badge} ${styles.badgeMeta}`}>{p.category ?? '-'}</span>
-                </td>
-                <td>
-                  <span className={styles.viewsCount}>
-                    {(p.views ?? 0).toLocaleString('vi-VN')}
-                  </span>
-                </td>
-                <td>
-                  <span
-                    className={`${styles.badge} ${p.isHidden ? styles.badgeHidden : styles.badgeVisible}`}
-                  >
-                    {p.isHidden ? 'Ẩn' : 'Hiện'}
-                  </span>
-                </td>
-                <td>
-                  <div className={styles.actions}>
-                    <Link to={`/admin/edit/${p._id}`} className={`${styles.actionBtn} ${styles.edit}`}>
-                      Sửa
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(p._id)}
-                      className={`${styles.actionBtn} ${styles.delete}`}
-                    >
-                      Xóa
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => void handleToggleHidden(p._id)}
-                      className={`${styles.actionBtn} ${styles.toggle}`}
-                    >
-                      {p.isHidden ? 'Hiện' : 'Ẩn'}
-                    </button>
-                  </div>
-                </td>
+      <>
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Tên sản phẩm</th>
+                <th>Hình ảnh</th>
+                <th>OB</th>
+                <th>Category</th>
+                <th>Lượt xem</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {filteredProducts.map((p) => (
+                <tr key={p._id}>
+                  <td>{p.name}</td>
+                  <td>
+                    {p.imageUrl ? (
+                      <img src={getImageUrl(p.imageUrl)} alt={p.name} className={styles.image} />
+                    ) : p.imageBase64 ? (
+                      <img src={p.imageBase64} alt={p.name} className={styles.image} />
+                    ) : (
+                      <div className={styles.noImage}>No image</div>
+                    )}
+                  </td>
+                  <td>
+                    <span className={`${styles.badge} ${styles.badgeMeta}`}>{p.obVersion ?? '-'}</span>
+                  </td>
+                  <td>
+                    <span className={`${styles.badge} ${styles.badgeMeta}`}>{p.category ?? '-'}</span>
+                  </td>
+                  <td>
+                    <span className={styles.viewsCount}>
+                      {(p.views ?? 0).toLocaleString('vi-VN')}
+                    </span>
+                  </td>
+                  <td>
+                    <span
+                      className={`${styles.badge} ${p.isHidden ? styles.badgeHidden : styles.badgeVisible}`}
+                    >
+                      {p.isHidden ? 'Ẩn' : 'Hiện'}
+                    </span>
+                  </td>
+                  <td>
+                    <div className={styles.actions}>
+                      <Link to={`/admin/edit/${p._id}`} className={`${styles.actionBtn} ${styles.edit}`}>
+                        Sửa
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(p._id)}
+                        className={`${styles.actionBtn} ${styles.delete}`}
+                      >
+                        Xóa
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleToggleHidden(p._id)}
+                        className={`${styles.actionBtn} ${styles.toggle}`}
+                      >
+                        {p.isHidden ? 'Hiện' : 'Ẩn'}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className={styles.pagination}>
+          <button
+            type="button"
+            className={styles.pageButton}
+            disabled={page === 1 || loadState === 'loading'}
+            onClick={() => void fetchProducts(Math.max(1, page - 1))}
+          >
+            Trang trước
+          </button>
+          <span className={styles.pageInfo}>Trang {page}</span>
+          <button
+            type="button"
+            className={styles.pageButton}
+            disabled={!hasNextPage || loadState === 'loading'}
+            onClick={() => void fetchProducts(page + 1)}
+          >
+            Trang sau
+          </button>
+        </div>
+      </>
     );
-  }, [errorMessage, fetchProducts, filteredProducts, handleDelete, handleToggleHidden, loadState]);
+  }, [
+    errorMessage,
+    fetchProducts,
+    filteredProducts,
+    handleDelete,
+    handleToggleHidden,
+    hasNextPage,
+    loadState,
+    page,
+  ]);
 
   return (
     <div>

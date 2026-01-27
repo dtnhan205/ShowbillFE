@@ -20,6 +20,9 @@ const AdminObManager: React.FC = () => {
 
   const canCreate = useMemo(() => name.trim() && slug.trim(), [name, slug]);
 
+  const PAGE_SIZE = 10;
+  const [page, setPage] = useState(1);
+
   const fetchList = useCallback(async () => {
     try {
       setLoadState('loading');
@@ -77,7 +80,7 @@ const AdminObManager: React.FC = () => {
   }, [confirmDelete]);
 
   const filteredItems = useMemo(() => {
-    return items.filter((item) => {
+    const filtered = items.filter((item) => {
       const searchLower = search.toLowerCase().trim();
       if (searchLower) {
         const matchesSearch =
@@ -90,11 +93,15 @@ const AdminObManager: React.FC = () => {
 
       return true;
     });
-  }, [items, search, statusFilter]);
+
+    const start = (page - 1) * PAGE_SIZE;
+    return filtered.slice(start, start + PAGE_SIZE);
+  }, [items, page, search, statusFilter]);
 
   const resetFilters = useCallback(() => {
     setSearch('');
     setStatusFilter('all');
+    setPage(1);
   }, []);
 
   return (
@@ -102,10 +109,10 @@ const AdminObManager: React.FC = () => {
       <div className={styles.header}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
           <div>
-            <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <Icon name="game" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý OB/Mùa Game
-            </h2>
-            <div className={styles.muted}>Tổng: {items.length} | Hiển thị: {filteredItems.length}</div>
+        <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Icon name="game" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý OB/Mùa Game
+        </h2>
+        <div className={styles.muted}>Tổng: {items.length} | Hiển thị: {filteredItems.length}</div>
           </div>
           {!showForm && (
             <button
@@ -123,13 +130,13 @@ const AdminObManager: React.FC = () => {
       <div className={styles.filters}>
         <div style={{ position: 'relative' }}>
           <Icon name="search" size={18} color="rgba(255, 255, 255, 0.5)" style={{ position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-          <input
-            className={styles.filterInput}
-            placeholder="Tìm theo tên hoặc slug..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+        <input
+          className={styles.filterInput}
+          placeholder="Tìm theo tên hoặc slug..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
             style={{ paddingLeft: 48 }}
-          />
+        />
         </div>
         <select
           className={styles.filterSelect}
@@ -147,7 +154,7 @@ const AdminObManager: React.FC = () => {
       </div>
 
       {showForm && (
-        <div className={styles.card}>
+      <div className={styles.card}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.95)', display: 'flex', alignItems: 'center', gap: 10 }}>
               <Icon name="package" size={20} color="rgba(59, 130, 246, 0.8)" />
@@ -166,29 +173,29 @@ const AdminObManager: React.FC = () => {
               <Icon name="close" size={20} color="currentColor" />
             </button>
           </div>
-          <div className={styles.form}>
-            <input
-              className={styles.input}
-              placeholder="Tên hiển thị (VD: OB51)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <input
-              className={styles.input}
-              placeholder="Slug (VD: ob51)"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-            />
-            <button className={styles.btn} type="button" disabled={!canCreate} onClick={() => void createItem()}>
+        <div className={styles.form}>
+          <input
+            className={styles.input}
+            placeholder="Tên hiển thị (VD: OB51)"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <input
+            className={styles.input}
+            placeholder="Slug (VD: ob51)"
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+          />
+          <button className={styles.btn} type="button" disabled={!canCreate} onClick={() => void createItem()}>
               <Icon name="check" size={16} color="currentColor" style={{ marginRight: 6, display: 'inline-block', verticalAlign: 'middle' }} />
-              Thêm
-            </button>
-          </div>
+            Thêm
+          </button>
+        </div>
           <div className={styles.muted} style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Icon name="info" size={16} color="rgba(255, 255, 255, 0.5)" />
-            Gợi ý: slug nên viết thường, không dấu, không khoảng trắng.
-          </div>
+          Gợi ý: slug nên viết thường, không dấu, không khoảng trắng.
         </div>
+      </div>
       )}
 
       <div className={styles.card}>
@@ -248,6 +255,38 @@ const AdminObManager: React.FC = () => {
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className={styles.pagination}>
+        <button
+          type="button"
+          className={styles.pageButton}
+          disabled={page === 1}
+          onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+        >
+          Trang trước
+        </button>
+        <span className={styles.pageInfo}>Trang {page}</span>
+        <button
+          type="button"
+          className={styles.pageButton}
+          disabled={page * PAGE_SIZE >= items.filter((item) => {
+            const searchLower = search.toLowerCase().trim();
+            if (searchLower) {
+              const matchesSearch =
+                item.name.toLowerCase().includes(searchLower) || item.slug.toLowerCase().includes(searchLower);
+              if (!matchesSearch) return false;
+            }
+
+            if (statusFilter === 'active' && !item.isActive) return false;
+            if (statusFilter === 'inactive' && item.isActive) return false;
+
+            return true;
+          }).length}
+          onClick={() => setPage((prev) => prev + 1)}
+        >
+          Trang sau
+        </button>
       </div>
 
       {confirmDelete && (

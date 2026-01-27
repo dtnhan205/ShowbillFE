@@ -54,6 +54,10 @@ const Profile: React.FC = () => {
     reason?: string;
   }>({});
 
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 20;
+  const [hasNextPage, setHasNextPage] = useState(false);
+
   const [ob, setOb] = useState('');
   const [cat, setCat] = useState('');
 
@@ -182,7 +186,7 @@ const Profile: React.FC = () => {
       setLoading(true);
       setError(null);
       setData(null); // Reset data khi fetch mới
-      const res = await api.get<PublicAdminDetail>(`/public/admins/${id}`);
+      const res = await api.get<PublicAdminDetail>(`/public/admins/${id}?page=${page}&limit=${PAGE_SIZE}`);
       
       // Log để debug
       console.log('[Profile] Admin data:', res.data.admin);
@@ -197,12 +201,13 @@ const Profile: React.FC = () => {
       }
       
       setData(res.data);
+      setHasNextPage((res.data.products ?? []).length === PAGE_SIZE);
       setLoading(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Không thể tải trang profile');
       setLoading(false);
     }
-  }, [id]);
+  }, [id, page]);
 
 
   // Reset data và loading khi id thay đổi
@@ -210,6 +215,7 @@ const Profile: React.FC = () => {
     setData(null);
     setLoading(true);
     setError(null);
+    setPage(1);
   }, [id]);
 
   // Effect để tăng view cho tất cả bill của admin khi mở trang profile
@@ -783,6 +789,49 @@ const Profile: React.FC = () => {
             <div className={styles.contentLayout}>
               <div className={styles.mainColumn}>
                 <ClientProductGrid products={filteredProducts} onOpen={openBill} />
+                {filteredProducts.length > 0 && (
+                  <div className={styles.pagination}>
+                    <button
+                      type="button"
+                      className={styles.pageButton}
+                      disabled={page === 1 || loading}
+                      onClick={() => setPage(1)}
+                    >
+                      «
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.pageButton}
+                      disabled={page === 1 || loading}
+                      onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.pageButton} ${styles.pageButtonActive}`}
+                      disabled
+                    >
+                      {page}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.pageButton}
+                      disabled={!hasNextPage || loading}
+                      onClick={() => setPage((prev) => prev + 1)}
+                    >
+                      ›
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.pageButton}
+                      disabled={!hasNextPage || loading}
+                      onClick={() => setPage((prev) => prev + 1)}
+                    >
+                      »
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </>

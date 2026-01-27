@@ -20,6 +20,9 @@ const AdminCategoryManager: React.FC = () => {
 
   const canCreate = useMemo(() => name.trim() && slug.trim(), [name, slug]);
 
+  const PAGE_SIZE = 10;
+  const [page, setPage] = useState(1);
+
   const fetchList = useCallback(async () => {
     try {
       setLoadState('loading');
@@ -85,7 +88,7 @@ const AdminCategoryManager: React.FC = () => {
   }, [confirmDelete]);
 
   const filteredItems = useMemo(() => {
-    return items.filter((item) => {
+    const filtered = items.filter((item) => {
       const searchLower = search.toLowerCase().trim();
       if (searchLower) {
         const matchesSearch =
@@ -98,11 +101,15 @@ const AdminCategoryManager: React.FC = () => {
 
       return true;
     });
-  }, [items, search, statusFilter]);
+
+    const start = (page - 1) * PAGE_SIZE;
+    return filtered.slice(start, start + PAGE_SIZE);
+  }, [items, page, search, statusFilter]);
 
   const resetFilters = useCallback(() => {
     setSearch('');
     setStatusFilter('all');
+    setPage(1);
   }, []);
 
   return (
@@ -155,7 +162,7 @@ const AdminCategoryManager: React.FC = () => {
       </div>
 
       {showForm && (
-      <div className={styles.card}>
+        <div className={styles.card}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.95)', display: 'flex', alignItems: 'center', gap: 10 }}>
               <Icon name="folder" size={20} color="rgba(59, 130, 246, 0.8)" />
@@ -256,6 +263,38 @@ const AdminCategoryManager: React.FC = () => {
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className={styles.pagination}>
+        <button
+          type="button"
+          className={styles.pageButton}
+          disabled={page === 1}
+          onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+        >
+          Trang trước
+        </button>
+        <span className={styles.pageInfo}>Trang {page}</span>
+        <button
+          type="button"
+          className={styles.pageButton}
+          disabled={page * PAGE_SIZE >= items.filter((item) => {
+            const searchLower = search.toLowerCase().trim();
+            if (searchLower) {
+              const matchesSearch =
+                item.name.toLowerCase().includes(searchLower) || item.slug.toLowerCase().includes(searchLower);
+              if (!matchesSearch) return false;
+            }
+
+            if (statusFilter === 'active' && !item.isActive) return false;
+            if (statusFilter === 'inactive' && item.isActive) return false;
+
+            return true;
+          }).length}
+          onClick={() => setPage((prev) => prev + 1)}
+        >
+          Trang sau
+        </button>
       </div>
 
       {confirmDelete && (
