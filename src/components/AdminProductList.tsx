@@ -35,7 +35,7 @@ const AdminProductList: React.FC = () => {
     status: 'all',
   });
 
-  const PAGE_SIZE = 20;
+  const PAGE_SIZE = 10;
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
 
@@ -243,7 +243,7 @@ const AdminProductList: React.FC = () => {
           <button
             type="button"
             className={styles.pageButton}
-            disabled={page === 1 || loadState === 'loading'}
+            disabled={page === 1 || loadState !== 'idle'}
             onClick={() => void fetchProducts(Math.max(1, page - 1))}
           >
             Trang trước
@@ -252,7 +252,7 @@ const AdminProductList: React.FC = () => {
           <button
             type="button"
             className={styles.pageButton}
-            disabled={!hasNextPage || loadState === 'loading'}
+            disabled={!hasNextPage || loadState !== 'idle'}
             onClick={() => void fetchProducts(page + 1)}
           >
             Trang sau
