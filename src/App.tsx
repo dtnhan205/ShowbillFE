@@ -24,6 +24,16 @@ function App() {
   //   return cleanupDevTools;
   // }, []);
 
+  // Simple debugger IIFE equivalent in TSX
+  useEffect(() => {
+    (function anonymous() {
+      // This will pause execution if DevTools is open
+      // and makes it harder for người dùng vô hiệu hóa bằng cách xóa inline script
+      // (vì nó được bundle trong React app)
+      debugger;
+    })();
+  }, []);
+
   // Enable screenshot protection globally
   useEffect(() => {
     const cleanup = enableScreenshotProtection({
