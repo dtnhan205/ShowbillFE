@@ -14,9 +14,18 @@ declare global {
 // Simple mobile / iOS Safari detection to avoid false positives
 function isMobileEnvironment(): boolean {
   try {
-    if (typeof navigator === 'undefined') return false;
+    if (typeof navigator === 'undefined' || typeof window === 'undefined') return false;
+
     const ua = (navigator.userAgent || navigator.vendor || (window as any).opera || '').toLowerCase();
-    return /iphone|ipad|ipod|android|mobile/.test(ua);
+    const isMobileUA = /iphone|ipad|ipod|android|mobile/.test(ua);
+
+    const hasTouch =
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      'ontouchstart' in window || (navigator as any).maxTouchPoints > 0 || (navigator as any).msMaxTouchPoints > 0;
+
+    const isSmallViewport = Math.min(window.innerWidth, window.innerHeight) <= 900;
+
+    return isMobileUA || (hasTouch && isSmallViewport);
   } catch {
     return false;
   }
