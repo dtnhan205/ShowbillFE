@@ -1,19 +1,40 @@
 .wrap {
   display: grid;
-  gap: 28px;
+  gap: 24px;
   padding: 0 4px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .header {
-  padding: 28px;
-  border-radius: 20px;
-  border: 2px solid rgba(59, 130, 246, 0.25);
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(147, 51, 234, 0.08) 100%);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  padding: 24px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 16px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(147, 51, 234, 0.05) 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
-  margin-bottom: 4px;
-  backdrop-filter: blur(10px);
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerInner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  gap: 12px;
+}
+
+.headerInfo {
+  display: flex;
+  flex-direction: column;
 }
 
 .header::before {
@@ -22,21 +43,18 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 5px;
+  height: 4px;
   background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-  border-radius: 20px 20px 0 0;
 }
 
 .title {
-  margin: 0;
   font-size: 24px;
   font-weight: 800;
   color: #ffffff;
+  margin: 0;
   display: flex;
   align-items: center;
-  gap: 14px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  letter-spacing: -0.5px;
+  gap: 12px;
 }
 
 .title::before {
@@ -46,8 +64,8 @@
 
 .muted {
   color: rgba(255, 255, 255, 0.75);
-  font-size: 15px;
-  margin-top: 10px;
+  font-size: 13px;
+  margin-top: 6px;
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -55,7 +73,10 @@
 }
 
 .card {
-  padding: 36px 32px;
+  padding: 24px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  box-sizing: border-box;
   border-radius: 24px;
   border: 2px solid rgba(255, 255, 255, 0.12);
   background: linear-gradient(145deg, rgba(30, 30, 40, 0.98) 0%, rgba(20, 20, 30, 0.98) 100%);
@@ -70,50 +91,11 @@
   border-color: rgba(59, 130, 246, 0.3);
 }
 
-@media (max-width: 640px) {
-  .header {
-    padding: 20px 16px;
-  }
-
-  .card {
-    padding: 20px 16px;
-  }
-
-  .title {
-    font-size: 20px;
-  }
-
-  .table th,
-  .table td {
-    padding: 12px 8px;
-    font-size: 13px;
-  }
-
-  .header > div {
-    flex-wrap: wrap;
-    row-gap: 12px;
-  }
-
-  .addButton {
-    width: 100%;
-    justify-content: center;
-    margin-top: 12px;
-    padding: 12px 18px;
-    font-size: 14px;
-  }
-}
-
 .form {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
   gap: 16px;
   align-items: start;
-}
-
-@media (max-width: 720px) {
-  .form {
-    grid-template-columns: 1fr;
-  }
 }
 
 .input {
@@ -195,18 +177,20 @@
   -webkit-overflow-scrolling: touch;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
 }
 
 .table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 520px;
+  /* Giống trang quản lý sản phẩm: bảng rộng, cuộn ngang trong tableWrap */
+  min-width: 1000px;
 }
 
 .table th,
 .table td {
-  padding: 20px 16px;
+  padding: 14px 12px;
   text-align: left;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -334,7 +318,9 @@
   display: grid;
   grid-template-columns: 1fr auto auto;
   gap: 14px;
-  padding: 24px;
+  padding: 20px 16px;
+  width: 100%;
+  box-sizing: border-box;
   border-radius: 20px;
   border: 2px solid rgba(255, 255, 255, 0.12);
   background: linear-gradient(145deg, rgba(30, 30, 40, 0.98) 0%, rgba(20, 20, 30, 0.98) 100%);
@@ -343,10 +329,8 @@
   backdrop-filter: blur(20px);
 }
 
-@media (max-width: 720px) {
-  .filters {
-    grid-template-columns: 1fr;
-  }
+.searchWrap {
+  position: relative;
 }
 
 .filterInput,
@@ -578,12 +562,6 @@
   font-weight: 600;
 }
 
-@media (max-width: 640px) {
-  .pageInfo {
-    font-size: 13px;
-  }
-}
-
 .addButton {
   cursor: pointer;
   border: 0;
@@ -634,4 +612,153 @@
 
 .closeButton:active {
   transform: rotate(90deg) scale(0.95);
+}
+
+/* Responsive - Tablet */
+@media (max-width: 1024px) {
+  .header {
+    padding: 20px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .headerInner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .resetBtn {
+    justify-self: flex-start;
+  }
+
+  .card {
+    padding: 20px 16px;
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .wrap {
+    gap: 16px;
+    padding: 0;
+  }
+
+  .header {
+    margin-bottom: 16px;
+    align-items: stretch;
+  }
+
+  .headerInner {
+    align-items: stretch;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .addButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 16px 12px;
+    margin-bottom: 16px;
+  }
+
+  .filterInput,
+  .filterSelect,
+  .resetBtn {
+    font-size: 13px;
+    padding: 12px 14px;
+  }
+
+  .card {
+    padding: 16px 12px;
+    border-radius: 18px;
+  }
+
+  .table {
+    min-width: 100%;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+
+  /* Ẩn cột slug để bảng đỡ rộng trên mobile */
+  .table th:nth-child(2),
+  .table td:nth-child(2) {
+    display: none;
+  }
+
+  .form {
+    grid-template-columns: 1fr;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actionBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .emptyMessage {
+    padding: 32px 16px;
+    font-size: 14px;
+  }
+
+  .modalContent {
+    padding: 24px 16px;
+  }
+
+  .modalTitle {
+    font-size: 20px;
+  }
+
+  .modalMessage {
+    font-size: 14px;
+  }
+
+  .modalActions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .modalConfirmButton,
+  .modalCancelButton {
+    width: 100%;
+    text-align: center;
+  }
+
+  .pagination {
+    margin-top: 16px;
+    gap: 8px;
+  }
+
+  .pageButton {
+    min-width: 80px;
+    width: auto;
+  }
 }

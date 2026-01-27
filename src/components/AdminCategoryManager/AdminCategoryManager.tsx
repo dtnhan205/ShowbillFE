@@ -115,9 +115,9 @@ const AdminCategoryManager: React.FC = () => {
   return (
     <div className={styles.wrap}>
       <div className={styles.header}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
-          <div>
-        <h2 className={styles.title} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div className={styles.headerInner}>
+          <div className={styles.headerInfo}>
+        <h2 className={styles.title}>
           <Icon name="folder" size={28} color="rgba(255, 255, 255, 0.9)" /> Quản lý Category
         </h2>
         <div className={styles.muted}>Tổng: {items.length} | Hiển thị: {filteredItems.length}</div>
@@ -136,7 +136,7 @@ const AdminCategoryManager: React.FC = () => {
       </div>
 
       <div className={styles.filters}>
-        <div style={{ position: 'relative' }}>
+        <div className={styles.searchWrap}>
           <Icon name="search" size={18} color="rgba(255, 255, 255, 0.5)" style={{ position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
         <input
           className={styles.filterInput}
@@ -163,7 +163,7 @@ const AdminCategoryManager: React.FC = () => {
 
       {showForm && (
         <div className={styles.card}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          <div className={styles.formHeader}>
             <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.95)', display: 'flex', alignItems: 'center', gap: 10 }}>
               <Icon name="folder" size={20} color="rgba(59, 130, 246, 0.8)" />
               Thêm Category mới

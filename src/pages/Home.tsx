@@ -641,25 +641,6 @@ const Home: React.FC = () => {
             </>
           )}
         </div>
-
-        {/* Stats Footer */}
-        <footer className={styles.statsFooter}>
-          <div className={styles.statsFooterContent}>
-            <div className={styles.statsItem}>
-              <span className={styles.statsLabel}>SHOWBILL</span>
-            </div>
-            <div className={styles.statsDivider} />
-            <div className={styles.statsItem}>
-              <span className={styles.statsValue}>{admins.length}</span>
-              <span className={styles.statsText}>Admins</span>
-            </div>
-            <div className={styles.statsDivider} />
-            <div className={styles.statsItem}>
-              <span className={styles.statsValue}>{filteredAdmins.length}</span>
-              <span className={styles.statsText}>Active</span>
-            </div>
-          </div>
-        </footer>
       </div>
     </ClientLayout>
   );
