@@ -70,6 +70,33 @@
   border-color: rgba(59, 130, 246, 0.3);
 }
 
+@media (max-width: 640px) {
+  .header {
+    padding: 20px 16px;
+  }
+
+  .card {
+    padding: 20px 16px;
+  }
+
+  .table th,
+  .table td {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+
+  .header > div {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+
+  .addButton {
+    width: 100%;
+    justify-content: center;
+    margin-top: 12px;
+  }
+}
+
 .form {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
@@ -156,12 +183,19 @@
   box-shadow: none;
 }
 
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  overflow: hidden;
-  border-radius: 16px;
+  min-width: 520px;
 }
 
 .table th,
@@ -531,6 +565,23 @@
   color: rgba(255, 255, 255, 0.85);
   font-size: 14px;
   font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .pagination {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pageButton {
+    width: 100%;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .pageInfo {
+    font-size: 13px;
+  }
 }
 
 .addButton {

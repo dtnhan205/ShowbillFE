@@ -202,59 +202,61 @@ const AdminObManager: React.FC = () => {
         {loadState === 'loading' ? <div className={styles.muted}>Đang tải...</div> : null}
         {loadState === 'error' ? <div className={styles.muted}>{error}</div> : null}
 
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Tên</th>
-              <th>Slug</th>
-              <th>Trạng thái</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredItems.length === 0 ? (
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead>
               <tr>
-                <td colSpan={4} className={styles.emptyMessage}>
-                  <Icon name="alert-circle" size={48} color="rgba(255, 255, 255, 0.3)" style={{ marginBottom: 16, display: 'block', margin: '0 auto 16px' }} />
-                  <div>Không tìm thấy OB nào phù hợp với bộ lọc.</div>
-                </td>
+                <th>Tên</th>
+                <th>Slug</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
               </tr>
-            ) : (
-              filteredItems.map((x) => (
-              <tr key={x._id}>
-                <td>{x.name}</td>
-                <td className={styles.muted}>{x.slug}</td>
-                <td>
-                  <span className={`${styles.badge} ${x.isActive ? styles.active : styles.inactive}`}>
-                    {x.isActive ? 'ACTIVE' : 'INACTIVE'}
-                  </span>
-                </td>
-                <td>
-                  <div className={styles.actions}>
-                    <button
-                      type="button"
-                      className={styles.actionBtn}
-                      onClick={() => void toggleActive(x._id, !x.isActive)}
-                      title={x.isActive ? 'Tắt OB này' : 'Bật OB này'}
-                    >
-                      {x.isActive ? 'Tắt' : 'Bật'}
-                    </button>
-                    <button
-                      type="button"
-                      className={`${styles.actionBtn} ${styles.danger}`}
-                      onClick={() => void removeItem(x._id)}
-                      title="Xóa OB này"
-                    >
-                      <Icon name="trash" size={14} color="currentColor" style={{ marginRight: 6, display: 'inline-block', verticalAlign: 'middle' }} />
-                      Xóa
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredItems.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className={styles.emptyMessage}>
+                    <Icon name="alert-circle" size={48} color="rgba(255, 255, 255, 0.3)" style={{ marginBottom: 16, display: 'block', margin: '0 auto 16px' }} />
+                    <div>Không tìm thấy OB nào phù hợp với bộ lọc.</div>
+                  </td>
+                </tr>
+              ) : (
+                filteredItems.map((x) => (
+                <tr key={x._id}>
+                  <td>{x.name}</td>
+                  <td className={styles.muted}>{x.slug}</td>
+                  <td>
+                    <span className={`${styles.badge} ${x.isActive ? styles.active : styles.inactive}`}>
+                      {x.isActive ? 'ACTIVE' : 'INACTIVE'}
+                    </span>
+                  </td>
+                  <td>
+                    <div className={styles.actions}>
+                      <button
+                        type="button"
+                        className={styles.actionBtn}
+                        onClick={() => void toggleActive(x._id, !x.isActive)}
+                        title={x.isActive ? 'Tắt OB này' : 'Bật OB này'}
+                      >
+                        {x.isActive ? 'Tắt' : 'Bật'}
+                      </button>
+                      <button
+                        type="button"
+                        className={`${styles.actionBtn} ${styles.danger}`}
+                        onClick={() => void removeItem(x._id)}
+                        title="Xóa OB này"
+                      >
+                        <Icon name="trash" size={14} color="currentColor" style={{ marginRight: 6, display: 'inline-block', verticalAlign: 'middle' }} />
+                        Xóa
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className={styles.pagination}>
