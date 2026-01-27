@@ -1398,3 +1398,8 @@
   color: #ffffff;
 }
 
+.pageButtonDots {
+  cursor: default;
+  border-style: dashed;
+}
+

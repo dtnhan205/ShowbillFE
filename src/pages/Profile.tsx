@@ -57,6 +57,7 @@ const Profile: React.FC = () => {
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 20;
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [lastPage, setLastPage] = useState<number | null>(null);
 
   const [ob, setOb] = useState('');
   const [cat, setCat] = useState('');
@@ -201,7 +202,14 @@ const Profile: React.FC = () => {
       }
       
       setData(res.data);
-      setHasNextPage((res.data.products ?? []).length === PAGE_SIZE);
+      const products = res.data.products ?? [];
+      const hasMore = products.length === PAGE_SIZE;
+      setHasNextPage(hasMore);
+      if (!hasMore) {
+        setLastPage(page);
+      } else {
+        setLastPage((prev) => prev);
+      }
       setLoading(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Không thể tải trang profile');
@@ -216,6 +224,7 @@ const Profile: React.FC = () => {
     setLoading(true);
     setError(null);
     setPage(1);
+    setLastPage(null);
   }, [id]);
 
   // Effect để tăng view cho tất cả bill của admin khi mở trang profile
@@ -791,45 +800,99 @@ const Profile: React.FC = () => {
                 <ClientProductGrid products={filteredProducts} onOpen={openBill} />
                 {filteredProducts.length > 0 && (
                   <div className={styles.pagination}>
-                    <button
-                      type="button"
-                      className={styles.pageButton}
-                      disabled={page === 1 || loading}
-                      onClick={() => setPage(1)}
-                    >
-                      «
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.pageButton}
-                      disabled={page === 1 || loading}
-                      onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-                    >
-                      ‹
-                    </button>
-                    <button
-                      type="button"
-                      className={`${styles.pageButton} ${styles.pageButtonActive}`}
-                      disabled
-                    >
-                      {page}
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.pageButton}
-                      disabled={!hasNextPage || loading}
-                      onClick={() => setPage((prev) => prev + 1)}
-                    >
-                      ›
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.pageButton}
-                      disabled={!hasNextPage || loading}
-                      onClick={() => setPage((prev) => prev + 1)}
-                    >
-                      »
-                    </button>
+                    {(() => {
+                      const pages: Array<number | 'dots'> = [];
+
+                      if (lastPage && lastPage <= 5) {
+                        for (let i = 1; i <= lastPage; i++) pages.push(i);
+                      } else if (lastPage) {
+                        if (page <= 3) {
+                          pages.push(1, 2, 3, 'dots', lastPage - 1, lastPage);
+                        } else if (page >= lastPage - 2) {
+                          pages.push(1, 2, 'dots', lastPage - 2, lastPage - 1, lastPage);
+                        } else {
+                          pages.push(1, 'dots', page - 1, page, page + 1, 'dots', lastPage);
+                        }
+                      } else {
+                        if (page <= 3) {
+                          pages.push(1, 2, 3, 'dots');
+                        } else {
+                          pages.push(1, 'dots', page - 1, page, page + 1);
+                        }
+                      }
+
+                      const canGoPrev = page > 1 && !loading;
+                      const canGoNext = hasNextPage && !loading;
+                      const canGoLast = (lastPage !== null || hasNextPage) && !loading;
+
+                      return (
+                        <>
+                          <button
+                            type="button"
+                            className={styles.pageButton}
+                            disabled={!canGoPrev}
+                            onClick={() => !canGoPrev ? undefined : setPage(1)}
+                          >
+                            «
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.pageButton}
+                            disabled={!canGoPrev}
+                            onClick={() => !canGoPrev ? undefined : setPage((prev) => Math.max(1, prev - 1))}
+                          >
+                            ‹
+                          </button>
+
+                          {pages.map((p, idx) =>
+                            p === 'dots' ? (
+                              <button
+                                key={`dots-${idx}`}
+                                type="button"
+                                className={`${styles.pageButton} ${styles.pageButtonDots}`}
+                                disabled
+                              >
+                                …
+                              </button>
+                            ) : (
+                              <button
+                                key={p}
+                                type="button"
+                                className={`${styles.pageButton} ${p === page ? styles.pageButtonActive : ''}`}
+                                disabled={p === page || loading}
+                                onClick={() => setPage(p)}
+                              >
+                                {p}
+                              </button>
+                            ),
+                          )}
+
+                          <button
+                            type="button"
+                            className={styles.pageButton}
+                            disabled={!canGoNext}
+                            onClick={() => !canGoNext ? undefined : setPage((prev) => prev + 1)}
+                          >
+                            ›
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.pageButton}
+                            disabled={!canGoLast}
+                            onClick={() => {
+                              if (!canGoLast) return;
+                              if (lastPage) {
+                                setPage(lastPage);
+                              } else {
+                                setPage((prev) => prev + 1);
+                              }
+                            }}
+                          >
+                            »
+                          </button>
+                        </>
+                      );
+                    })()}
                   </div>
                 )}
               </div>
