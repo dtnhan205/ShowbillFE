@@ -176,28 +176,29 @@ const AdminProductList: React.FC = () => {
       return <div className={styles.empty}>Không có sản phẩm phù hợp bộ lọc.</div>;
     }
 
-    // Tính danh sách số trang hiển thị (dạng: 1 2 ... 7 8)
+    // Tính danh sách số trang hiển thị dạng: [current, maybe next, 'dots', last]
     const pages: Array<number | 'dots'> = [];
 
-    if (lastPage && lastPage <= 5) {
-      // Ít trang: hiển thị hết
-      for (let i = 1; i <= lastPage; i++) pages.push(i);
-    } else if (lastPage) {
-      // Đã biết trang cuối
-      if (page <= 3) {
-        pages.push(1, 2, 3, 'dots', lastPage - 1, lastPage);
-      } else if (page >= lastPage - 2) {
-        pages.push(1, 2, 'dots', lastPage - 2, lastPage - 1, lastPage);
-      } else {
-        pages.push(1, 'dots', page - 1, page, page + 1, 'dots', lastPage);
+    if (lastPage && lastPage > 0) {
+      const set = new Set<number>();
+      set.add(page);
+      if (page + 1 <= lastPage) set.add(page + 1);
+      set.add(lastPage);
+
+      const sorted = Array.from(set).sort((a, b) => a - b);
+      let prevNum: number | null = null;
+      for (const num of sorted) {
+        if (prevNum !== null && num - prevNum > 1) {
+          pages.push('dots');
+        }
+        pages.push(num);
+        prevNum = num;
       }
     } else {
-      // Chưa biết trang cuối: hiển thị quanh trang hiện tại
-      if (page <= 3) {
-        pages.push(1, 2, 3, 'dots');
-      } else {
-        pages.push(1, 'dots', page - 1, page, page + 1);
-      }
+      // Chưa biết trang cuối: chỉ hiển thị trang hiện tại và trang kế tiếp
+      pages.push(page);
+      pages.push(page + 1);
+      pages.push('dots');
     }
 
     return (
@@ -274,62 +275,56 @@ const AdminProductList: React.FC = () => {
         </div>
 
         <div className={styles.pagination}>
-          <button
-            type="button"
-            className={styles.pageButton}
-            disabled={page === 1 || loadState !== 'idle'}
-            onClick={() => void fetchProducts(1)}
-          >
-            «
-          </button>
-          <button
-            type="button"
-            className={styles.pageButton}
-            disabled={page === 1 || loadState !== 'idle'}
-            onClick={() => void fetchProducts(Math.max(1, page - 1))}
-          >
-            ‹
-          </button>
+          {(() => {
+            const canGoPrev = page > 1 && loadState === 'idle';
+            const canGoNext =
+              loadState === 'idle' && (hasNextPage || (lastPage !== null && page < lastPage));
 
-          {pages.map((p, idx) =>
-            p === 'dots' ? (
-              <button
-                key={`dots-${idx}`}
-                type="button"
-                className={`${styles.pageButton} ${styles.pageButtonDots}`}
-                disabled
-              >
-                …
-              </button>
-            ) : (
-              <button
-                key={p}
-                type="button"
-                className={`${styles.pageButton} ${p === page ? styles.pageButtonActive : ''}`}
-                disabled={p === page || loadState !== 'idle'}
-                onClick={() => void fetchProducts(p)}
-              >
-                {p}
-              </button>
-            ),
-          )}
+            return (
+              <>
+                <button
+                  type="button"
+                  className={styles.pageButton}
+                  disabled={!canGoPrev}
+                  onClick={() => void fetchProducts(Math.max(1, page - 1))}
+                >
+                  ‹
+                </button>
 
-          <button
-            type="button"
-            className={styles.pageButton}
-            disabled={!hasNextPage || loadState !== 'idle'}
-            onClick={() => void fetchProducts(page + 1)}
-          >
-            ›
-          </button>
-          <button
-            type="button"
-            className={styles.pageButton}
-            disabled={(!lastPage && !hasNextPage) || loadState !== 'idle'}
-            onClick={() => void fetchProducts(lastPage ?? page + 1)}
-          >
-            »
-          </button>
+                {pages.map((p, idx) =>
+                  p === 'dots' ? (
+                    <button
+                      key={`dots-${idx}`}
+                      type="button"
+                      className={`${styles.pageButton} ${styles.pageButtonDots}`}
+                      disabled
+                    >
+                      …
+                    </button>
+                  ) : (
+                    <button
+                      key={p}
+                      type="button"
+                      className={`${styles.pageButton} ${p === page ? styles.pageButtonActive : ''}`}
+                      disabled={p === page || loadState !== 'idle'}
+                      onClick={() => void fetchProducts(p)}
+                    >
+                      {p}
+                    </button>
+                  ),
+                )}
+
+                <button
+                  type="button"
+                  className={styles.pageButton}
+                  disabled={!canGoNext}
+                  onClick={() => void fetchProducts(page + 1)}
+                >
+                  ›
+                </button>
+              </>
+            );
+          })()}
         </div>
       </>
     );

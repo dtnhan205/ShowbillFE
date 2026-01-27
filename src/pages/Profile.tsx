@@ -303,11 +303,18 @@ const Profile: React.FC = () => {
 
   // Tính tổng views và số bill
   const stats = useMemo(() => {
+    if (data?.admin?.stats) {
+      return {
+        totalBills: data.admin.stats.totalBills,
+        totalViews: data.admin.stats.totalViews,
+      };
+    }
+
     const products = data?.products ?? [];
     const totalViews = products.reduce((sum, p) => sum + (p.views ?? 0), 0);
     const totalBills = products.length;
     return { totalViews, totalBills };
-  }, [data?.products]);
+  }, [data?.admin?.stats, data?.products]);
 
   const navigateToBill = useCallback(
     async (newIndex: number) => {
@@ -803,38 +810,31 @@ const Profile: React.FC = () => {
                     {(() => {
                       const pages: Array<number | 'dots'> = [];
 
-                      if (lastPage && lastPage <= 5) {
-                        for (let i = 1; i <= lastPage; i++) pages.push(i);
-                      } else if (lastPage) {
-                        if (page <= 3) {
-                          pages.push(1, 2, 3, 'dots', lastPage - 1, lastPage);
-                        } else if (page >= lastPage - 2) {
-                          pages.push(1, 2, 'dots', lastPage - 2, lastPage - 1, lastPage);
-                        } else {
-                          pages.push(1, 'dots', page - 1, page, page + 1, 'dots', lastPage);
+                      if (lastPage && lastPage > 0) {
+                        const set = new Set<number>();
+                        set.add(page);
+                        if (page + 1 <= lastPage) set.add(page + 1);
+                        set.add(lastPage);
+
+                        const sorted = Array.from(set).sort((a, b) => a - b);
+                        let prevNum: number | null = null;
+                        for (const num of sorted) {
+                          if (prevNum !== null && num - prevNum > 1) {
+                            pages.push('dots');
+                          }
+                          pages.push(num);
+                          prevNum = num;
                         }
                       } else {
-                        if (page <= 3) {
-                          pages.push(1, 2, 3, 'dots');
-                        } else {
-                          pages.push(1, 'dots', page - 1, page, page + 1);
-                        }
+                        pages.push(page, page + 1, 'dots');
                       }
 
                       const canGoPrev = page > 1 && !loading;
-                      const canGoNext = hasNextPage && !loading;
-                      const canGoLast = (lastPage !== null || hasNextPage) && !loading;
+                      const canGoNext =
+                        !loading && (hasNextPage || (lastPage !== null && page < lastPage));
 
                       return (
                         <>
-                          <button
-                            type="button"
-                            className={styles.pageButton}
-                            disabled={!canGoPrev}
-                            onClick={() => !canGoPrev ? undefined : setPage(1)}
-                          >
-                            «
-                          </button>
                           <button
                             type="button"
                             className={styles.pageButton}
@@ -874,21 +874,6 @@ const Profile: React.FC = () => {
                             onClick={() => !canGoNext ? undefined : setPage((prev) => prev + 1)}
                           >
                             ›
-                          </button>
-                          <button
-                            type="button"
-                            className={styles.pageButton}
-                            disabled={!canGoLast}
-                            onClick={() => {
-                              if (!canGoLast) return;
-                              if (lastPage) {
-                                setPage(lastPage);
-                              } else {
-                                setPage((prev) => prev + 1);
-                              }
-                            }}
-                          >
-                            »
                           </button>
                         </>
                       );
