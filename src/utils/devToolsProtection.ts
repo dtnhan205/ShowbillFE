@@ -11,10 +11,25 @@ declare global {
   }
 }
 
+// Simple mobile / iOS Safari detection to avoid false positives
+function isMobileEnvironment(): boolean {
+  try {
+    if (typeof navigator === 'undefined') return false;
+    const ua = (navigator.userAgent || navigator.vendor || (window as any).opera || '').toLowerCase();
+    return /iphone|ipad|ipod|android|mobile/.test(ua);
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Detects if Developer Tools is open using multiple methods
  */
 function detectDevToolsOpen(): boolean {
+  // On mobile (especially iOS Safari), skip DevTools detection to avoid false redirects
+  if (isMobileEnvironment()) {
+    return false;
+  }
   // First check global flag set by inline script
   // @ts-ignore
   if (window.__DEVTOOLS_DETECTED__ || window.__API_BLOCKED__) {
@@ -107,6 +122,10 @@ function detectDevToolsOpen(): boolean {
  * Redirects to Google and blocks API
  */
 function redirectToGoogle(): void {
+  // Do not redirect on mobile/iOS Safari to avoid breaking normal browsing
+  if (isMobileEnvironment()) {
+    return;
+  }
   // Set global flags
   // @ts-ignore
   window.__DEVTOOLS_DETECTED__ = true;
@@ -315,6 +334,11 @@ function blockContextMenu(): () => void {
  * This will redirect to Google if DevTools is detected and block all API calls
  */
 export function enableDevToolsProtection(): () => void {
+  // Completely skip protection on mobile browsers (Safari iOS, Chrome mobile, ...)
+  if (isMobileEnvironment()) {
+    return () => {};
+  }
+
   // Check if already detected by inline script
   // @ts-ignore
   if (window.__DEVTOOLS_DETECTED__ || window.__API_BLOCKED__) {
