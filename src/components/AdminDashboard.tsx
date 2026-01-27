@@ -25,12 +25,19 @@ type MyStats = {
   totalBills: number;
   totalVisibleBills: number;
   totalViews: number;
+  // Không phụ thuộc bộ lọc thời gian
+  totalCategories?: number;
+  totalObVersions?: number;
+  totalPackagesPurchased?: number;
 };
 
 type SystemStats = {
   totalAdmins: number;
   totalBills: number;
   totalViews: number;
+  // Không phụ thuộc bộ lọc thời gian
+  totalCategories?: number;
+  totalObVersions?: number;
 };
 
 type PaymentStats = {
@@ -262,18 +269,18 @@ const AdminDashboard: React.FC = () => {
         <>
           <div className={styles.stats}>
             <div className={`${styles.statCard} ${styles.statCardBlue}`}>
-                <div className={styles.statCardLeft}>
-              <div className={styles.statValue}>{systemStats.totalAdmins}</div>
-              <div className={styles.statLabel}>Tổng Admin</div>
+              <div className={styles.statCardLeft}>
+                <div className={styles.statValue}>{systemStats.totalAdmins.toLocaleString('vi-VN')}</div>
+                <div className={styles.statLabel}>Tổng Admin</div>
               </div>
               <div className={styles.statIcon}>
                 <Icon name="users" size={28} color="rgba(59, 130, 246, 0.9)" />
               </div>
             </div>
             <div className={`${styles.statCard} ${styles.statCardGreen}`}>
-                <div className={styles.statCardLeft}>
-              <div className={styles.statValue}>{systemStats.totalBills}</div>
-              <div className={styles.statLabel}>Tổng Bill (tất cả admin)</div>
+              <div className={styles.statCardLeft}>
+                <div className={styles.statValue}>{systemStats.totalBills.toLocaleString('vi-VN')}</div>
+                <div className={styles.statLabel}>Tổng Bill (tất cả admin)</div>
                 <div className={styles.statBadge}>{getPeriodLabel}</div>
               </div>
               <div className={styles.statIcon}>
@@ -281,9 +288,9 @@ const AdminDashboard: React.FC = () => {
               </div>
             </div>
             <div className={`${styles.statCard} ${styles.statCardPurple}`}>
-                <div className={styles.statCardLeft}>
-              <div className={styles.statValue}>{systemStats.totalViews}</div>
-              <div className={styles.statLabel}>Tổng lượt xem (tất cả admin)</div>
+              <div className={styles.statCardLeft}>
+                <div className={styles.statValue}>{systemStats.totalViews.toLocaleString('vi-VN')}</div>
+                <div className={styles.statLabel}>Tổng lượt xem (tất cả admin)</div>
                 <div className={styles.statBadge}>{getPeriodLabel}</div>
               </div>
               <div className={styles.statIcon}>
@@ -291,6 +298,38 @@ const AdminDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {(typeof systemStats.totalCategories === 'number' ||
+            typeof systemStats.totalObVersions === 'number') && (
+            <div className={styles.stats} style={{ marginTop: 24 }}>
+              {typeof systemStats.totalCategories === 'number' && (
+                <div className={`${styles.statCard} ${styles.statCardGreen}`}>
+                  <div className={styles.statCardLeft}>
+                    <div className={styles.statValue}>
+                      {systemStats.totalCategories.toLocaleString('vi-VN')}
+                    </div>
+                    <div className={styles.statLabel}>Tổng Category (tất cả admin)</div>
+                  </div>
+                  <div className={styles.statIcon}>
+                    <Icon name="folder" size={28} color="rgba(34, 197, 94, 0.9)" />
+                  </div>
+                </div>
+              )}
+              {typeof systemStats.totalObVersions === 'number' && (
+                <div className={`${styles.statCard} ${styles.statCardPurple}`}>
+                  <div className={styles.statCardLeft}>
+                    <div className={styles.statValue}>
+                      {systemStats.totalObVersions.toLocaleString('vi-VN')}
+                    </div>
+                    <div className={styles.statLabel}>Tổng OB / Mùa game (tất cả admin)</div>
+                  </div>
+                  <div className={styles.statIcon}>
+                    <Icon name="game" size={28} color="rgba(168, 85, 247, 0.9)" />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           {paymentStats && (
             <div className={styles.stats} style={{ marginTop: 24 }}>
               <div className={`${styles.statCard} ${styles.statCardOrange}`}>
@@ -338,28 +377,76 @@ const AdminDashboard: React.FC = () => {
     // Normal admin view
     if (myStats) {
       return (
-        <div className={styles.stats}>
-          <div className={`${styles.statCard} ${styles.statCardGreen}`}>
-            <div className={styles.statCardLeft}>
-            <div className={styles.statValue}>{myStats.totalBills}</div>
-            <div className={styles.statLabel}>Tổng Bill đã up</div>
-              <div className={styles.statBadge}>{getPeriodLabel}</div>
+        <>
+          <div className={styles.stats}>
+            <div className={`${styles.statCard} ${styles.statCardGreen}`}>
+              <div className={styles.statCardLeft}>
+                <div className={styles.statValue}>{myStats.totalBills.toLocaleString('vi-VN')}</div>
+                <div className={styles.statLabel}>Tổng Bill đã up</div>
+                <div className={styles.statBadge}>{getPeriodLabel}</div>
+              </div>
+              <div className={styles.statIcon}>
+                <Icon name="file-text" size={28} color="rgba(34, 197, 94, 0.9)" />
+              </div>
             </div>
-            <div className={styles.statIcon}>
-              <Icon name="file-text" size={28} color="rgba(34, 197, 94, 0.9)" />
+            <div className={`${styles.statCard} ${styles.statCardPurple}`}>
+              <div className={styles.statCardLeft}>
+                <div className={styles.statValue}>{myStats.totalViews.toLocaleString('vi-VN')}</div>
+                <div className={styles.statLabel}>Tổng lượt xem</div>
+                <div className={styles.statBadge}>{getPeriodLabel}</div>
+              </div>
+              <div className={styles.statIcon}>
+                <Icon name="eye" size={28} color="rgba(168, 85, 247, 0.9)" />
+              </div>
             </div>
           </div>
-          <div className={`${styles.statCard} ${styles.statCardPurple}`}>
-            <div className={styles.statCardLeft}>
-            <div className={styles.statValue}>{myStats.totalViews}</div>
-            <div className={styles.statLabel}>Tổng lượt xem</div>
-              <div className={styles.statBadge}>{getPeriodLabel}</div>
+
+          {(typeof myStats.totalCategories === 'number' ||
+            typeof myStats.totalObVersions === 'number' ||
+            typeof myStats.totalPackagesPurchased === 'number') && (
+            <div className={styles.stats} style={{ marginTop: 24 }}>
+              {typeof myStats.totalCategories === 'number' && (
+                <div className={`${styles.statCard} ${styles.statCardBlue}`}>
+                  <div className={styles.statCardLeft}>
+                    <div className={styles.statValue}>
+                      {myStats.totalCategories.toLocaleString('vi-VN')}
+                    </div>
+                    <div className={styles.statLabel}>Tổng Category (từ trước tới nay)</div>
+                  </div>
+                  <div className={styles.statIcon}>
+                    <Icon name="folder" size={28} color="rgba(59, 130, 246, 0.9)" />
+                  </div>
+                </div>
+              )}
+              {typeof myStats.totalObVersions === 'number' && (
+                <div className={`${styles.statCard} ${styles.statCardOrange}`}>
+                  <div className={styles.statCardLeft}>
+                    <div className={styles.statValue}>
+                      {myStats.totalObVersions.toLocaleString('vi-VN')}
+                    </div>
+                    <div className={styles.statLabel}>Tổng OB / Mùa game (từ trước tới nay)</div>
+                  </div>
+                  <div className={styles.statIcon}>
+                    <Icon name="game" size={28} color="rgba(249, 115, 22, 0.9)" />
+                  </div>
+                </div>
+              )}
+              {typeof myStats.totalPackagesPurchased === 'number' && (
+                <div className={`${styles.statCard} ${styles.statCardPink}`}>
+                  <div className={styles.statCardLeft}>
+                    <div className={styles.statValue}>
+                      {myStats.totalPackagesPurchased.toLocaleString('vi-VN')}
+                    </div>
+                    <div className={styles.statLabel}>Tổng số gói đã mua (từ trước tới nay)</div>
+                  </div>
+                  <div className={styles.statIcon}>
+                    <Icon name="package" size={28} color="rgba(236, 72, 153, 0.9)" />
+                  </div>
+                </div>
+              )}
             </div>
-            <div className={styles.statIcon}>
-              <Icon name="eye" size={28} color="rgba(168, 85, 247, 0.9)" />
-            </div>
-          </div>
-        </div>
+          )}
+        </>
       );
     }
 

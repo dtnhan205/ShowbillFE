@@ -539,26 +539,31 @@
 
 .pageButton {
   cursor: pointer;
-  border: 2px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 2px solid #3b82f6;
+  background: transparent;
   color: rgba(255, 255, 255, 0.95);
-  padding: 8px 16px;
-  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 700;
   font-size: 13px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  min-width: 110px;
 }
 
 .pageButton:hover:not(:disabled) {
-  background: rgba(59, 130, 246, 0.3);
-  border-color: rgba(59, 130, 246, 0.6);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-color: rgba(59, 130, 246, 0.7);
   transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
 }
 
 .pageButton:disabled {
   opacity: 0.4;
   cursor: default;
+  box-shadow: none;
 }
 
 .pageInfo {
@@ -568,17 +573,6 @@
 }
 
 @media (max-width: 640px) {
-  .pagination {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .pageButton {
-    width: 100%;
-    min-width: 0;
-    text-align: center;
-  }
-
   .pageInfo {
     font-size: 13px;
   }
